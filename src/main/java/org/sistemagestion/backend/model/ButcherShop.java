@@ -22,4 +22,8 @@ public class ButcherShop {
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "current_account_id", nullable = false)
+    private ButcherShopCurrentAccount currentAccount;
 }

@@ -27,6 +27,4 @@ public class Purchase extends Movement{
     private Double kilograms;
     private Double pricePerKilo;
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CutMeat> cutMeatList = new ArrayList<>();
 }

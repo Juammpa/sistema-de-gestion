@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ButcherShopCurrentAccount {
+public class ButcherShopCurrentAccount extends CurrentAccount{
 
     @OneToOne(mappedBy = "currentAccount")
     private ButcherShop butcherShop;

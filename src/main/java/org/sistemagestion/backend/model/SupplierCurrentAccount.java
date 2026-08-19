@@ -16,4 +16,5 @@ public class SupplierCurrentAccount extends CurrentAccount{
 
     @OneToOne(mappedBy = "currentAccount")
     private Supplier supplier;
+
 }
