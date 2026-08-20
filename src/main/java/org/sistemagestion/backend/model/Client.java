@@ -2,6 +2,7 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Client {
 
     @Id
@@ -24,5 +26,6 @@ public class Client {
     private String phoneNumber;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<ButcherShop> butcherShops = new ArrayList<>();
 }
