@@ -4,7 +4,9 @@ package org.sistemagestion.backend.mapper;
 import org.sistemagestion.backend.dto.ClientRequestDto;
 import org.sistemagestion.backend.dto.ClientResponseDto;
 import org.sistemagestion.backend.model.Client;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ClientMapper {
 
     public Client toClient(ClientRequestDto request) {

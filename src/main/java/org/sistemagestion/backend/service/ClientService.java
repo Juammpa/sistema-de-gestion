@@ -27,6 +27,7 @@ public class ClientService implements IClientService{
     @Override
     public ClientResponseDto getById(Long id) {
         return clientRepository.findAll().stream()
+                .filter(client -> client.getId().equals(id))
                 .map(mapper::toDto)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException());
