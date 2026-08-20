@@ -1,4 +1,4 @@
-package org.sistemagestion.backend.dto;
+package org.sistemagestion.backend.dto.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

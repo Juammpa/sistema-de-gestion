@@ -2,8 +2,8 @@ package org.sistemagestion.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.sistemagestion.backend.dto.ClientRequestDto;
-import org.sistemagestion.backend.dto.ClientResponseDto;
+import org.sistemagestion.backend.dto.client.ClientRequestDto;
+import org.sistemagestion.backend.dto.client.ClientResponseDto;
 import org.sistemagestion.backend.service.IClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

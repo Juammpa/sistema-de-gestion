@@ -1,8 +1,8 @@
 package org.sistemagestion.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.sistemagestion.backend.dto.ClientRequestDto;
-import org.sistemagestion.backend.dto.ClientResponseDto;
+import org.sistemagestion.backend.dto.client.ClientRequestDto;
+import org.sistemagestion.backend.dto.client.ClientResponseDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.ClientMapper;
 import org.sistemagestion.backend.model.Client;

@@ -1,7 +1,7 @@
 package org.sistemagestion.backend.service;
 
-import org.sistemagestion.backend.dto.ClientRequestDto;
-import org.sistemagestion.backend.dto.ClientResponseDto;
+import org.sistemagestion.backend.dto.client.ClientRequestDto;
+import org.sistemagestion.backend.dto.client.ClientResponseDto;
 
 import java.util.List;
 
