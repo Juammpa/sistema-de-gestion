@@ -3,6 +3,7 @@ package org.sistemagestion.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.ClientRequestDto;
 import org.sistemagestion.backend.dto.ClientResponseDto;
+import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.ClientMapper;
 import org.sistemagestion.backend.model.Client;
 import org.sistemagestion.backend.repository.ClientRepository;
@@ -26,11 +27,11 @@ public class ClientService implements IClientService{
 
     @Override
     public ClientResponseDto getById(Long id) {
-        return clientRepository.findAll().stream()
-                .filter(client -> client.getId().equals(id))
-                .map(mapper::toDto)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException());
+
+        Client client =  clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+
+        return mapper.toDto(client);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class ClientService implements IClientService{
     public ClientResponseDto updateClient(Long id, ClientRequestDto requestDto) {
 
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
 
         client.setName(requestDto.getName());
         client.setLastName(requestDto.getLastName());
@@ -57,7 +58,7 @@ public class ClientService implements IClientService{
     public void deleteById(Long id) {
 
        Client client = clientRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException());
+               .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
 
        clientRepository.delete(client);
     }
