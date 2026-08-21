@@ -1,0 +1,64 @@
+package org.sistemagestion.backend.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
+import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
+import org.sistemagestion.backend.service.butcher_shop.IButcherShopService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/butcher-shops")
+@RequiredArgsConstructor
+public class ButcherShopController {
+
+    private final IButcherShopService butcherShopService;
+
+    @PostMapping
+    public ResponseEntity<ButcherShopResponseDto> createButcherShop(@Valid @RequestBody ButcherShopRequestDto request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(butcherShopService.createButcherShop(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ButcherShopResponseDto> getById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(butcherShopService.getById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ButcherShopResponseDto>> getByClient(@RequestParam Long clientId) {
+
+        return ResponseEntity.ok(butcherShopService.getByClient(clientId));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ButcherShopResponseDto>> getAllButcherShops() {
+
+        return ResponseEntity.ok(butcherShopService.getAllButcherShops());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ButcherShopResponseDto> updateButcherShop(@PathVariable Long id, @Valid @RequestBody ButcherShopRequestDto request) {
+
+        return ResponseEntity.ok(butcherShopService.updateButcherShop(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+
+        butcherShopService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
+
+
+
+}
