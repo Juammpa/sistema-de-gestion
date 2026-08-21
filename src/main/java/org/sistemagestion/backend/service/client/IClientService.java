@@ -1,4 +1,4 @@
-package org.sistemagestion.backend.service;
+package org.sistemagestion.backend.service.client;
 
 import org.sistemagestion.backend.dto.client.ClientRequestDto;
 import org.sistemagestion.backend.dto.client.ClientResponseDto;

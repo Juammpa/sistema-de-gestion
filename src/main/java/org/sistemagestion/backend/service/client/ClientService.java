@@ -1,4 +1,4 @@
-package org.sistemagestion.backend.service;
+package org.sistemagestion.backend.service.client;
 
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.client.ClientRequestDto;
