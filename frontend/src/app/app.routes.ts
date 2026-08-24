@@ -7,6 +7,10 @@ export const routes: Routes = [
     component: HomePage,
   },
   {
+    path: 'home',
+    loadChildren: () => import('./shared/shared.routes'),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
