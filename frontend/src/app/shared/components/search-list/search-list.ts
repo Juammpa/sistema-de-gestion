@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { Client } from '../../../clientes/interfaces/client.interface';
+import { ListItem } from '../../interfaces/list-item.interface';
 
 @Component({
   selector: 'search-list',
@@ -8,5 +8,5 @@ import { Client } from '../../../clientes/interfaces/client.interface';
 })
 export class SearchList {
   // Almacena la lista a iterar
-  searchList = input.required<Client[]>();
+  searchList = input.required<ListItem[]>();
 }

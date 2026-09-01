@@ -11,6 +11,10 @@ export const Sharedroutes: Routes = [
         path: 'clientes',
         loadComponent: () => import('../clientes/pages/client-page/client-page'),
       },
+      {
+        path: 'proveedores',
+        loadComponent: () => import('../supplier/pages/supplier-page/supplier-page'),
+      },
     ],
   },
   {

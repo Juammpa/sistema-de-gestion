@@ -1,0 +1,38 @@
+<!-- Búsqueda y creación de clientes -->
+<div
+  class="max-w-3xl mx-auto px-6 py-6 mt-10 mb-6 border-slate-800 border rounded-2xl text-white bg-slate-900"
+>
+  <search-input
+    placeholder="Buscar proveedores..."
+    [numberFound]="supplierResource.value()?.length || 0"
+    searchName="proveedores"
+  />
+</div>
+
+<!-- Lista de usuarios -->
+<div class="flex flex-col gap-3 max-w-3xl mx-auto">
+  <!-- Mostrar estado de carga -->
+  @if (supplierResource.isLoading()) {
+    <div class="m-auto">
+      <loading-spinner />
+    </div>
+  }
+
+  <!-- TODO: implementar funcionalidad -->
+  <!-- Mostrar estado de error -->
+  @if (supplierResource.error()) {
+    <empty-state infoMessage="No se pudo conectar al servidor" />
+  }
+
+  <!-- Mostrar estado sin resultados -->
+  @if (
+    supplierResource.value()?.length === 0 &&
+    !supplierResource.isLoading() &&
+    !supplierResource.error()
+  ) {
+    <empty-state infoMessage="No hay proveedores registrados" />
+  }
+
+  <!-- Iterar lista de usuarios -->
+  <search-list [searchList]="supplierList()" />
+</div>
