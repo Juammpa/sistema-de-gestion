@@ -1,0 +1,36 @@
+<!-- Búsqueda y creación de clientes -->
+<div
+  class="max-w-3xl mx-auto px-6 py-6 mt-10 mb-6 border-slate-800 border rounded-2xl text-white bg-slate-900"
+>
+  <search-input
+    placeholder="Buscar clientes..."
+    [numberFound]="clientResource.value()?.length || 0"
+    searchName="clientes"
+  />
+</div>
+
+<!-- Lista de usuarios -->
+<div class="flex flex-col gap-3 max-w-3xl mx-auto">
+  <!-- Mostrar estado de carga -->
+  @if (clientResource.isLoading()) {
+    <div class="m-auto">
+      <loading-spinner />
+    </div>
+  }
+
+  <!-- TODO: implementar funcionalidad -->
+  <!-- Mostrar estado de error -->
+  @if (clientResource.error()) {
+    <empty-state infoMessage="No se pudo conectar al servidor" />
+  }
+
+  <!-- Mostrar estado sin resultados -->
+  @if (
+    clientResource.value()?.length === 0 && !clientResource.isLoading() && !clientResource.error()
+  ) {
+    <empty-state infoMessage="No hay clientes registrados" />
+  }
+
+  <!-- Iterar lista de usuarios -->
+  <search-list [searchList]="clientResource.value() || []" />
+</div>

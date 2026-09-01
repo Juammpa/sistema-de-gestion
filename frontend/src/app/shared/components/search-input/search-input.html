@@ -1,0 +1,59 @@
+<div class="flex gap-2">
+  <!-- Input + botón buscar integrados -->
+  <div
+    class="flex flex-1 h-10 border border-gray-500 rounded-lg overflow-hidden focus-within:border-blue-500 hover:border-blue-400"
+  >
+    <input
+      type="search"
+      [placeholder]="placeholder()"
+      class="flex-1 px-4 text-sm outline-none bg-transparent text-slate-300 placeholder:text-slate-500"
+    />
+    <button
+      class="px-3 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors hover:cursor-pointer"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-4 h-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <button
+    class="h-10 px-4 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:cursor-pointer"
+  >
+    + Agregar
+  </button>
+</div>
+<!-- Contador + Ordenar + Filtrar -->
+<div class="flex items-center mt-4 justify-between">
+  <!-- Contador -->
+  <div class="flex items-center gap-2 text-xs text-slate-500">
+    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+    <span
+      ><strong class="text-slate-300 font-medium">{{ numberFound() ?? 0 }}</strong>
+      {{ searchName() }}</span
+    >
+  </div>
+
+  <!-- Ordenar y Filtrar -->
+  <div class="flex gap-2">
+    <select
+      class="h-8 px-3 text-xs bg-slate-800 border border-slate-700 text-slate-400 rounded-lg outline-none cursor-pointer hover:border-blue-400"
+    >
+      <option>Ordenar: nombre A-Z</option>
+      <option>Ordenar: nombre Z-A</option>
+      <option>Más recientes</option>
+      <option>Más compras</option>
+    </select>
+  </div>
+</div>

@@ -5,6 +5,13 @@ export const Sharedroutes: Routes = [
   {
     path: '',
     component: LayoutPage,
+
+    children: [
+      {
+        path: 'clientes',
+        loadComponent: () => import('../clientes/pages/client-page/client-page'),
+      },
+    ],
   },
   {
     path: '**',
