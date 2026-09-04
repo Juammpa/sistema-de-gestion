@@ -16,4 +16,9 @@ export class SupplierService {
       .get<Supplier[]>(`${environment.apiUrl}/suppliers`)
       .pipe(catchError(() => of([])));
   }
+
+  // Obtener proveedor por Id
+  getSupplierById(id: number) {
+    return this.http.get<Supplier>(`${environment.apiUrl}/suppliers/${id}`);
+  }
 }

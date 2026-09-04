@@ -1,0 +1,20 @@
+<!-- Boton Volver -->
+<back-button />
+
+<section
+  class="m-5 rounded-2xl border border-[#2a3247] bg-[#161c2e] p-6 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]"
+>
+  <div class="flex flex-wrap items-start justify-between gap-6">
+    @if (supplier()) {
+      <!-- Informacion proveedor -->
+      <div class="min-w-0 flex flex-col gap-1">
+        <!-- Nombre Proveedor -->
+        <h1 class="text-2xl font-bold tracking-tight text-slate-100 sm:text-3xl">
+          {{ supplier().companyName }}
+        </h1>
+        <!-- Boton WhatsApp -->
+        <whatsapp-button [phoneNumber]="supplier().phoneNumber" />
+      </div>
+    }
+  </div>
+</section>

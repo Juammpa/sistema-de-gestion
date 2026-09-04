@@ -6,10 +6,10 @@ export const supplierRoutes: Routes = [
     loadComponent: () => import('./pages/supplier-page/supplier-page'),
   },
   // Ruta dinamica
-  // {
-  //   path: ':id',
-  //   loadComponent: () => import('./pages/client-info-page/client-info-page'),
-  // },
+  {
+    path: ':id',
+    loadComponent: () => import('./pages/supplier-info-page/supplier-info-page'),
+  },
 ];
 
 export default supplierRoutes;
