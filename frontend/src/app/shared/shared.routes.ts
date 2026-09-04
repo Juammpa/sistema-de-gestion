@@ -9,11 +9,11 @@ export const Sharedroutes: Routes = [
     children: [
       {
         path: 'clientes',
-        loadComponent: () => import('../clientes/pages/client-page/client-page'),
+        loadChildren: () => import('../clientes/clientes.routes'),
       },
       {
         path: 'proveedores',
-        loadComponent: () => import('../supplier/pages/supplier-page/supplier-page'),
+        loadChildren: () => import('../supplier/supplier.routes'),
       },
     ],
   },

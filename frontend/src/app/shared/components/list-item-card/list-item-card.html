@@ -1,0 +1,18 @@
+<div
+  [routerLink]="pathRoute()"
+  (click)="itemClick.emit(item())"
+  class="px-3 py-4 mb-2 border-slate-800 border rounded-2xl text-white bg-slate-900 hover:cursor-pointer hover:opacity-90"
+>
+  <div class="flex items-center gap-4">
+    <!-- Foto -->
+    <div class="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center shrink-0">
+      <span class="text-sm font-medium text-white">{{ item().initials }}</span>
+    </div>
+
+    <!-- Info -->
+    <div>
+      <p class="text-sm font-medium text-white">{{ item().title }}</p>
+      <p class="text-xs text-slate-400 mt-0.5">{{ item().subtitle }}</p>
+    </div>
+  </div>
+</div>
