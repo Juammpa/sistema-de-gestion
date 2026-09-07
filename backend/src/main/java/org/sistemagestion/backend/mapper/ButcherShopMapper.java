@@ -3,7 +3,6 @@ package org.sistemagestion.backend.mapper;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
 import org.sistemagestion.backend.model.ButcherShop;
-import org.sistemagestion.backend.model.Client;
 
 import org.springframework.stereotype.Component;
 
@@ -24,6 +23,8 @@ public class ButcherShopMapper {
                 .address(butcherShop.getAddress())
                 .clientName(String.format("%s %s", butcherShop.getClient().getName(), butcherShop.getClient().getLastName()))
                 .currentAccountId(butcherShop.getCurrentAccount().getId())
+                .currentBalance(butcherShop.getCurrentAccount().getCurrentBalance())
                 .build();
     }
+
 }

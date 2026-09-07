@@ -16,4 +16,5 @@ public class ButcherShopResponseDto {
     private String address;
     private String clientName;
     private Long currentAccountId;
+    private Double currentBalance;
 }
