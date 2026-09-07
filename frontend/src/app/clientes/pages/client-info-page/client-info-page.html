@@ -1,4 +1,15 @@
 <div class="max-w-5xl mx-auto">
   <!-- Contenedor de Info del Cliente -->
   <client-header [client]="clientResource.value()!" />
+
+  <!-- Divisior (filtros) -->
+  <movements-filters />
+
+  <!-- Tabla Movimientos -->
+
+  <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
+    <div class="overflow-x-auto">
+      <movements-table />
+    </div>
+  </div>
 </div>

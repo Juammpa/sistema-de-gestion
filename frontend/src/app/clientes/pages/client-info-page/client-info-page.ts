@@ -4,10 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ClientHeader } from './client-header/client-header';
 import { SidebarService } from '../../../shared/components/sidebar/services/sidebar.service';
+import { MovementsFilters } from '../../../movements/components/movements-filters/movements-filters';
+import { MovementsTable } from '../../../movements/components/movements-table/movements-table';
 
 @Component({
   selector: 'client-info-page',
-  imports: [ClientHeader],
+  imports: [ClientHeader, MovementsFilters, MovementsTable],
   templateUrl: './client-info-page.html',
 })
 export default class ClientInfoPage implements OnDestroy {
