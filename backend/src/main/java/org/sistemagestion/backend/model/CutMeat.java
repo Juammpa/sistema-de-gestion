@@ -1,16 +1,15 @@
 package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.sistemagestion.backend.model.enums.CutMeatType;
 
 @Entity
 @Table(name = "cut_meats")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class CutMeat {
 
     @Id

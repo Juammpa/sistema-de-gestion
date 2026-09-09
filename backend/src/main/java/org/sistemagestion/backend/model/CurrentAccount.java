@@ -1,20 +1,18 @@
 package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "current_accounts")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public abstract class CurrentAccount {
+@Getter
+@Setter
+public class CurrentAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

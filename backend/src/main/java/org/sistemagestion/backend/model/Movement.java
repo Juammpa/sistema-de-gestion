@@ -1,9 +1,7 @@
 package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -12,7 +10,8 @@ import java.time.LocalDate;
 @Table(name = "movements")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public abstract class Movement {
 
     @Id

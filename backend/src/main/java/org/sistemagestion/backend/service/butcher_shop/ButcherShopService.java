@@ -6,8 +6,8 @@ import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.ButcherShopMapper;
 import org.sistemagestion.backend.model.ButcherShop;
-import org.sistemagestion.backend.model.ButcherShopCurrentAccount;
 import org.sistemagestion.backend.model.Client;
+import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.ClientRepository;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class ButcherShopService implements IButcherShopService{
         ButcherShop butcherShop = mapper.toButcherShop(requestDto);
         butcherShop.setClient(client);
 
-        ButcherShopCurrentAccount currentAccount =  new ButcherShopCurrentAccount();
+        CurrentAccount currentAccount =  new CurrentAccount();
         currentAccount.setCurrentBalance(0.0);
 
         butcherShop.setCurrentAccount(currentAccount);

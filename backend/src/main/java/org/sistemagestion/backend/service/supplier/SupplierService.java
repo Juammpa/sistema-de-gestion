@@ -5,8 +5,8 @@ import org.sistemagestion.backend.dto.supplier.SupplierRequestDto;
 import org.sistemagestion.backend.dto.supplier.SupplierResponseDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.SupplierMapper;
+import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Supplier;
-import org.sistemagestion.backend.model.SupplierCurrentAccount;
 import org.sistemagestion.backend.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class SupplierService implements ISupplierService{
 
         Supplier supplier = mapper.toSupplier(request);
 
-        SupplierCurrentAccount currentAccount = new SupplierCurrentAccount();
+        CurrentAccount currentAccount = new CurrentAccount();
         currentAccount.setCurrentBalance(0.0);
 
         supplier.setCurrentAccount(currentAccount);

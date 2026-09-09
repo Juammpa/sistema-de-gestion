@@ -1,16 +1,14 @@
 package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "butcher_shops")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class ButcherShop {
 
@@ -27,5 +25,5 @@ public class ButcherShop {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "current_account_id", nullable = false)
-    private ButcherShopCurrentAccount currentAccount;
+    private CurrentAccount currentAccount;
 }
