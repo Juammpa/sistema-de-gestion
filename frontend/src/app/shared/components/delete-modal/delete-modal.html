@@ -28,11 +28,12 @@
         <i class="fa-solid fa-user-minus"></i>
       </span>
 
-      <h2 class="mt-4 text-lg font-bold tracking-tight text-white">Eliminar cliente</h2>
+      <h2 class="mt-4 text-lg font-bold tracking-tight text-white">{{ description() }}</h2>
 
       <p class="mt-1.5 text-sm text-slate-400">
-        @if (clientName().trim()) {
-          Vas a eliminar a <span class="font-semibold text-slate-200">{{ clientName() }}.</span>
+        @if (entityName()) {
+          Vas a eliminar a
+          <span class="font-semibold text-slate-200">{{ entityName().trim() }}.</span>
         } @else {
           Vas a eliminar a este cliente.
         }
@@ -48,12 +49,15 @@
         <ul class="mt-2 space-y-1 text-xs text-slate-400">
           <li class="flex items-center gap-2">
             <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
-            El cliente y sus datos de contacto
+            El {{ entityType() }} y sus datos de contacto
           </li>
-          <li class="flex items-center gap-2">
-            <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
-            Todas sus sucursales asociadas
-          </li>
+          <!-- Mostrar solo si es cliente (proveedor no tiene sucursales) -->
+          @if (entityType() === 'cliente') {
+            <li class="flex items-center gap-2">
+              <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
+              Todas sus sucursales asociadas
+            </li>
+          }
           <li class="flex items-center gap-2">
             <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
             El historial de movimientos y saldos
@@ -83,7 +87,7 @@
           [class.fa-trash-can]="!loading()"
           [class.fa-hourglass-half]="loading()"
         ></i>
-        <span>{{ loading() ? 'Eliminando...' : 'Eliminar cliente' }}</span>
+        <span>{{ loading() ? 'Eliminando...' : 'Eliminar' }}</span>
       </button>
     </div>
   </div>

@@ -1,0 +1,69 @@
+import { Component, computed, inject, input, OnInit, output } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SupplierService } from '../../services/supplier.service';
+import { FormUtils } from '../../../utils/form-utils';
+import { Supplier, SupplierRequest } from '../../interfaces/supplier.interface';
+
+@Component({
+  selector: 'supplier-form-modal',
+  imports: [ReactiveFormsModule],
+  templateUrl: './supplier-form-modal.html',
+})
+export class SupplierFormModal implements OnInit {
+  private supplierService = inject(SupplierService);
+  private fb = inject(FormBuilder);
+  formUtils = FormUtils;
+
+  // Inputs
+  description = input.required<string>();
+  supplier = input<Supplier>(); // presente --> editar; ausente --> crear
+
+  // Outputs
+  cancel = output();
+  saved = output(); // Se guardo con exito (editado o creado)
+
+  // Definimos nuestro formulario
+  supplierForm: FormGroup = this.fb.group({
+    companyName: ['', [Validators.required, Validators.minLength(3)]],
+    phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
+  });
+
+  // true si estamos editando un proveedor existente
+  isEdit = computed(() => !!this.supplier());
+
+  // Si llega un proveedor, precargamos el formulario (modo edicion)
+  ngOnInit() {
+    const current = this.supplier();
+    if (current) this.supplierForm.patchValue(current);
+  }
+
+  // Cierra el modal
+  close() {
+    this.cancel.emit();
+  }
+
+  // Guardar proveedor
+  onSave() {
+    if (this.supplierForm.invalid) {
+      this.supplierForm.markAllAsTouched();
+      return;
+    }
+
+    // Obtenemos el request
+    const request: SupplierRequest = this.supplierForm.value;
+
+    // Segun el request: editar o crear
+    const request$ = this.isEdit()
+      ? this.supplierService.updateSupplier(this.supplier()!.id, request)
+      : this.supplierService.createSupplier(request);
+
+    request$.subscribe({
+      next: () => {
+        this.saved.emit();
+        this.supplierForm.reset();
+        this.close();
+      },
+      error: (err) => console.error('Error al guardar el proveedor', err),
+    });
+  }
+}

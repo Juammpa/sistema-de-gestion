@@ -1,4 +1,48 @@
 <div class="max-w-5xl mx-auto">
-  <!-- Contenedor de Info del Proveedor -->
-  <supplier-header [supplier]="supplierResource.value()!" />
+  @if (supplierResource.value(); as supplier) {
+    <!-- Contenedor de Info del Proveedor -->
+    <supplier-header
+      [supplier]="supplier"
+      (edit)="showModal.set(true)"
+      (remove)="showRemoveModal.set(true)"
+    />
+
+    <!-- Divisior (filtros) -->
+    <movements-filters />
+
+    <!-- Tabla Movimientos -->
+    <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
+      <div class="overflow-x-auto">
+        <movements-table />
+      </div>
+    </div>
+    <!-- Estado de carga -->
+  } @else if (supplierResource.isLoading()) {
+    <div class="m-auto mt-10">
+      <loading-spinner />
+    </div>
+    <!-- Estado de error -->
+  } @else if (supplierResource.error()) {
+    <empty-state infoMessage="No se pudo cargar al proveedor" />
+  }
 </div>
+
+@if (showModal() && supplierResource.value(); as supplier) {
+  <supplier-form-modal
+    description="Editar Proveedor"
+    [supplier]="supplier"
+    (cancel)="showModal.set(false)"
+    (saved)="showModal.set(false); supplierResource.reload()"
+  />
+}
+
+@if (showRemoveModal() && supplierResource.value(); as supplier) {
+  <delete-modal
+    description="Eliminar Proveedor"
+    entityType="proveedor"
+    [entityName]="supplier.companyName"
+    [loading]="deleting()"
+    (cancel)="showRemoveModal.set(false)"
+    (confirm)="deleteSupplier(supplier.id)"
+  />
+}

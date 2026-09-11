@@ -1,8 +1,9 @@
 import { Component, computed, input, output, signal } from '@angular/core';
-import { Client } from '../../../interfaces/client.interface';
-import { WhatsappButton } from '../../../../shared/ui/whatsapp-button/whatsapp-button';
-import { BackButton } from '../../../../shared/ui/back-button/back-button';
+
 import { CurrencyPipe } from '@angular/common';
+import { WhatsappButton } from '../../../shared/ui/whatsapp-button/whatsapp-button';
+import { BackButton } from '../../../shared/ui/back-button/back-button';
+import { Client } from '../../interfaces/client.interface';
 
 @Component({
   selector: 'client-header',

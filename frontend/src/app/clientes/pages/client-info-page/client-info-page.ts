@@ -2,14 +2,14 @@ import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { ClientService } from '../../services/cliente.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { ClientHeader } from './client-header/client-header';
+import { ClientHeader } from '../../components/client-header/client-header';
 import { SidebarService } from '../../../shared/components/sidebar/services/sidebar.service';
 import { MovementsFilters } from '../../../movements/components/movements-filters/movements-filters';
 import { MovementsTable } from '../../../movements/components/movements-table/movements-table';
 import { ClientFormModal } from '../../components/client-form-modal/client-form-modal';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
-import { DeleteClientModal } from '../../components/delete-client-modal/delete-client-modal';
+import { DeleteModal } from '../../../shared/components/delete-modal/delete-modal';
 
 @Component({
   selector: 'client-info-page',
@@ -20,7 +20,7 @@ import { DeleteClientModal } from '../../components/delete-client-modal/delete-c
     ClientFormModal,
     EmptyState,
     LoadingSpinner,
-    DeleteClientModal,
+    DeleteModal,
   ],
   templateUrl: './client-info-page.html',
 })

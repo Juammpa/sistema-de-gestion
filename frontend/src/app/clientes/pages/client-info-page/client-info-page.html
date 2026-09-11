@@ -11,16 +11,17 @@
     <movements-filters />
 
     <!-- Tabla Movimientos -->
-
     <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
       <div class="overflow-x-auto">
         <movements-table />
       </div>
     </div>
+    <!-- Estado de carga -->
   } @else if (clientResource.isLoading()) {
     <div class="m-auto mt-10">
       <loading-spinner />
     </div>
+    <!-- Estado de error -->
   } @else if (clientResource.error()) {
     <empty-state infoMessage="No se pudo cargar al cliente" />
   }
@@ -36,8 +37,10 @@
 }
 
 @if (showRemoveModal() && clientResource.value(); as client) {
-  <delete-client-modal
-    [clientName]="`${client.lastName} ${client.name}`"
+  <delete-modal
+    description="Eliminar Cliente"
+    entityType="cliente"
+    [entityName]="`${client.lastName} ${client.name}`"
     [loading]="deleting()"
     (cancel)="showRemoveModal.set(false)"
     (confirm)="deleteClient(client.id)"
