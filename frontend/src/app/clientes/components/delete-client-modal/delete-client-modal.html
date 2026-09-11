@@ -1,0 +1,90 @@
+<!-- Backdrop: cierra al hacer click fuera del panel -->
+<div
+  (click)="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-[#070b14]/70 p-4 backdrop-blur-sm"
+>
+  <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
+  <div
+    (click)="$event.stopPropagation()"
+    class="w-full max-w-fit overflow-hidden rounded-2xl border border-slate-700/60 bg-[#151d2e] shadow-2xl shadow-black/60 ring-1 ring-white/5"
+  >
+    <!-- Boton cerrar (absoluto, esquina) -->
+    <div class="relative">
+      <button
+        type="button"
+        (click)="close()"
+        class="absolute right-3 top-3 rounded-lg p-1.5 cursor-pointer text-slate-400 transition-colors hover:bg-slate-700/60 hover:text-white"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- ====== BODY ======== -->
+    <div class="px-7 py-6 pt-8 text-center">
+      <!-- Icono destructivo centrado -->
+      <span
+        class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600/15 text-xl text-red-400 ring-8 ring-red-600/5"
+      >
+        <i class="fa-solid fa-user-minus"></i>
+      </span>
+
+      <h2 class="mt-4 text-lg font-bold tracking-tight text-white">Eliminar cliente</h2>
+
+      <p class="mt-1.5 text-sm text-slate-400">
+        @if (clientName().trim()) {
+          Vas a eliminar a <span class="font-semibold text-slate-200">{{ clientName() }}.</span>
+        } @else {
+          Vas a eliminar a este cliente.
+        }
+        Esta acción no se puede deshacer.
+      </p>
+
+      <!-- Recuadro de advertencia: qué se elimina -->
+      <div class="mt-4 rounded-xl border border-red-500/25 bg-red-500/5 px-4 py-3 text-left">
+        <p class="flex items-center gap-2 text-xs font-semibold text-red-300">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Se eliminará de forma permanente
+        </p>
+        <ul class="mt-2 space-y-1 text-xs text-slate-400">
+          <li class="flex items-center gap-2">
+            <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
+            El cliente y sus datos de contacto
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
+            Todas sus sucursales asociadas
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
+            El historial de movimientos y saldos
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ======= FOOTER ======== -->
+    <div class="flex item-center gap-3 border-t border-slate-700/50 px-7 py-4">
+      <button
+        type="button"
+        (click)="close()"
+        class="flex-1 cursor-pointer rounded-lg border border-slate-600/70 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        (click)="confirm.emit()"
+        [disabled]="loading()"
+        class="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/60 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <i
+          class="fa-regular"
+          [class.fa-trash-can]="!loading()"
+          [class.fa-hourglass-half]="loading()"
+        ></i>
+        <span>{{ loading() ? 'Eliminando...' : 'Eliminar cliente' }}</span>
+      </button>
+    </div>
+  </div>
+</div>

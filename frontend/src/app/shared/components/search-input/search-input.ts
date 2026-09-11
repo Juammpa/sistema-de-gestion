@@ -10,4 +10,7 @@ export class SearchInput {
   placeholder = input.required<string>();
   numberFound = input.required<number | undefined>();
   searchName = input.required<string>();
+
+  // Output
+  add = output();
 }

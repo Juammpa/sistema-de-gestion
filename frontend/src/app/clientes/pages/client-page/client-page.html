@@ -1,16 +1,17 @@
 <!-- Búsqueda y creación de clientes -->
 <div
-  class="max-w-3xl mx-auto px-6 py-6 mt-10 mb-6 border-slate-800 border rounded-2xl text-white bg-slate-900"
+  class="max-w-3xl mx-auto px-6 py-6 mt-2 mb-6 border-slate-800 border rounded-2xl text-white bg-slate-900"
 >
   <search-input
     placeholder="Buscar clientes..."
     [numberFound]="clientResource.value()?.length || 0"
     searchName="clientes"
+    (add)="showModal.set(true)"
   />
 </div>
 
 <!-- Lista de usuarios -->
-<div class="flex flex-col gap-3 max-w-3xl mx-auto">
+<div class="flex flex-col gap-3 max-w-3xl mx-auto max-h-[calc(100vh-11.5rem)] overflow-y-auto pr-4">
   <!-- Mostrar estado de carga -->
   @if (clientResource.isLoading()) {
     <div class="m-auto">
@@ -34,3 +35,12 @@
   <!-- Iterar lista de usuarios -->
   <search-list [searchList]="clientList()" pathRoute="/home/clientes" />
 </div>
+
+<!-- Modal para Agregar Cliente -->
+@if (showModal()) {
+  <client-form-modal
+    description="Crear Cliente"
+    (cancel)="showModal.set(false)"
+    (saved)="showModal.set(false); clientResource.reload()"
+  />
+}

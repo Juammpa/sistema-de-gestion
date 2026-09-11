@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { Client } from '../../../interfaces/client.interface';
 import { WhatsappButton } from '../../../../shared/ui/whatsapp-button/whatsapp-button';
 import { BackButton } from '../../../../shared/ui/back-button/back-button';
@@ -12,6 +12,10 @@ import { CurrencyPipe } from '@angular/common';
 export class ClientHeader {
   // Inputs
   client = input.required<Client>();
+
+  // Outputs
+  edit = output();
+  remove = output();
 
   // null = Mostrar el total de todas las carnicerias
   selectedButcherShopId = signal<number | null>(null);

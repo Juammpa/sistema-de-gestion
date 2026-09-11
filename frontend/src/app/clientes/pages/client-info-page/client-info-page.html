@@ -1,15 +1,45 @@
 <div class="max-w-5xl mx-auto">
-  <!-- Contenedor de Info del Cliente -->
-  <client-header [client]="clientResource.value()!" />
+  @if (clientResource.value(); as client) {
+    <!-- Contenedor de Info del Cliente -->
+    <client-header
+      [client]="client"
+      (edit)="showModal.set(true)"
+      (remove)="showRemoveModal.set(true)"
+    />
 
-  <!-- Divisior (filtros) -->
-  <movements-filters />
+    <!-- Divisior (filtros) -->
+    <movements-filters />
 
-  <!-- Tabla Movimientos -->
+    <!-- Tabla Movimientos -->
 
-  <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
-    <div class="overflow-x-auto">
-      <movements-table />
+    <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
+      <div class="overflow-x-auto">
+        <movements-table />
+      </div>
     </div>
-  </div>
+  } @else if (clientResource.isLoading()) {
+    <div class="m-auto mt-10">
+      <loading-spinner />
+    </div>
+  } @else if (clientResource.error()) {
+    <empty-state infoMessage="No se pudo cargar al cliente" />
+  }
 </div>
+
+@if (showModal() && clientResource.value(); as client) {
+  <client-form-modal
+    description="Editar Cliente"
+    [client]="client"
+    (cancel)="showModal.set(false)"
+    (saved)="showModal.set(false); clientResource.reload()"
+  />
+}
+
+@if (showRemoveModal() && clientResource.value(); as client) {
+  <delete-client-modal
+    [clientName]="`${client.lastName} ${client.name}`"
+    [loading]="deleting()"
+    (cancel)="showRemoveModal.set(false)"
+    (confirm)="deleteClient(client.id)"
+  />
+}

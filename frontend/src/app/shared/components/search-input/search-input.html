@@ -29,9 +29,11 @@
   </div>
 
   <button
-    class="h-10 px-4 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:cursor-pointer"
+    (click)="add.emit()"
+    class="h-10 px-4 text-sm bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 hover:cursor-pointer"
   >
-    + Agregar
+    <i class="fa-solid fa-plus"></i>
+    Agregar
   </button>
 </div>
 <!-- Contador + Ordenar + Filtrar -->
