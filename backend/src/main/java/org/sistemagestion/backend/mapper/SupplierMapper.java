@@ -21,6 +21,7 @@ public class SupplierMapper {
                 .companyName(supplier.getCompanyName())
                 .phoneNumber(supplier.getPhoneNumber())
                 .currentAccountId(supplier.getCurrentAccount().getId())
+                .currentBalance(supplier.getCurrentAccount().getCurrentBalance())
                 .build();
     }
 

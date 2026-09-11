@@ -15,4 +15,5 @@ public class SupplierResponseDto {
     private String companyName;
     private String phoneNumber;
     private Long currentAccountId;
+    private Double currentBalance;
 }
