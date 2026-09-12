@@ -32,7 +32,7 @@ public class MovementService implements IMovementService{
         // Cada sucursal tiene una unica cuenta corriente; ahi cuelgan sus movimientos
         Long currentAccountId = butcherShop.getCurrentAccount().getId();
 
-        return movementRepository.findByCurrentAccountIdOrderByDateAsc(currentAccountId).stream()
+        return movementRepository.findByCurrentAccountIdOrderByDateAscIdAsc(currentAccountId).stream()
                 .map(mapper::toDto)
                 .toList();
 
