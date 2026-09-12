@@ -26,4 +26,12 @@ public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ButcherShop> butcherShops = new ArrayList<>();
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Sale> sales = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @Builder.Default
+//    private List<Movement> movements = new ArrayList<>();
 }

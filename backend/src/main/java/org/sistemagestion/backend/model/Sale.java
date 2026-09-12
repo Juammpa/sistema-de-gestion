@@ -5,6 +5,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "sales")
@@ -12,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@SuperBuilder
 public class Sale extends Movement{
 
     private Double kilograms;
@@ -20,4 +22,8 @@ public class Sale extends Movement{
     @ManyToOne
     @JoinColumn(name = "cut_meat_id", nullable = false)
     private CutMeat cutMeat;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 }

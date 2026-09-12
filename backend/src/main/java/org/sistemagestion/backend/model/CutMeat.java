@@ -10,6 +10,7 @@ import org.sistemagestion.backend.model.enums.CutMeatType;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class CutMeat {
 
     @Id

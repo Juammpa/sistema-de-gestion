@@ -2,6 +2,7 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@SuperBuilder
 public abstract class Movement {
 
     @Id

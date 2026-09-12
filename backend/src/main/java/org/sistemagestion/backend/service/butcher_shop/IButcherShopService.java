@@ -13,4 +13,5 @@ public interface IButcherShopService {
     List<ButcherShopResponseDto> getAllButcherShops();
     ButcherShopResponseDto updateButcherShop(Long id, ButcherShopRequestDto requestDto);
     void deleteById(Long id);
+
 }
