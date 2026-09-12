@@ -1,0 +1,53 @@
+package org.sistemagestion.backend.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
+import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
+import org.sistemagestion.backend.service.payment.IPaymentService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@CrossOrigin(origins = "http://localhost:4200")
+@RestController
+@RequestMapping("/api/payment")
+@RequiredArgsConstructor
+public class PaymentController {
+
+    private final IPaymentService paymentService;
+
+    @PostMapping
+    public ResponseEntity<PaymentResponseDto> createPayment(@Valid @RequestBody PaymentRequestDto request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.createPayment(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentResponseDto> getPaymentById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(paymentService.getPaymentById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PaymentResponseDto>> getAllPaymentsByClient(@RequestParam Long clientId) {
+
+        return ResponseEntity.ok(paymentService.getAllPaymentsByClient(clientId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PaymentResponseDto> updatePayment(@PathVariable Long id, @Valid @RequestBody PaymentRequestDto request) {
+
+        return ResponseEntity.ok(paymentService.updatePayment(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+
+        paymentService.deletePaymentById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+}
