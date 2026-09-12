@@ -3,7 +3,7 @@
   <div class="flex flex-col justify-center gap-1.5">
     <back-button />
     <add-sale-button (addSale)="openSaleModal()" />
-    <add-payment-button />
+    <add-payment-button (addPayment)="openPaymentModal()" />
   </div>
 
   <!-- Seccion info cliente -->
@@ -91,11 +91,20 @@
   </section>
 </div>
 
-@if (showModal()) {
+@if (showSaleModal()) {
   <sale-form-modal
-    (cancel)="showModal.set(false)"
-    (saved)="showModal.set(false); saleCreated.emit()"
+    (cancel)="showSaleModal.set(false)"
+    (saved)="showSaleModal.set(false); saleCreated.emit()"
     [butcherShop]="selectedButcherShop()!"
     [client]="client()"
+  />
+}
+
+@if (showPaymentModal()) {
+  <payment-form-modal
+    (cancel)="showPaymentModal.set(false)"
+    (saved)="showPaymentModal.set(false); paymentCreated.emit()"
+    [client]="client()"
+    [butcherShop]="selectedButcherShop()!"
   />
 }

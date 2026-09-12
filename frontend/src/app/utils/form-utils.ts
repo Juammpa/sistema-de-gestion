@@ -12,6 +12,9 @@ export class FormUtils {
 
         case 'minlength':
           return `Minimo de ${errors['minlength'].requiredLength} carácteres`;
+
+        case 'min':
+          return `El valor minimo es ${errors['min'].min}`;
       }
     }
 

@@ -7,6 +7,7 @@ import { Client } from '../../interfaces/client.interface';
 import { AddSaleButton } from '../../../movements/sales/components/add-sale-button/add-sale-button';
 import { AddPaymentButton } from '../../../movements/payments/components/add-payment-button/add-payment-button';
 import { SaleFormModal } from '../../../movements/sales/components/sale-form-modal/sale-form-modal';
+import { PaymentFormModal } from '../../../movements/payments/components/payment-form-modal/payment-form-modal';
 
 @Component({
   selector: 'client-header',
@@ -17,6 +18,7 @@ import { SaleFormModal } from '../../../movements/sales/components/sale-form-mod
     AddSaleButton,
     AddPaymentButton,
     SaleFormModal,
+    PaymentFormModal,
   ],
   templateUrl: './client-header.html',
 })
@@ -28,9 +30,11 @@ export class ClientHeader {
   edit = output();
   remove = output();
   saleCreated = output();
+  paymentCreated = output();
   shopSelected = output<number | null>();
 
-  showModal = signal<boolean>(false); // Modal de Venta
+  showSaleModal = signal<boolean>(false); // Modal de Venta
+  showPaymentModal = signal<boolean>(false); // Modal de Pago
 
   // Aviso cuando se intenta crear una venta/pago sin elegir sucursal
   showShopWarning = signal<boolean>(false);
@@ -48,7 +52,13 @@ export class ClientHeader {
   // Abre el modal de venta solo si hay una sucursal seleccionada
   openSaleModal() {
     if (!this.ensureShopSelected()) return;
-    this.showModal.set(true);
+    this.showSaleModal.set(true);
+  }
+
+  // Abre el modal de pago solo si hay una sucursal seleccionada
+  openPaymentModal() {
+    if (!this.ensureShopSelected()) return;
+    this.showPaymentModal.set(true);
   }
 
   // Saldo a mostrar: Se recalcula solo cuando cambia el cliente o la carniceria elegida.

@@ -1,4 +1,4 @@
-<td class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300">22/10/2023</td>
+<td class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300">{{ payment().date }}</td>
 <td class="whitespace-nowrap px-4 py-3.5 font-sans">
   <span
     class="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400"
@@ -16,13 +16,16 @@
         d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
       />
     </svg>
-    <span>Transferencia Banco Macro</span>
+    <span>{{ translatePaymentType(payment().paymentType) }}</span>
   </div>
-  <div class="text-[11px] text-slate-500">Ref: TRF-99401289</div>
 </td>
 <td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-500">-</td>
 <td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
 <td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
 <td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-emerald-400">+$500.000</td>
-<td class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right font-bold text-rose-400">-$1.316.365</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-emerald-400">
+  {{ payment().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+</td>
+<td class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right font-bold text-rose-400">
+  {{ payment().balance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+</td>

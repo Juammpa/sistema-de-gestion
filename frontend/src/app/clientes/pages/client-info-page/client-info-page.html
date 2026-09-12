@@ -6,6 +6,7 @@
       (edit)="showModal.set(true)"
       (remove)="showRemoveModal.set(true)"
       (saleCreated)="clientResource.reload(); movementsTable.reload()"
+      (paymentCreated)="clientResource.reload(); movementsTable.reload()"
       (shopSelected)="selectedButcherShopId.set($event)"
     />
 
