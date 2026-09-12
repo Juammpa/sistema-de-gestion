@@ -1,6 +1,10 @@
 <div class="flex items-start gap-4 mt-2">
   <!-- Boton Volver -->
-  <back-button />
+  <div class="flex flex-col justify-center gap-1.5">
+    <back-button />
+    <add-sale-button (addSale)="openSaleModal()" />
+    <add-payment-button />
+  </div>
 
   <!-- Seccion info cliente -->
   <section
@@ -48,6 +52,12 @@
             </button>
           }
         </div>
+        @if (showShopWarning()) {
+          <p class="flex items-center gap-1.5 text-xs text-amber-600">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Seleccioná una sucursal para continuar
+          </p>
+        }
       </div>
       <!-- Info Saldo Pendiente -->
       <div class="flex flex-col items-end gap-3">
@@ -66,7 +76,7 @@
             >
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
-            {{ displayedBalance() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
+            {{ displayedBalance() | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
           </p>
           <p class="mt-0.5 text-right text-xs text-slate-400">
             @if (selectedButcherShop(); as shop) {
@@ -80,3 +90,12 @@
     </div>
   </section>
 </div>
+
+@if (showModal()) {
+  <sale-form-modal
+    (cancel)="showModal.set(false)"
+    (saved)="showModal.set(false); saleCreated.emit()"
+    [butcherShop]="selectedButcherShop()!"
+    [client]="client()"
+  />
+}

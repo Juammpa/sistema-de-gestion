@@ -51,6 +51,7 @@ export default class ClientInfoPage implements OnDestroy {
   showModal = signal<boolean>(false);
   showRemoveModal = signal<boolean>(false);
   deleting = signal<boolean>(false); // Estado de la request de borrado
+  selectedButcherShopId = signal<number | null>(null);
 
   deleteClient(clientId: number) {
     this.deleting.set(true);

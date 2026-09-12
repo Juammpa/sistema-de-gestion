@@ -18,10 +18,46 @@
 
   <!-- Cuerpo de la Tabla -->
   <tbody class="divide-y divide-slate-800/60 font-mono text-xs">
-    <!-- Fila 1: Venta #1042 -->
-    <tr sale-item class="bg-emerald-950/10 transition-colors hover:bg-emerald-950/20"></tr>
-
-    <!-- Fila 2: Pago #0455 -->
-    <tr payment-item class="bg-emerald-950/10 transition-colors hover:bg-emerald-950/20"></tr>
+    @if (butcherShopId() === null) {
+      <tr>
+        <td colspan="9" class="py-10 text-center text-sm text-slate-500">
+          Seleccioná una sucursal para ver sus movimientos
+        </td>
+      </tr>
+    } @else if (movementResource.isLoading()) {
+      <tr>
+        <td colspan="9" class="py-10 text-center">
+          <loading-spinner />
+        </td>
+      </tr>
+    } @else if (movementResource.error()) {
+      <tr>
+        <td colspan="9" class="py-10 text-center text-sm text-red-400">
+          No se pudieron cargar los movimientos
+        </td>
+      </tr>
+    } @else if (movements().length === 0) {
+      <tr>
+        <td colspan="9" class="py-10 text-center text-sm text-slate-500">
+          Todavía no hay movimientos registrados
+        </td>
+      </tr>
+    } @else {
+      @for (movement of movements(); track movement.id) {
+        @if (movement.type === 'SALE') {
+          <tr
+            sale-item
+            [sale]="movement"
+            class="transition-colors hover:bg-slate-800/30 cursor-pointer"
+          ></tr>
+        } @else {
+          <tr
+            payment-item
+            [payment]="movement"
+            class="transition-colors hover:bg-slate-800/30 cursor-pointer"
+          ></tr>
+        }
+      }
+    }
   </tbody>
 </table>

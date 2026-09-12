@@ -1,0 +1,133 @@
+<!-- Backdrop: cierra al hacer click fuera del panel -->
+<div
+  (click)="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-[#070b14]/10 p-4 backdrop-blur-sm"
+>
+  <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
+  <div
+    (click)="$event.stopPropagation()"
+    class="w-full max-w-lg overflow-hidden rounded-2xl border border-slate-700/60 bg-[#151d2e] shadow-2xl shadow-black/60 ring-1 ring-white/5"
+  >
+    <!-- ====== HEADER ====== -->
+    <div class="flex items-start justify-between gap-4 border-b border-slate-700/50 px-7 py-5">
+      <div class="flex items-center gap-3">
+        <!-- Badge con ícono -->
+        <span
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/15 text-blue-400"
+        >
+          <i class="fa-solid fa-tag"></i>
+        </span>
+        <div>
+          <h2 class="text-lg font-bold tracking-tight text-white">Crear Venta</h2>
+          <p class="mt-0.5 text-xs text-slate-400">Datos de la venta</p>
+        </div>
+      </div>
+
+      <!-- Botón cerrar -->
+      <button
+        type="button"
+        (click)="close()"
+        class="rounded-lg p-1.5 cursor-pointer text-slate-400 transition-colors hover:bg-slate-700/60 hover:text-white"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- ====== BODY (form) ====== -->
+    <form [formGroup]="saleForm" (ngSubmit)="onSave()" class="space-y-5 px-7 py-6">
+      <!-- Grid: TipoCorte y Unidades -->
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <!-- Tipo Corte -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-slate-300">Tipo de Corte</label>
+          <select
+            formControlName="cutMeatId"
+            class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          >
+            <!-- Opcion placeholder: value null obliga a elegir -->
+            <option [ngValue]="null" disabled>Seleccionar corte...</option>
+            @for (cutMeat of cutMeatOptions.value(); track cutMeat.id) {
+              <option [ngValue]="cutMeat.id">
+                {{ translateCutMeatType(cutMeat.cutMeatType) }}
+              </option>
+            }
+          </select>
+          @if (cutMeatOptions.error()) {
+            <span class="flex items-center gap-1 text-xs text-red-400">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              No se puedieron cargar los cortes de carne
+            </span>
+          } @else if (formUtils.isValidField(saleForm, 'cutMeatId')) {
+            <span class="flex items-center gap-1 text-xs text-red-400">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              {{ formUtils.getFieldError(saleForm, 'cutMeatId') }}
+            </span>
+          }
+        </div>
+
+        <!-- Unidades -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-slate-300">Unidades</label>
+          <input
+            type="text"
+            [value]="saleForm.controls['unit']"
+            formControlName="unit"
+            placeholder="Ej. 1"
+            [class.!border-red-500]="formUtils.isValidField(saleForm, 'unit')"
+            class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
+          <!-- Mostrar error descriptivo -->
+          @if (formUtils.isValidField(saleForm, 'unit')) {
+            <span class="flex items-center gap-1 text-xs text-red-400">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              {{ formUtils.getFieldError(saleForm, 'unit') }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Kilogramos -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-medium text-slate-300">Kilogramos</label>
+        <div class="relative sm:w-1/2">
+          <input
+            type="tel"
+            [value]="saleForm.controls['kilograms']"
+            formControlName="kilograms"
+            placeholder="Ej. 100"
+            [class.!border-red-500]="formUtils.isValidField(saleForm, 'kilograms')"
+            class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <!-- Mostrar error descriptivo -->
+        @if (formUtils.isValidField(saleForm, 'kilograms')) {
+          <span class="flex items-center gap-1 text-xs text-red-400">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ formUtils.getFieldError(saleForm, 'kilograms') }}
+          </span>
+        }
+      </div>
+
+      <!-- ====== FOOTER ====== -->
+      <div class="mt-6 flex items-center justify-end gap-3 border-t border-slate-700/50 pt-5">
+        <button
+          type="button"
+          (click)="close()"
+          class="cursor-pointer rounded-xl border border-slate-600/70 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white"
+        >
+          Cancelar
+        </button>
+
+        <!-- Deshabilitado mientras el form es inválido -->
+        <button
+          type="submit"
+          [disabled]="saleForm.invalid"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/25 transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+        >
+          <i class="fa-solid fa-check"></i>
+          <span>Crear Venta</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

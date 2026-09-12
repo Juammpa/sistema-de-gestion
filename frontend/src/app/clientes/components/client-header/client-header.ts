@@ -4,10 +4,20 @@ import { CurrencyPipe } from '@angular/common';
 import { WhatsappButton } from '../../../shared/ui/whatsapp-button/whatsapp-button';
 import { BackButton } from '../../../shared/ui/back-button/back-button';
 import { Client } from '../../interfaces/client.interface';
+import { AddSaleButton } from '../../../movements/sales/components/add-sale-button/add-sale-button';
+import { AddPaymentButton } from '../../../movements/payments/components/add-payment-button/add-payment-button';
+import { SaleFormModal } from '../../../movements/sales/components/sale-form-modal/sale-form-modal';
 
 @Component({
   selector: 'client-header',
-  imports: [WhatsappButton, BackButton, CurrencyPipe],
+  imports: [
+    WhatsappButton,
+    BackButton,
+    CurrencyPipe,
+    AddSaleButton,
+    AddPaymentButton,
+    SaleFormModal,
+  ],
   templateUrl: './client-header.html',
 })
 export class ClientHeader {
@@ -17,6 +27,13 @@ export class ClientHeader {
   // Outputs
   edit = output();
   remove = output();
+  saleCreated = output();
+  shopSelected = output<number | null>();
+
+  showModal = signal<boolean>(false); // Modal de Venta
+
+  // Aviso cuando se intenta crear una venta/pago sin elegir sucursal
+  showShopWarning = signal<boolean>(false);
 
   // null = Mostrar el total de todas las carnicerias
   selectedButcherShopId = signal<number | null>(null);
@@ -24,6 +41,14 @@ export class ClientHeader {
   selectButcherShop(id: number) {
     // Tocar la misma otra vez la desselecciona y vuelve al total
     this.selectedButcherShopId.update((current) => (current === id ? null : id));
+    this.showShopWarning.set(false); // al elegir sucursal, ocultamos el aviso
+    this.shopSelected.emit(this.selectedButcherShopId());
+  }
+
+  // Abre el modal de venta solo si hay una sucursal seleccionada
+  openSaleModal() {
+    if (!this.ensureShopSelected()) return;
+    this.showModal.set(true);
   }
 
   // Saldo a mostrar: Se recalcula solo cuando cambia el cliente o la carniceria elegida.
@@ -41,4 +66,13 @@ export class ClientHeader {
   selectedButcherShop = computed(() =>
     this.client().butcherShops.find((bs) => bs.id === this.selectedButcherShopId()),
   );
+
+  // Valida la sucursal elegida; si no hay, muestra el aviso y corta el flujo
+  private ensureShopSelected(): boolean {
+    if (this.selectedButcherShopId() === null) {
+      this.showShopWarning.set(true);
+      return false;
+    }
+    return true;
+  }
 }
