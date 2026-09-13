@@ -29,7 +29,7 @@ export class SaleFormModal {
   cancel = output();
   saved = output();
 
-  // Arreglo con los tipos de cortes (temporal)
+  // Arreglo con los tipos de cortes
   cutMeatOptions = rxResource({
     stream: () => this.cutMeatService.getAllCutMeats(),
   });

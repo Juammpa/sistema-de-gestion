@@ -35,6 +35,6 @@ export class SaleService {
 
   // Eliminar venta por Id
   deleteSaleById(id: number) {
-    return this.http.delete(`${environment.apiUrl}/${id}`);
+    return this.http.delete(`${environment.apiUrl}/sales/${id}`);
   }
 }

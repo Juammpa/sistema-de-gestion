@@ -16,7 +16,11 @@
     <!-- Tabla Movimientos -->
     <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
       <div class="overflow-x-auto">
-        <movements-table #movementsTable [butcherShopId]="selectedButcherShopId()" />
+        <movements-table
+          #movementsTable
+          [butcherShopId]="selectedButcherShopId()"
+          (movementChanged)="clientResource.reload()"
+        />
       </div>
     </div>
     <!-- Estado de carga -->
@@ -42,7 +46,7 @@
 @if (showRemoveModal() && clientResource.value(); as client) {
   <delete-modal
     description="Eliminar Cliente"
-    entityType="cliente"
+    entityType="El cliente"
     [entityName]="`${client.lastName} ${client.name}`"
     [loading]="deleting()"
     (cancel)="showRemoveModal.set(false)"

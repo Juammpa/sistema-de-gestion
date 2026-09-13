@@ -49,11 +49,13 @@
             sale-item
             [sale]="movement"
             class="transition-colors hover:bg-slate-800/30 cursor-pointer"
+            (click)="openSaleDetail(movement)"
           ></tr>
         } @else {
           <tr
             payment-item
             [payment]="movement"
+            (click)="openPaymentDetail(movement)"
             class="transition-colors hover:bg-slate-800/30 cursor-pointer"
           ></tr>
         }
@@ -61,3 +63,23 @@
     }
   </tbody>
 </table>
+
+@if (showSaleDetail() && saleDetail.value(); as sale) {
+  <edit-sale-modal
+    [sale]="sale"
+    [butcherShopId]="butcherShopId()!"
+    (cancel)="showSaleDetail.set(false)"
+    (saved)="onSaleChanged()"
+    (deleted)="onSaleChanged()"
+  />
+}
+
+@if (showPaymentDetail() && paymentDetail.value(); as payment) {
+  <edit-payment-modal
+    [payment]="payment"
+    [butcherShopId]="butcherShopId()!"
+    (cancel)="showPaymentDetail.set(false)"
+    (saved)="onPaymentChanged()"
+    (deleted)="onPaymentChanged()"
+  />
+}

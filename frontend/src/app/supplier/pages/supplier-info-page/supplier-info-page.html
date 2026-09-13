@@ -39,7 +39,7 @@
 @if (showRemoveModal() && supplierResource.value(); as supplier) {
   <delete-modal
     description="Eliminar Proveedor"
-    entityType="proveedor"
+    entityType="El proveedor"
     [entityName]="supplier.companyName"
     [loading]="deleting()"
     (cancel)="showRemoveModal.set(false)"

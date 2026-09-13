@@ -49,10 +49,10 @@
         <ul class="mt-2 space-y-1 text-xs text-slate-400">
           <li class="flex items-center gap-2">
             <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
-            El {{ entityType() }} y sus datos de contacto
+            {{ entityType() }} y sus datos asociados
           </li>
           <!-- Mostrar solo si es cliente (proveedor no tiene sucursales) -->
-          @if (entityType() === 'cliente') {
+          @if (entityType() === 'El cliente') {
             <li class="flex items-center gap-2">
               <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
               Todas sus sucursales asociadas

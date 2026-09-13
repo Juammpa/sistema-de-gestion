@@ -30,7 +30,7 @@ export class ClientFormModal implements OnInit {
   });
 
   // true si estamos editanto un cliente existente
-  isEdit = computed(() => !!this.client);
+  isEdit = computed(() => !!this.client());
 
   // Si llega un cliente, precargamos el formulario (modo edicion)
   ngOnInit() {
