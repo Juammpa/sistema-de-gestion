@@ -17,6 +17,7 @@ public class SaleResponseDto {
     private Long id;
     private Long clientId;
     private LocalDate date;
+    private Long cutMeatId;
     private CutMeatType cutMeatType;
     private Integer unit;
     private Double kilograms;

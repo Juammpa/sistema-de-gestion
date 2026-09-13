@@ -117,6 +117,12 @@ public class SaleService implements ISaleService{
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sale", "id", id));
 
+        // Actualizamos balance de la cuenta
+        CurrentAccount currentAccount = sale.getCurrentAccount();
+        Double oldBalance = currentAccount.getCurrentBalance();
+        Double newBalance = oldBalance - sale.getAmount();
+        currentAccount.setCurrentBalance(newBalance);
+
         saleRepository.delete(sale);
         log.info("Venta eliminada correctamente. ID: {}", sale.getId());
     }

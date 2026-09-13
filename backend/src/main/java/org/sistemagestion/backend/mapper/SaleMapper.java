@@ -34,6 +34,7 @@ public class SaleMapper {
                 .id(sale.getId())
                 .clientId(sale.getClient().getId())
                 .date(sale.getDate())
+                .cutMeatId(sale.getCutMeat().getId())
                 .cutMeatType(sale.getCutMeat().getCutMeatType())
                 .unit(sale.getUnit())
                 .kilograms(sale.getKilograms())

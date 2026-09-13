@@ -100,6 +100,11 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment","id", id));
 
+        // Actualizamos el balance de la cuenta
+        CurrentAccount currentAccount = payment.getCurrentAccount();
+        Double amount = payment.getAmount();
+        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() + amount);
+
         paymentRepository.delete(payment);
         log.info("Pago eliminado corectamente. ID: {}", payment.getId());
     }
