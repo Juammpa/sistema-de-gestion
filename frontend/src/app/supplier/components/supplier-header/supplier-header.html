@@ -3,6 +3,7 @@
   <div class="flex flex-col justify-center gap-1.5">
     <back-button />
     <add-payment-button (addPayment)="showPaymentModal.set(true)" />
+    <add-purchase-button (addPurchase)="showPurchaseModal.set(true)" />
   </div>
 
   <!-- Seccion info proveedor -->
@@ -69,6 +70,14 @@
   <payment-form-modal
     (cancel)="showPaymentModal.set(false)"
     (saved)="showPaymentModal.set(false); paymentCreated.emit()"
+    [currentAccountId]="supplier().currentAccountId"
+  />
+}
+
+@if (showPurchaseModal()) {
+  <purchase-form-modal
+    (cancel)="showPurchaseModal.set(false)"
+    (saved)="showPurchaseModal.set(false); purchaseCreated.emit()"
     [currentAccountId]="supplier().currentAccountId"
   />
 }

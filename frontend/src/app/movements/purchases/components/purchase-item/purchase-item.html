@@ -1,0 +1,31 @@
+<td class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300">
+  {{ purchase().date }}
+</td>
+<td class="whitespace-nowrap px-4 py-3.5 font-sans">
+  <span
+    class="inline-flex items-center rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-400"
+  >
+    Compra
+  </span>
+</td>
+<td class="px-4 py-3.5 font-sans">
+  <div class="font-medium text-slate-200">
+    {{ translatePurchaseType(purchase().purchaseType) }}
+  </div>
+</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-400">
+  {{ purchase().unit }}
+</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400">
+  {{ purchase().kilograms }} kg
+</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400">
+  {{ purchase().pricePerKilo | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-slate-100">
+  {{ purchase().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-center text-slate-500">-</td>
+<td class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right font-bold text-rose-400">
+  {{ purchase().balance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+</td>

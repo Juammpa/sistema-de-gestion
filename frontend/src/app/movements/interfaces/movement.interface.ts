@@ -15,9 +15,17 @@ export interface SaleMovement extends BaseMovement {
   pricePerKilo: number;
 }
 
+export interface PurchaseMovement extends BaseMovement {
+  type: 'PURCHASE';
+  purchaseType: string;
+  unit: number;
+  kilograms: number;
+  pricePerKilo: number;
+}
+
 export interface PaymentMovement extends BaseMovement {
   type: 'PAYMENT';
   paymentType: string;
 }
 
-export type Movement = SaleMovement | PaymentMovement;
+export type Movement = SaleMovement | PaymentMovement | PurchaseMovement;

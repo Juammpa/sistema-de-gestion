@@ -5,10 +5,20 @@ import { Supplier } from '../../interfaces/supplier.interface';
 import { CurrencyPipe } from '@angular/common';
 import { AddPaymentButton } from '../../../movements/payments/components/add-payment-button/add-payment-button';
 import { PaymentFormModal } from '../../../movements/payments/components/payment-form-modal/payment-form-modal';
+import { AddPurchaseButton } from '../../../movements/purchases/components/add-purchase-button/add-purchase-button';
+import { PurchaseFormModal } from '../../../movements/purchases/components/purchase-form-modal/purchase-form-modal';
 
 @Component({
   selector: 'supplier-header',
-  imports: [BackButton, WhatsappButton, CurrencyPipe, AddPaymentButton, PaymentFormModal],
+  imports: [
+    BackButton,
+    WhatsappButton,
+    CurrencyPipe,
+    AddPaymentButton,
+    PaymentFormModal,
+    AddPurchaseButton,
+    PurchaseFormModal,
+  ],
   templateUrl: './supplier-header.html',
 })
 export class SupplierHeader {
@@ -19,9 +29,10 @@ export class SupplierHeader {
   edit = output();
   remove = output();
   paymentCreated = output();
+  purchaseCreated = output();
 
   // Señales
-  // showPurchaseModal = signal<boolean>(false);
+  showPurchaseModal = signal<boolean>(false);
   showPaymentModal = signal<boolean>(false);
 
   // Saldo a mostrar
