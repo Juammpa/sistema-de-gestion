@@ -7,10 +7,10 @@ import { environment } from '../../../environments/environment';
 export class MovementService {
   private http = inject(HttpClient);
 
-  // Obtener los movimiento (ventas + pagos) de una sucursal
-  getMovementsByButcherShop(butcherShopId: number) {
+  // Obtener los movimientos (ventas + pagos) por cuenta corriente
+  getMovementsByCurrentAccount(currentAccountId: number) {
     return this.http.get<Movement[]>(`${environment.apiUrl}/movements`, {
-      params: { butcherShopId },
+      params: { currentAccountId },
     });
   }
 }

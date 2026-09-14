@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { ClientService } from '../../services/cliente.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -52,6 +52,14 @@ export default class ClientInfoPage implements OnDestroy {
   showRemoveModal = signal<boolean>(false);
   deleting = signal<boolean>(false); // Estado de la request de borrado
   selectedButcherShopId = signal<number | null>(null);
+
+  selectedCurrentAccountId = computed(() => {
+    const shopId = this.selectedButcherShopId();
+    return (
+      this.clientResource.value()?.butcherShops.find((bs) => bs.id === shopId)?.currentAccountId ??
+      null
+    );
+  });
 
   deleteClient(clientId: number) {
     this.deleting.set(true);

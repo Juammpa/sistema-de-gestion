@@ -104,7 +104,6 @@
   <payment-form-modal
     (cancel)="showPaymentModal.set(false)"
     (saved)="showPaymentModal.set(false); paymentCreated.emit()"
-    [client]="client()"
-    [butcherShop]="selectedButcherShop()!"
+    [currentAccountId]="selectedButcherShop()!.currentAccountId"
   />
 }

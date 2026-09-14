@@ -1,10 +1,8 @@
 import { Component, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../utils/form-utils';
-import { Client } from '../../../../clientes/interfaces/client.interface';
 import { PaymentService } from '../../services/payment.service';
 import { PaymentRequest } from '../../interfaces/payment.interface';
-import { ButcherShop } from '../../../../butcher-shop/interfaces/butcher-shop.interface';
 import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
 
 @Component({
@@ -18,8 +16,7 @@ export class PaymentFormModal {
   formUtils = FormUtils;
 
   // Input
-  client = input.required<Client>();
-  butcherShop = input.required<ButcherShop>();
+  currentAccountId = input.required<number>();
 
   // Output
   cancel = output();
@@ -48,8 +45,7 @@ export class PaymentFormModal {
     // Armamos el request explicitamente
     const request: PaymentRequest = {
       ...this.paymentForm.value,
-      clientId: this.client().id,
-      butcherShopId: this.butcherShop().id,
+      currentAccountId: this.currentAccountId(),
     };
 
     // Creamos el pago

@@ -19,6 +19,7 @@
         <movements-table
           #movementsTable
           [butcherShopId]="selectedButcherShopId()"
+          [currentCurrentId]="selectedCurrentAccountId()"
           (movementChanged)="clientResource.reload()"
         />
       </div>

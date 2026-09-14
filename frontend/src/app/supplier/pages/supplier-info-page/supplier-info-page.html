@@ -5,6 +5,7 @@
       [supplier]="supplier"
       (edit)="showModal.set(true)"
       (remove)="showRemoveModal.set(true)"
+      (paymentCreated)="supplierResource.reload(); movementsTable.reload()"
     />
 
     <!-- Divisior (filtros) -->
@@ -13,7 +14,11 @@
     <!-- Tabla Movimientos -->
     <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
       <div class="overflow-x-auto">
-        <movements-table />
+        <movements-table
+          #movementsTable
+          [currentCurrentId]="supplierResource.value()?.currentAccountId ?? null"
+          (movementChanged)="supplierResource.reload()"
+        />
       </div>
     </div>
     <!-- Estado de carga -->

@@ -1,6 +1,9 @@
 <div class="flex items-start gap-4 m-2">
   <!-- Boton Volver -->
-  <back-button />
+  <div class="flex flex-col justify-center gap-1.5">
+    <back-button />
+    <add-payment-button (addPayment)="showPaymentModal.set(true)" />
+  </div>
 
   <!-- Seccion info proveedor -->
   <section
@@ -61,3 +64,11 @@
     </div>
   </section>
 </div>
+
+@if (showPaymentModal()) {
+  <payment-form-modal
+    (cancel)="showPaymentModal.set(false)"
+    (saved)="showPaymentModal.set(false); paymentCreated.emit()"
+    [currentAccountId]="supplier().currentAccountId"
+  />
+}

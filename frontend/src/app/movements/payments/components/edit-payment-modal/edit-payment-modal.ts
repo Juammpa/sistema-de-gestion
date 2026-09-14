@@ -22,7 +22,6 @@ export class EditPaymentModal {
 
   // Inputs
   payment = input.required<Payment>();
-  butcherShopId = input.required<number>();
 
   // Definimos el formulario
   paymentForm: FormGroup = this.fb.group({
@@ -52,8 +51,7 @@ export class EditPaymentModal {
     // Armamos el request explicitamente
     const request: PaymentRequest = {
       ...this.paymentForm.value,
-      clientId: this.payment().clientId,
-      butcherShopId: this.butcherShopId(),
+      currentAccountId: this.payment().currentAccountId,
     };
 
     this.paymentService.updatePayment(this.payment().id, request).subscribe({

@@ -21,17 +21,20 @@ export class MovementsTable {
   private saleService = inject(SaleService);
   private paymentService = inject(PaymentService);
 
-  // Sucursal a mostrar
+  // Necesario para el flujo de edicion de Sale
   butcherShopId = input<number | null>(null);
+
+  // Cuenta corriente a mostrar (sucursal o proveedor)
+  currentCurrentId = input<number | null>(null);
 
   // Avisa al padre que un movimiento cambio (para refrescar el saldo)
   movementChanged = output();
 
   // Se vuelve a ejecutar cada vez que cambia butcherShopId
   movementResource = rxResource({
-    params: () => this.butcherShopId(),
+    params: () => this.currentCurrentId(),
     stream: ({ params }) =>
-      params !== null ? this.movementService.getMovementsByButcherShop(params) : of([]),
+      params !== null ? this.movementService.getMovementsByCurrentAccount(params) : of([]),
   });
 
   movements = computed(() => this.movementResource.value() ?? []);

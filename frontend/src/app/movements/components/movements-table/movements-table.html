@@ -18,7 +18,7 @@
 
   <!-- Cuerpo de la Tabla -->
   <tbody class="divide-y divide-slate-800/60 font-mono text-xs">
-    @if (butcherShopId() === null) {
+    @if (currentCurrentId() === null) {
       <tr>
         <td colspan="9" class="py-10 text-center text-sm text-slate-500">
           Seleccioná una sucursal para ver sus movimientos
@@ -77,7 +77,6 @@
 @if (showPaymentDetail() && paymentDetail.value(); as payment) {
   <edit-payment-modal
     [payment]="payment"
-    [butcherShopId]="butcherShopId()!"
     (cancel)="showPaymentDetail.set(false)"
     (saved)="onPaymentChanged()"
     (deleted)="onPaymentChanged()"

@@ -12,11 +12,6 @@ export class PaymentService {
     return this.http.post<Payment>(`${environment.apiUrl}/payment`, payment);
   }
 
-  // Obtiene todos los pagos de un cliente
-  getPaymentsByClient(clientId: number) {
-    return this.http.get<Payment[]>(`${environment.apiUrl}/payment`, { params: { clientId } });
-  }
-
   // Obtiene un pago por Id
   getPaymentById(id: number) {
     return this.http.get<Payment>(`${environment.apiUrl}/payment/${id}`);
