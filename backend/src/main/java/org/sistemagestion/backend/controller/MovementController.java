@@ -17,9 +17,10 @@ public class MovementController {
     private final IMovementService movementService;
 
     @GetMapping
-    public ResponseEntity<List<MovementResponseDto>> getMovementsByButcherShop(@RequestParam Long butcherShopId) {
+    public ResponseEntity<List<MovementResponseDto>> getMovementsByCurrentAccount(@RequestParam Long currentAccountId) {
 
-        return ResponseEntity.ok(movementService.getMovementsByButcherShop(butcherShopId));
+        return ResponseEntity.ok(movementService.getMovementsByCurrentAccount(currentAccountId));
     }
+
 
 }

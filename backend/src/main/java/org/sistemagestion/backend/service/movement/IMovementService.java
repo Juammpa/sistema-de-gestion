@@ -5,6 +5,5 @@ import org.sistemagestion.backend.dto.movement.MovementResponseDto;
 import java.util.List;
 
 public interface IMovementService {
-
-    List<MovementResponseDto> getMovementsByButcherShop(Long butcherShopId);
+    List<MovementResponseDto> getMovementsByCurrentAccount(Long currenAccountId);
 }

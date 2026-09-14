@@ -31,8 +31,4 @@ public class Client {
     @Builder.Default
     private List<Sale> sales = new ArrayList<>();
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<Payment> payments = new ArrayList<>();
-
 }

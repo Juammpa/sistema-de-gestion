@@ -17,7 +17,4 @@ public class Payment extends Movement{
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
 }

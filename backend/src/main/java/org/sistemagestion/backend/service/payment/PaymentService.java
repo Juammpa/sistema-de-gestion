@@ -6,17 +6,13 @@ import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PaymentMapper;
-import org.sistemagestion.backend.model.ButcherShop;
-import org.sistemagestion.backend.model.Client;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
-import org.sistemagestion.backend.repository.ClientRepository;
+import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,35 +20,24 @@ import java.util.List;
 public class PaymentService implements IPaymentService{
 
     private final PaymentRepository paymentRepository;
-    private final ClientRepository clientRepository;
-    private final ButcherShopRepository butcherShopRepository;
+    private final CurrentAccountRepository currentAccountRepository;
     private final PaymentMapper mapper;
 
     @Override
     @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto request) {
 
-        Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", request.getClientId()));
+       CurrentAccount currentAccount = currentAccountRepository.findById(request.getCurrentAccountId())
+               .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
 
-        ButcherShop butcherShop = butcherShopRepository.findById(request.getButcherShopId())
-                .orElseThrow(() -> new ResourceNotFoundException("ButcherShop","id", request.getButcherShopId()));
+       Payment payment = mapper.toPayment(request, currentAccount);
+       Payment paymentSaved = paymentRepository.save(payment);
 
-        // Validamos si la sucursal es del cliente
-        if(!butcherShop.getClient().getId().equals(client.getId())) {
-            throw new IllegalArgumentException("The butcher shop does not belong to the given client.");
-        }
+       currentAccount.setCurrentBalance(payment.getBalance());
 
-        // Obtenemos la cuenta corriente de la sucursal
-        CurrentAccount currentAccount = butcherShop.getCurrentAccount();
+       log.info("Pago creado correctamente. ID: {}", paymentSaved.getId());
+       return mapper.toDto(paymentSaved);
 
-        Payment payment = mapper.toPayment(request,client,currentAccount);
-        Payment paymentSaved = paymentRepository.save(payment);
-
-        currentAccount.setCurrentBalance(payment.getBalance());
-
-        log.info("Pago creado correctamente. ID: {}", paymentSaved.getId());
-        return mapper.toDto(paymentSaved);
     }
 
     @Override
@@ -61,14 +46,6 @@ public class PaymentService implements IPaymentService{
         return paymentRepository.findById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PaymentResponseDto> getAllPaymentsByClient(Long clientId) {
-        return paymentRepository.findByClientId(clientId).stream()
-                .map(mapper::toDto)
-                .toList();
     }
 
     @Override
@@ -95,6 +72,7 @@ public class PaymentService implements IPaymentService{
     }
 
     @Override
+    @Transactional
     public void deletePaymentById(Long id) {
 
         Payment payment = paymentRepository.findById(id)

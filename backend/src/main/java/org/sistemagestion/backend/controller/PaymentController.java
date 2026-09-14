@@ -31,12 +31,6 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getPaymentById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<PaymentResponseDto>> getAllPaymentsByClient(@RequestParam Long clientId) {
-
-        return ResponseEntity.ok(paymentService.getAllPaymentsByClient(clientId));
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<PaymentResponseDto> updatePayment(@PathVariable Long id, @Valid @RequestBody PaymentRequestDto request) {
 

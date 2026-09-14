@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class PaymentResponseDto {
 
     private Long id;
-    private Long clientId;
+    private Long currentAccountId;
     private LocalDate date;
     private PaymentType paymentType;
     private Double amount;

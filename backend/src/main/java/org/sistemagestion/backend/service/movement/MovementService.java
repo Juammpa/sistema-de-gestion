@@ -24,17 +24,9 @@ public class MovementService implements IMovementService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<MovementResponseDto> getMovementsByButcherShop(Long butcherShopId) {
-
-        ButcherShop butcherShop = butcherShopRepository.findById(butcherShopId)
-                .orElseThrow(() -> new ResourceNotFoundException("ButcherShop","id", butcherShopId));
-
-        // Cada sucursal tiene una unica cuenta corriente; ahi cuelgan sus movimientos
-        Long currentAccountId = butcherShop.getCurrentAccount().getId();
-
-        return movementRepository.findByCurrentAccountIdOrderByDateAscIdAsc(currentAccountId).stream()
+    public List<MovementResponseDto> getMovementsByCurrentAccount(Long currenAccountId) {
+        return movementRepository.findByCurrentAccountIdOrderByDateAscIdAsc(currenAccountId).stream()
                 .map(mapper::toDto)
                 .toList();
-
     }
 }

@@ -21,9 +21,6 @@ public class PaymentRequestDto {
     @Positive(message = "The amount must be positive")
     private Double amount;
 
-    @NotNull(message = "The butcherShopId is mandatory")
-    private Long butcherShopId;
-
-    @NotNull(message = "The clientId is mandatory")
-    private Long clientId;
+    @NotNull(message = "The currentAccountId is mandatory")
+    private Long currentAccountId;
 }
