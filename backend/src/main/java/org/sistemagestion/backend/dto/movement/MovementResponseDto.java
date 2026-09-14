@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.sistemagestion.backend.model.enums.CutMeatType;
 import org.sistemagestion.backend.model.enums.MovementType;
 import org.sistemagestion.backend.model.enums.PaymentType;
+import org.sistemagestion.backend.model.enums.PurchaseType;
 
 import java.time.LocalDate;
 
@@ -22,7 +23,7 @@ public class MovementResponseDto {
     private Double amount;
     private Double balance;
 
-    // Propios de Sale (null si type == PAYMENT)
+    // Propios de Sale/Purchase (null si type === PAYMENT)
     private CutMeatType cutMeatType;
     private Integer unit;
     private Double kilograms;
@@ -30,5 +31,8 @@ public class MovementResponseDto {
 
     // Propio de Payment (null si type == SALE)
     private PaymentType paymentType;
+
+    // Propio de Purchase (null salvo que tyep = PURCHASE)
+    private PurchaseType purchaseType;
 
 }

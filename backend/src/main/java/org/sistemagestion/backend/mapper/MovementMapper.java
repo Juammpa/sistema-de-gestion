@@ -3,6 +3,7 @@ package org.sistemagestion.backend.mapper;
 import org.sistemagestion.backend.dto.movement.MovementResponseDto;
 import org.sistemagestion.backend.model.Movement;
 import org.sistemagestion.backend.model.Payment;
+import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.model.Sale;
 import org.sistemagestion.backend.model.enums.MovementType;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,16 @@ public class MovementMapper {
                     .unit(sale.getUnit())
                     .kilograms(sale.getKilograms())
                     .pricePerKilo(sale.getCutMeat().getPricePerKilo())
+                    .build();
+        }
+
+        if (movement instanceof Purchase purchase) {
+            return builder
+                    .type(MovementType.PURCHASE)
+                    .purchaseType(purchase.getPurchaseType())
+                    .unit(purchase.getUnit())
+                    .kilograms(purchase.getKilograms())
+                    .pricePerKilo(purchase.getPricePerKilo())
                     .build();
         }
 

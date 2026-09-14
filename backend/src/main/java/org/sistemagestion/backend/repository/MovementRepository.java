@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface MovementRepository extends JpaRepository<Movement, Long> {
 
-    List<Movement> findByCurrentAccountIdOrderByDateAscIdAsc(Long currentAccountId);
-
+    List<Movement> findByCurrentAccountIdOrderByDateDescIdDesc(Long currentAccountId);
 }
