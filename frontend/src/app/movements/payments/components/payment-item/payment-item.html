@@ -1,4 +1,6 @@
-<td class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300">{{ payment().date }}</td>
+<td class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300">
+  {{ payment().date | date: 'dd/MM/yy' }}
+</td>
 <td class="whitespace-nowrap px-4 py-3.5 font-sans">
   <span
     class="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400"

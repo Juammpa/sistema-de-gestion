@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
 import translatePurchaseType from '../../utils/purchase.utils';
 import { PurchaseMovement } from '../../../interfaces/movement.interface';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: '[purchase-item]',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, DatePipe],
   templateUrl: './purchase-item.html',
 })
 export class PurchaseItem {
