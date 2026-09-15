@@ -34,6 +34,7 @@ public class PurchaseMapper {
                 .id(purchase.getId())
                 .date(purchase.getDate())
                 .currentAccountId(purchase.getCurrentAccount().getId())
+                .purchaseType(purchase.getPurchaseType())
                 .unit(purchase.getUnit())
                 .kilograms(purchase.getKilograms())
                 .pricePerKilo(purchase.getPricePerKilo())

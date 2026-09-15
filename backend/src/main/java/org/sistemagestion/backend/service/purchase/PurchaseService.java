@@ -57,6 +57,7 @@ public class PurchaseService implements IPurchaseService {
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", id));
 
+        purchase.setDate(request.getDate());
         purchase.setPurchaseType(request.getPurchaseType());
         purchase.setKilograms(request.getKilograms());
         purchase.setPricePerKilo(request.getPricePerKilo());

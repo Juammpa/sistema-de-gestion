@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.model.enums.Specie;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -32,5 +34,7 @@ public class PurchaseRequestDto {
 
     @NotNull(message = "The currentAccountId is mandatory")
     private Long currentAccountId;
+
+    private LocalDate date;
 
 }

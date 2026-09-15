@@ -78,6 +78,7 @@ public class SaleService implements ISaleService{
         CutMeat cutMeat = cutMeatRepository.findById(request.getCutMeatId())
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat","id", request.getCutMeatId()));
 
+        sale.setDate(request.getDate());
         sale.setUnit(request.getUnit());
         sale.setKilograms(request.getKilograms());
         sale.setCutMeat(cutMeat);

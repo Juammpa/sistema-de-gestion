@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.sistemagestion.backend.model.enums.PaymentType;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -23,4 +25,6 @@ public class PaymentRequestDto {
 
     @NotNull(message = "The currentAccountId is mandatory")
     private Long currentAccountId;
+
+    private LocalDate date;
 }

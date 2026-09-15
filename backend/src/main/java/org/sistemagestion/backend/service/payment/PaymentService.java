@@ -56,6 +56,7 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
 
+        payment.setDate(request.getDate());
         payment.setPaymentType(request.getPaymentType());
         payment.setAmount(request.getAmount());
 

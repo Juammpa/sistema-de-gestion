@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -27,5 +29,7 @@ public class SaleRequestDto {
     @NotNull(message = "The unit is mandatory")
     @Positive(message = "The unit must be positive")
     private Integer unit;
+
+    private LocalDate date;
 
 }
