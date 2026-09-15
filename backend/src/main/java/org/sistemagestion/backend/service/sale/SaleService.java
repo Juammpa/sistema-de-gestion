@@ -11,6 +11,7 @@ import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.ClientRepository;
 import org.sistemagestion.backend.repository.CutMeatRepository;
 import org.sistemagestion.backend.repository.SaleRepository;
+import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class SaleService implements ISaleService{
     private final ClientRepository clientRepository;
     private final CutMeatRepository cutMeatRepository;
     private final ButcherShopRepository butcherShopRepository;
+    private final BalanceRecalculationService balanceRecalculationService;
     private final SaleMapper mapper;
 
     @Override
@@ -52,7 +54,7 @@ public class SaleService implements ISaleService{
         Sale sale = mapper.toSale(request, client, cutMeat, currentAccount);
         Sale saleSaved = saleRepository.save(sale);
 
-        currentAccount.setCurrentBalance(sale.getBalance());
+        balanceRecalculationService.recalculate(currentAccount);
 
         log.info("Venta creada correctamente. ID: {}", saleSaved.getId());
         return mapper.toDto(saleSaved);
@@ -76,23 +78,17 @@ public class SaleService implements ISaleService{
         CutMeat cutMeat = cutMeatRepository.findById(request.getCutMeatId())
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat","id", request.getCutMeatId()));
 
-        CurrentAccount currentAccount = sale.getCurrentAccount();
-        Double oldAmount = sale.getAmount();
-        Double newAmount = request.getKilograms() * cutMeat.getPricePerKilo();
-        Double amountDifference = newAmount - oldAmount;
-
         sale.setUnit(request.getUnit());
         sale.setKilograms(request.getKilograms());
         sale.setCutMeat(cutMeat);
-        sale.setAmount(newAmount);
-        sale.setBalance(sale.getBalance() - amountDifference);
+        sale.setAmount(request.getKilograms() * cutMeat.getPricePerKilo());
 
-        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() + amountDifference);
+        Sale saleUpdated = saleRepository.saveAndFlush(sale);
 
-        Sale saleUpdated = saleRepository.save(sale);
+        balanceRecalculationService.recalculate(sale.getCurrentAccount());
+
         log.info("Venta actualizada correctamente. ID: {}", sale.getId());
-
-       return mapper.toDto(saleUpdated);
+        return mapper.toDto(saleUpdated);
     }
 
     @Override
@@ -112,6 +108,7 @@ public class SaleService implements ISaleService{
     }
 
     @Override
+    @Transactional
     public void deleteSaleById(Long id) {
 
         Sale sale = saleRepository.findById(id)
@@ -119,9 +116,8 @@ public class SaleService implements ISaleService{
 
         // Actualizamos balance de la cuenta
         CurrentAccount currentAccount = sale.getCurrentAccount();
-        Double oldBalance = currentAccount.getCurrentBalance();
-        Double newBalance = oldBalance - sale.getAmount();
-        currentAccount.setCurrentBalance(newBalance);
+        saleRepository.delete(sale);
+        saleRepository.flush();
 
         saleRepository.delete(sale);
         log.info("Venta eliminada correctamente. ID: {}", sale.getId());

@@ -11,6 +11,7 @@ import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
+import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class PaymentService implements IPaymentService{
 
     private final PaymentRepository paymentRepository;
     private final CurrentAccountRepository currentAccountRepository;
+    private final BalanceRecalculationService balanceRecalculationService;
     private final PaymentMapper mapper;
 
     @Override
@@ -33,11 +35,10 @@ public class PaymentService implements IPaymentService{
        Payment payment = mapper.toPayment(request, currentAccount);
        Payment paymentSaved = paymentRepository.save(payment);
 
-       currentAccount.setCurrentBalance(payment.getBalance());
+       balanceRecalculationService.recalculate(currentAccount);
 
        log.info("Pago creado correctamente. ID: {}", paymentSaved.getId());
        return mapper.toDto(paymentSaved);
-
     }
 
     @Override
@@ -55,19 +56,14 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
 
-        CurrentAccount currentAccount = payment.getCurrentAccount();
-        Double oldAmount = payment.getAmount();
-        Double amountDifference = request.getAmount() - oldAmount;
-
         payment.setPaymentType(request.getPaymentType());
         payment.setAmount(request.getAmount());
-        payment.setBalance(payment.getBalance() - amountDifference);
 
-        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() - amountDifference);
+        Payment paymentUpdated = paymentRepository.saveAndFlush(payment);
 
-        Payment paymentUpdated = paymentRepository.save(payment);
+        balanceRecalculationService.recalculate(payment.getCurrentAccount());
+
         log.info("Pago actualizado correctamente. ID: {}", payment.getId());
-
         return mapper.toDto(paymentUpdated);
     }
 
@@ -80,10 +76,11 @@ public class PaymentService implements IPaymentService{
 
         // Actualizamos el balance de la cuenta
         CurrentAccount currentAccount = payment.getCurrentAccount();
-        Double amount = payment.getAmount();
-        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() + amount);
-
         paymentRepository.delete(payment);
+        paymentRepository.flush();
+
+        balanceRecalculationService.recalculate(currentAccount);
+
         log.info("Pago eliminado corectamente. ID: {}", payment.getId());
     }
 }

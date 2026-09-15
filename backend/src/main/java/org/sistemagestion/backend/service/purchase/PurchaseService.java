@@ -10,6 +10,7 @@ import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PurchaseRepository;
+import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class PurchaseService implements IPurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final CurrentAccountRepository currentAccountRepository;
+    private final BalanceRecalculationService balanceRecalculationService;
     private final PurchaseMapper mapper;
 
     @Override
@@ -33,9 +35,8 @@ public class PurchaseService implements IPurchaseService {
 
         Purchase purchase = mapper.toPurchase(request, currentAccount);
         Purchase purchaseSaved = purchaseRepository.save(purchase);
-        Double amount = request.getKilograms() * request.getPricePerKilo();
 
-        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() + amount);
+        balanceRecalculationService.recalculate(currentAccount);
 
         log.info("Compra creada correctamente. ID: {}", purchaseSaved.getId());
         return mapper.toDto(purchaseSaved);
@@ -56,23 +57,17 @@ public class PurchaseService implements IPurchaseService {
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", id));
 
-        CurrentAccount currentAccount = purchase.getCurrentAccount();
-        Double oldAmount = purchase.getAmount();
-        Double newAmount = request.getKilograms() * request.getPricePerKilo();
-        Double amountDifference = newAmount - oldAmount;
-
         purchase.setPurchaseType(request.getPurchaseType());
         purchase.setKilograms(request.getKilograms());
         purchase.setPricePerKilo(request.getPricePerKilo());
         purchase.setUnit(request.getUnit());
-        purchase.setAmount(newAmount);
-        purchase.setBalance(purchase.getBalance() + amountDifference);
+        purchase.setAmount(request.getKilograms() * request.getPricePerKilo());
 
-        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() + amountDifference);
+        Purchase purchaseSaved = purchaseRepository.saveAndFlush(purchase);
 
-        Purchase purchaseSaved = purchaseRepository.save(purchase);
+        balanceRecalculationService.recalculate(purchase.getCurrentAccount());
+
         log.info("Compra actualizada correctamente. ID: {}", purchaseSaved.getId());
-
         return mapper.toDto(purchaseSaved);
     }
 
@@ -85,9 +80,11 @@ public class PurchaseService implements IPurchaseService {
 
         // Actualizamos el balance de la cuenta
         CurrentAccount currentAccount = purchase.getCurrentAccount();
-        currentAccount.setCurrentBalance(currentAccount.getCurrentBalance() - purchase.getAmount());
-
         purchaseRepository.delete(purchase);
+        purchaseRepository.flush();
+
+        balanceRecalculationService.recalculate(currentAccount);
+
         log.info("Compra eliminada correctamente. ID: {}", purchase.getId());
 
     }
