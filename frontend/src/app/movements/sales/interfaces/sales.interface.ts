@@ -16,4 +16,5 @@ export interface SaleRequest {
   cutMeatId: number;
   kilograms: number;
   unit: number;
+  date?: string;
 }

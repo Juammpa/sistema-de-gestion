@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
@@ -12,7 +12,7 @@ import { Payment, PaymentRequest } from '../../interfaces/payment.interface';
   imports: [ReactiveFormsModule, DeleteModal],
   templateUrl: './edit-payment-modal.html',
 })
-export class EditPaymentModal {
+export class EditPaymentModal implements OnInit {
   private fb = inject(FormBuilder);
   private paymentService = inject(PaymentService);
   formUtils = FormUtils;
@@ -25,6 +25,7 @@ export class EditPaymentModal {
 
   // Definimos el formulario
   paymentForm: FormGroup = this.fb.group({
+    date: [null as string | null, [Validators.required]],
     paymentType: [null as string | null, [Validators.required]],
     amount: [0, [Validators.required, Validators.min(0)]],
   });
@@ -36,6 +37,15 @@ export class EditPaymentModal {
 
   close() {
     this.cancel.emit();
+  }
+
+  ngOnInit() {
+    const current = this.payment();
+    this.paymentForm.patchValue({
+      date: current.date,
+      paymentType: current.paymentType,
+      amount: current.amount,
+    });
   }
 
   // Señales

@@ -35,6 +35,16 @@
 
     <!-- ====== BODY (form) ====== -->
     <form [formGroup]="saleForm" (ngSubmit)="onSave()" class="space-y-5 px-7 py-6">
+      <!-- Fecha-->
+      <div class="space-y-1 5">
+        <label class="block text-xs font-medium text-slate-300">Fecha</label>
+        <input
+          type="date"
+          formControlName="date"
+          [class.!border-red-500]="formUtils.isValidField(saleForm, 'date')"
+          class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
       <!-- Grid: TipoCorte y Unidades -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- Tipo Corte -->

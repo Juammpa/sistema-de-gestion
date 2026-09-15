@@ -35,6 +35,7 @@ export class EditSaleModal implements OnInit {
   });
 
   saleForm: FormGroup = this.fb.group({
+    date: [null as string | null, [Validators.required]],
     cutMeatId: [null as number | null, [Validators.required]],
     kilograms: [0, [Validators.required, Validators.min(0)]],
     unit: [1, [Validators.required, Validators.min(1)]],
@@ -43,7 +44,9 @@ export class EditSaleModal implements OnInit {
   // Precarga el form con los datos actuales de la venta
   ngOnInit() {
     const current = this.sale();
+
     this.saleForm.patchValue({
+      date: current.date,
       cutMeatId: current.cutMeatId,
       kilograms: current.kilograms,
       unit: current.unit,

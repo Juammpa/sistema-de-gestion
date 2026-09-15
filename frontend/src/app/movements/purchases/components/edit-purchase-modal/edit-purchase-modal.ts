@@ -24,6 +24,7 @@ export class EditPurchaseModal implements OnInit {
   purchase = input.required<Purchase>();
 
   purchaseForm: FormGroup = this.fb.group({
+    date: [null as string | null, [Validators.required]],
     purchaseType: [null as string | null, [Validators.required]],
     unit: [1, [Validators.required, Validators.min(1)]],
     kilograms: [1, [Validators.required, Validators.min(1)]],
@@ -42,6 +43,7 @@ export class EditPurchaseModal implements OnInit {
   ngOnInit() {
     const current = this.purchase();
     this.purchaseForm.patchValue({
+      date: current.date,
       purchaseType: current.purchaseType,
       unit: current.unit,
       kilograms: current.kilograms,

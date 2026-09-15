@@ -10,4 +10,5 @@ export interface PaymentRequest {
   paymentType: string;
   amount: number;
   currentAccountId: number;
+  date: string;
 }
