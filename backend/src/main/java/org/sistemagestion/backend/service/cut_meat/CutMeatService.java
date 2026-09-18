@@ -9,6 +9,7 @@ import org.sistemagestion.backend.mapper.CutMeatMapper;
 import org.sistemagestion.backend.model.CutMeat;
 import org.sistemagestion.backend.repository.CutMeatRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -59,12 +60,26 @@ public class CutMeatService implements ICutMeatService{
     }
 
     @Override
+    @Transactional
+    public void activeCutMeatById(Long id) {
+
+        CutMeat cutMeat = cutMeatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("CutMeat", "id", id));
+
+        cutMeat.setIsActive(true);
+        cutMeatRepository.save(cutMeat);
+        log.info("Corte de carne reactivado correctamente.");
+    }
+
+    @Override
     public void deleteCutMeatById(Long id) {
 
         CutMeat cutMeat = cutMeatRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat","id",id));
 
-        cutMeatRepository.delete(cutMeat);
+        // Borrado logico
+        cutMeat.setIsActive(false);
+        cutMeatRepository.save(cutMeat);
         log.info("Corte de carne eliminado correctamente");
     }
 }

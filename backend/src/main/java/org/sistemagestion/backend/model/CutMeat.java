@@ -18,5 +18,5 @@ public class CutMeat {
 
     private String cutMeatName;
     private Double pricePerKilo;
-
+    private Boolean isActive;
 }

@@ -11,6 +11,7 @@ public interface ICutMeatService {
     CutMeatResponseDto getCutMeatById(Long id);
     List<CutMeatResponseDto> getAllCutMeats();
     CutMeatResponseDto updateCutMeat(Long id, CutMeatRequestDto request);
+    void activeCutMeatById(Long id);
     void deleteCutMeatById(Long id);
 
 }

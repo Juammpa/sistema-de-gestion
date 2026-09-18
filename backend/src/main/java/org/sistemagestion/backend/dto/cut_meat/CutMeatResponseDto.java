@@ -14,5 +14,6 @@ public class CutMeatResponseDto {
     private Long id;
     private String cutMeatName;
     private Double pricePerKilo;
+    private Boolean isActive;
 
 }

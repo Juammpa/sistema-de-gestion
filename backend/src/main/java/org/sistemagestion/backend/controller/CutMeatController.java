@@ -43,6 +43,13 @@ public class CutMeatController {
         return ResponseEntity.ok(cutMeatService.updateCutMeat(id, request));
     }
 
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<Void> activateCutMeatById(@PathVariable Long id) {
+
+        cutMeatService.activeCutMeatById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
 

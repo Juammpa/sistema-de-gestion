@@ -12,6 +12,7 @@ public class CutMeatMapper {
         return CutMeat.builder()
                 .cutMeatName(requestDto.getCutMeatName())
                 .pricePerKilo(requestDto.getPricePerKilo())
+                .isActive(true)
                 .build();
     }
 
@@ -20,6 +21,7 @@ public class CutMeatMapper {
                 .id(cutMeat.getId())
                 .cutMeatName(cutMeat.getCutMeatName())
                 .pricePerKilo(cutMeat.getPricePerKilo())
+                .isActive(cutMeat.getIsActive())
                 .build();
     }
 }
