@@ -10,7 +10,7 @@ public class CutMeatMapper {
 
     public CutMeat toEntity(CutMeatRequestDto requestDto) {
         return CutMeat.builder()
-                .cutMeatType(requestDto.getCutMeatType())
+                .cutMeatName(requestDto.getCutMeatName())
                 .pricePerKilo(requestDto.getPricePerKilo())
                 .build();
     }
@@ -18,7 +18,7 @@ public class CutMeatMapper {
     public CutMeatResponseDto toDto(CutMeat cutMeat) {
         return CutMeatResponseDto.builder()
                 .id(cutMeat.getId())
-                .cutMeatType(cutMeat.getCutMeatType())
+                .cutMeatName(cutMeat.getCutMeatName())
                 .pricePerKilo(cutMeat.getPricePerKilo())
                 .build();
     }

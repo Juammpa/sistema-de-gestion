@@ -51,7 +51,7 @@ public class CutMeatService implements ICutMeatService{
         CutMeat cutMeat = cutMeatRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat", "id", id));
 
-        cutMeat.setCutMeatType(request.getCutMeatType());
+        cutMeat.setCutMeatName(request.getCutMeatName());
         cutMeat.setPricePerKilo(request.getPricePerKilo());
         log.info("Corte de carne actualizado correctamente");
 

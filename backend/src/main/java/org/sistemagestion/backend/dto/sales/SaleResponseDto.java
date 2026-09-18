@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sistemagestion.backend.model.enums.CutMeatType;
 
 import java.time.LocalDate;
 
@@ -18,7 +17,7 @@ public class SaleResponseDto {
     private Long clientId;
     private LocalDate date;
     private Long cutMeatId;
-    private CutMeatType cutMeatType;
+    private String cutMeatName;
     private Integer unit;
     private Double kilograms;
     private Double pricePerKilo;

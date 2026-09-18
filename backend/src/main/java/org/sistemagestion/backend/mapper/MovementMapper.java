@@ -23,10 +23,10 @@ public class MovementMapper {
         if (movement instanceof Sale sale) {
             return builder
                     .type(MovementType.SALE)
-                    .cutMeatType(sale.getCutMeat().getCutMeatType())
+                    .cutMeatName(sale.getCutMeatName())
                     .unit(sale.getUnit())
                     .kilograms(sale.getKilograms())
-                    .pricePerKilo(sale.getCutMeat().getPricePerKilo())
+                    .pricePerKilo(sale.getPricePerKilo())
                     .build();
         }
 

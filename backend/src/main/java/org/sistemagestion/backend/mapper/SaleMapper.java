@@ -23,6 +23,8 @@ public class SaleMapper {
                 .client(client)
                 .cutMeat(cutMeat)
                 .currentAccount(currentAccount)
+                .pricePerKilo(cutMeat.getPricePerKilo())
+                .cutMeatName(cutMeat.getCutMeatName())
                 .amount(amount)
                 .date(LocalDate.now())
                 .balance(currentAccount.getCurrentBalance() + amount)
@@ -35,10 +37,10 @@ public class SaleMapper {
                 .clientId(sale.getClient().getId())
                 .date(sale.getDate())
                 .cutMeatId(sale.getCutMeat().getId())
-                .cutMeatType(sale.getCutMeat().getCutMeatType())
+                .cutMeatName(sale.getCutMeatName())
                 .unit(sale.getUnit())
                 .kilograms(sale.getKilograms())
-                .pricePerKilo(sale.getCutMeat().getPricePerKilo())
+                .pricePerKilo(sale.getPricePerKilo())
                 .subtotal(sale.getAmount())
                 .build();
     }

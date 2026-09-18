@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sistemagestion.backend.model.enums.CutMeatType;
 import org.sistemagestion.backend.model.enums.MovementType;
 import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.model.enums.PurchaseType;
@@ -24,7 +23,7 @@ public class MovementResponseDto {
     private Double balance;
 
     // Propios de Sale/Purchase (null si type === PAYMENT)
-    private CutMeatType cutMeatType;
+    private String cutMeatName;
     private Integer unit;
     private Double kilograms;
     private Double pricePerKilo;

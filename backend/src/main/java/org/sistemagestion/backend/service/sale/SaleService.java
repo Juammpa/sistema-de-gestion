@@ -82,6 +82,8 @@ public class SaleService implements ISaleService{
         sale.setUnit(request.getUnit());
         sale.setKilograms(request.getKilograms());
         sale.setCutMeat(cutMeat);
+        sale.setCutMeatName(cutMeat.getCutMeatName());
+        sale.setPricePerKilo(cutMeat.getPricePerKilo());
         sale.setAmount(request.getKilograms() * cutMeat.getPricePerKilo());
 
         Sale saleUpdated = saleRepository.saveAndFlush(sale);
@@ -120,7 +122,7 @@ public class SaleService implements ISaleService{
         saleRepository.delete(sale);
         saleRepository.flush();
 
-        saleRepository.delete(sale);
+        balanceRecalculationService.recalculate(currentAccount);
         log.info("Venta eliminada correctamente. ID: {}", sale.getId());
     }
 }

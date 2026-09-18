@@ -18,6 +18,8 @@ public class Sale extends Movement{
 
     private Double kilograms;
     private Integer unit;
+    private String cutMeatName;
+    private Double pricePerKilo;
 
     @ManyToOne
     @JoinColumn(name = "cut_meat_id", nullable = false)

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sistemagestion.backend.model.enums.CutMeatType;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +12,7 @@ import org.sistemagestion.backend.model.enums.CutMeatType;
 public class CutMeatResponseDto {
 
     private Long id;
-    private CutMeatType cutMeatType;
+    private String cutMeatName;
     private Double pricePerKilo;
 
 }
