@@ -1,10 +1,10 @@
 import { Component, input } from '@angular/core';
 import { SaleMovement } from '../../../interfaces/movement.interface';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: '[sale-item]',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, TitleCasePipe],
   templateUrl: './sale-item.html',
 })
 export class SaleItem {

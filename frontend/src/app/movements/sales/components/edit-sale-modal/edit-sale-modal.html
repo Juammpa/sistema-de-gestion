@@ -57,10 +57,12 @@
           >
             <!-- Opcion placeholder: value null obliga a elegir -->
             <option [ngValue]="null" disabled>Seleccionar corte...</option>
-            @for (cutMeat of cutMeatOptions.value(); track cutMeat.id) {
+            @for (cutMeat of activeCutMeats(); track cutMeat.id) {
               <option [ngValue]="cutMeat.id">
-                {{ cutMeat.cutMeatName }}
+                {{ cutMeat.cutMeatName | titlecase }}
               </option>
+            } @empty {
+              <option [ngValue]="null" disabled>No hay cortes disponibles</option>
             }
           </select>
           @if (cutMeatOptions.error()) {

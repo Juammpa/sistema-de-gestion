@@ -4,8 +4,8 @@
 >
   <search-input
     placeholder="Buscar cortes..."
-    [numberFound]="cutMeatResource.value()?.length ?? 0"
-    searchName="cortes"
+    [numberFound]="cutMeatsActive() ?? 0"
+    searchName="cortes activos"
     (add)="showModal.set(true)"
   />
 </div>
@@ -22,12 +22,14 @@
     <!-- Mostrar estado de error -->
     <empty-state infoMessage="No se pudo conectar al servidor" />
   } @else if (cutMeatResource.hasValue()) {
-    <!-- Iterar lista de cortes -->
-    @for (item of cutMeatResource.value(); track $index) {
+    <!-- Iterar lista de cortes (activos e inactivos) -->
+    @for (item of cutMeatResource.value(); track item.id) {
+      <!-- Mostrar unicamente los cortes de carnes activos -->
       <cut-meat-list-item
         [cutMeatName]="item.cutMeatName"
         specie="Bovino"
         [price]="item.pricePerKilo"
+        [isActive]="item.isActive"
         (click)="openCutMeatDetail(item)"
       />
     }

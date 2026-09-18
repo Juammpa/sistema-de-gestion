@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { SearchInput } from '../../../shared/components/search-input/search-input';
 import { CutMeatService } from '../../services/cut-meat.service';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -28,6 +28,9 @@ export default class CutMeatPage {
   cutMeatResource = rxResource({
     stream: () => this.cutMeatService.getAllCutMeats(),
   });
+
+  // Numero de cortes activos
+  cutMeatsActive = computed(() => this.cutMeatResource.value()?.filter((cm) => cm.isActive).length);
 
   reload() {
     this.cutMeatResource.reload();

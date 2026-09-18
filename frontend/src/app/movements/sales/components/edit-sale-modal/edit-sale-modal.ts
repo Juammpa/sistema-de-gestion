@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../utils/form-utils';
 import { SaleService } from '../../services/sale.service';
@@ -6,10 +6,11 @@ import { CutMeatService } from '../../../../cut-meat/services/cut-meat.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Sale, SaleRequest } from '../../interfaces/sales.interface';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'edit-sale-modal',
-  imports: [ReactiveFormsModule, DeleteModal],
+  imports: [ReactiveFormsModule, DeleteModal, TitleCasePipe],
   templateUrl: './edit-sale-modal.html',
 })
 export class EditSaleModal implements OnInit {
@@ -31,6 +32,11 @@ export class EditSaleModal implements OnInit {
   cutMeatOptions = rxResource({
     stream: () => this.cutMeatService.getAllCutMeats(),
   });
+
+  // Cortes de carnes activos
+  activeCutMeats = computed(() =>
+    (this.cutMeatOptions.value() ?? []).filter((cutMeat) => cutMeat.isActive),
+  );
 
   saleForm: FormGroup = this.fb.group({
     date: [null as string | null, [Validators.required]],

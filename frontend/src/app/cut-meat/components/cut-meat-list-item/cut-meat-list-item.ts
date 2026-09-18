@@ -1,9 +1,9 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'cut-meat-list-item',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, TitleCasePipe],
   templateUrl: './cut-meat-list-item.html',
 })
 export class CutMeatListItem {
@@ -11,4 +11,5 @@ export class CutMeatListItem {
   cutMeatName = input.required<string>();
   specie = input.required<string>();
   price = input.required<number>();
+  isActive = input.required<boolean>();
 }

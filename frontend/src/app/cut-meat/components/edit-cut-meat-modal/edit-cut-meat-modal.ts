@@ -26,6 +26,7 @@ export class EditCutMeatModal implements OnInit {
   // Señales
   showDeleteConfirm = signal<boolean>(false);
   deleting = signal<boolean>(false);
+  activating = signal<boolean>(false);
 
   CutMeatForm: FormGroup = this.fb.group({
     cutMeatName: ['', [Validators.required, Validators.minLength(3)]],
@@ -72,6 +73,21 @@ export class EditCutMeatModal implements OnInit {
       error: (err) => {
         console.error('Error al eliminar el corte de carne', err);
         this.deleting.set(false);
+      },
+    });
+  }
+
+  onActivate() {
+    this.activating.set(true);
+
+    this.cutMeatService.activateCutMeatById(this.cutMeat().id).subscribe({
+      next: () => {
+        this.saved.emit();
+        this.close();
+      },
+      error: (err) => {
+        console.error('Error al activar el corte de carne', err);
+        this.activating.set(false);
       },
     });
   }

@@ -6,13 +6,26 @@
     <span
       class="truncate text-sm font-semibold tracking-tight text-slate-100 group-hover:text-white"
     >
-      {{ cutMeatName() }}
+      {{ cutMeatName() | titlecase }}
     </span>
     <span
       class="inline-flex shrink-0 items-center rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-300"
     >
       {{ specie() }}
     </span>
+    @if (isActive()) {
+      <span
+        class="inline-flex shrink-0 items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300"
+      >
+        Activo
+      </span>
+    } @else {
+      <span
+        class="inline-flex shrink-0 items-center rounded-md border border-slate-600/50 bg-slate-700/30 px-2 py-0.5 text-[11px] font-medium text-slate-400"
+      >
+        Inactivo
+      </span>
+    }
   </div>
 
   <!-- Precio por kilo -->

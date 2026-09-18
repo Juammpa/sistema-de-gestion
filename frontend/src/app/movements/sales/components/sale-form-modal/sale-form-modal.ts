@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../utils/form-utils';
 import { CutMeatService } from '../../../../cut-meat/services/cut-meat.service';
@@ -7,10 +7,11 @@ import { SaleRequest } from '../../interfaces/sales.interface';
 import { SaleService } from '../../services/sale.service';
 import { Client } from '../../../../clientes/interfaces/client.interface';
 import { ButcherShop } from '../../../../butcher-shop/interfaces/butcher-shop.interface';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'sale-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TitleCasePipe],
   templateUrl: './sale-form-modal.html',
 })
 export class SaleFormModal {
@@ -31,6 +32,11 @@ export class SaleFormModal {
   cutMeatOptions = rxResource({
     stream: () => this.cutMeatService.getAllCutMeats(),
   });
+
+  // Cortes de carnes activos
+  activeCutMeats = computed(() =>
+    (this.cutMeatOptions.value() ?? []).filter((cutMeat) => cutMeat.isActive),
+  );
 
   saleForm: FormGroup = this.fb.group({
     cutMeatId: [null as number | null, [Validators.required]],

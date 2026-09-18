@@ -30,6 +30,11 @@ export class CutMeatService {
     return this.http.put<CutMeat>(`${environment.apiUrl}/cut-meat/${id}`, cutMeat);
   }
 
+  // Reactivar corte de carne
+  activateCutMeatById(id: number) {
+    return this.http.patch(`${environment.apiUrl}/cut-meat/${id}/activate`, {});
+  }
+
   // Eliminar un tipo de corte de carne
   deleteCutMeatById(id: number) {
     return this.http.delete(`${environment.apiUrl}/cut-meat/${id}`);
