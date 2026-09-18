@@ -1,10 +1,10 @@
 export interface CutMeat {
   id: number;
-  cutMeatType: string;
+  cutMeatName: string;
   pricePerKilo: number;
 }
 
 export interface CutMeatRequest {
-  cutMeatType: string;
+  cutMeatName: string;
   pricePerKilo: number;
 }

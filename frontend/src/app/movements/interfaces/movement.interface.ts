@@ -9,7 +9,7 @@ interface BaseMovement {
 
 export interface SaleMovement extends BaseMovement {
   type: 'SALE';
-  cutMeatType: string;
+  cutMeatName: string;
   unit: number;
   kilograms: number;
   pricePerKilo: number;

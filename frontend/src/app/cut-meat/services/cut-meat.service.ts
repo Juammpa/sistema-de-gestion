@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CutMeat, CutMeatRequest } from '../interfaces/cut-meat.interface';
 import { environment } from '../../../environments/environment';
+import { catchError, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CutMeatService {
@@ -19,7 +20,9 @@ export class CutMeatService {
 
   // Obtener todos los cortes de carne
   getAllCutMeats() {
-    return this.http.get<CutMeat[]>(`${environment.apiUrl}/cut-meat`);
+    return this.http
+      .get<CutMeat[]>(`${environment.apiUrl}/cut-meat`)
+      .pipe(catchError(() => of([])));
   }
 
   // Actualizar un tipo de corte de carne

@@ -1,0 +1,27 @@
+<div
+  class="group flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 shadow-sm transition-all duration-150 hover:border-slate-700 hover:bg-[#182133] hover:cursor-pointer"
+>
+  <!-- Nombre del corte + categoría -->
+  <div class="flex min-w-0 items-center gap-2.5">
+    <span
+      class="truncate text-sm font-semibold tracking-tight text-slate-100 group-hover:text-white"
+    >
+      {{ cutMeatName() }}
+    </span>
+    <span
+      class="inline-flex shrink-0 items-center rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-300"
+    >
+      {{ specie() }}
+    </span>
+  </div>
+
+  <!-- Precio por kilo -->
+  <div
+    class="flex shrink-0 items-baseline gap-1 rounded-lg border border-blue-500/30 bg-blue-950/40 px-3 py-1.5"
+  >
+    <span class="font-sans text-sm font-bold tracking-tight text-blue-300">{{
+      price() | currency: 'ARS' : 'symbol-narrow' : '1.2-2'
+    }}</span>
+    <span class="text-[10px] font-medium text-blue-400/70">/kg</span>
+  </div>
+</div>

@@ -5,7 +5,6 @@ import { SaleService } from '../../services/sale.service';
 import { CutMeatService } from '../../../../cut-meat/services/cut-meat.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Sale, SaleRequest } from '../../interfaces/sales.interface';
-import { translateCutMeatType } from '../../../../cut-meat/utils/cut-meat.utils';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 
 @Component({
@@ -18,7 +17,6 @@ export class EditSaleModal implements OnInit {
   private cutMeatService = inject(CutMeatService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
-  translateCutMeatType = translateCutMeatType;
 
   // Inputs
   sale = input.required<Sale>();

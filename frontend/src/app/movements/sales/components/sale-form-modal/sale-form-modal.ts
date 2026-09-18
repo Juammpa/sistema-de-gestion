@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormUtils } from '../../../../utils/form-utils';
 import { CutMeatService } from '../../../../cut-meat/services/cut-meat.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { translateCutMeatType } from '../../../../cut-meat/utils/cut-meat.utils';
 import { SaleRequest } from '../../interfaces/sales.interface';
 import { SaleService } from '../../services/sale.service';
 import { Client } from '../../../../clientes/interfaces/client.interface';
@@ -19,7 +18,6 @@ export class SaleFormModal {
   private cutMeatService = inject(CutMeatService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
-  translateCutMeatType = translateCutMeatType;
 
   // Inputs
   client = input.required<Client>();

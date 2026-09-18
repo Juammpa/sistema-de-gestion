@@ -15,6 +15,10 @@ export const Sharedroutes: Routes = [
         path: 'proveedores',
         loadChildren: () => import('../supplier/supplier.routes'),
       },
+      {
+        path: 'cortes',
+        loadComponent: () => import('../cut-meat/pages/cut-meat-page/cut-meat-page'),
+      },
     ],
   },
   {

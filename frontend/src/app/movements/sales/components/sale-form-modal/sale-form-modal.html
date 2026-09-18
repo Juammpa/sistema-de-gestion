@@ -48,7 +48,7 @@
             <option [ngValue]="null" disabled>Seleccionar corte...</option>
             @for (cutMeat of cutMeatOptions.value(); track cutMeat.id) {
               <option [ngValue]="cutMeat.id">
-                {{ translateCutMeatType(cutMeat.cutMeatType) }}
+                {{ cutMeat.cutMeatName }}
               </option>
             }
           </select>
