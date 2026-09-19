@@ -1,91 +1,98 @@
-<!-- Backdrop: cierra al hacer click fuera del panel -->
+<!-- Backdrop: cierra al hacer click fuera del panel con blur cinematográfico -->
 <div
   (click)="close()"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-[#070b14]/70 p-4 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md transition-opacity duration-200"
 >
   <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
   <div
     (click)="$event.stopPropagation()"
-    class="w-full max-w-fit overflow-hidden rounded-2xl border border-slate-700/60 bg-[#151d2e] shadow-2xl shadow-black/60 ring-1 ring-white/5"
+    class="relative w-full max-w-md sm:max-w-110 overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/90 ring-1 ring-white/10 transition-all duration-200"
   >
-    <!-- Boton cerrar (absoluto, esquina) -->
+    <!-- Línea superior de acento destructivo -->
+    <div
+      class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-red-500/40 to-transparent"
+    ></div>
+    <!-- Botón cerrar (absoluto en esquina superior derecha) -->
     <div class="relative">
       <button
         type="button"
         (click)="close()"
-        class="absolute right-3 top-3 rounded-lg p-1.5 cursor-pointer text-slate-400 transition-colors hover:bg-slate-700/60 hover:text-white"
+        class="absolute right-4 top-4 rounded-xl p-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150 active:scale-95 z-10"
+        title="Cerrar modal"
       >
-        <i class="fa-solid fa-xmark"></i>
+        <i class="fa-solid fa-xmark text-sm block"></i>
       </button>
     </div>
-
     <!-- ====== BODY ======== -->
-    <div class="px-7 py-6 pt-8 text-center">
-      <!-- Icono destructivo centrado -->
-      <span
-        class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-600/15 text-xl text-red-400 ring-8 ring-red-600/5"
-      >
-        <i class="fa-solid fa-user-minus"></i>
-      </span>
-
+    <div class="px-6 sm:px-8 py-6 pt-8 text-center">
+      <!-- Icono destructivo con halo sutil -->
+      <div class="relative inline-flex items-center justify-center">
+        <span
+          class="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-red-600/20 to-red-500/10 text-xl text-red-400 border border-red-500/25 shadow-md shadow-red-500/10 ring-8 ring-red-500/5"
+        >
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </span>
+      </div>
+      <!-- Título principal -->
       <h2 class="mt-4 text-lg font-bold tracking-tight text-white">{{ description() }}</h2>
-
-      <p class="mt-1.5 text-sm text-slate-400">
+      <!-- Subtítulo explicativo -->
+      <p class="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
         @if (entityName()) {
           Vas a eliminar a
           <span class="font-semibold text-slate-200">{{ entityName().trim() }}.</span>
         } @else {
-          Vas a eliminar a este cliente.
+          Vas a eliminar este elemento.
         }
-        Esta acción no se puede deshacer.
+        Esta acción es permanente y no se puede deshacer.
       </p>
-
       <!-- Recuadro de advertencia: qué se elimina -->
-      <div class="mt-4 rounded-xl border border-red-500/25 bg-red-500/5 px-4 py-3 text-left">
-        <p class="flex items-center gap-2 text-xs font-semibold text-red-300">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          Se eliminará de forma permanente
+      <div class="mt-5 rounded-xl border border-red-500/20 bg-red-950/20 px-4 py-3.5 text-left">
+        <p class="flex items-center gap-2 text-xs font-semibold text-red-400">
+          <i class="fa-solid fa-triangle-exclamation text-xs"></i> Se eliminará de forma definitiva
         </p>
-        <ul class="mt-2 space-y-1 text-xs text-slate-400">
-          <li class="flex items-center gap-2">
-            <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
-            {{ entityType() }} y sus datos asociados
+        <ul class="mt-2.5 space-y-1.5 text-xs text-slate-300/90">
+          <li class="flex items-center gap-2.5">
+            <span class="h-1.5 w-1.5 rounded-full bg-red-400/70 shrink-0"></span>
+            <span>{{ entityType() }} y sus datos asociados</span>
           </li>
           <!-- Mostrar solo si es cliente (proveedor no tiene sucursales) -->
           @if (entityType() === 'El cliente') {
-            <li class="flex items-center gap-2">
-              <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
-              Todas sus sucursales asociadas
+            <li class="flex items-center gap-2.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-red-400/70 shrink-0"></span>
+              <span>Todas sus sucursales asociadas</span>
             </li>
           }
-          <li class="flex items-center gap-2">
-            <i class="fa-solid fa-circle text-[4px] text-slate-500"></i>
-            El historial de movimientos y saldos
+          <li class="flex items-center gap-2.5">
+            <span class="h-1.5 w-1.5 rounded-full bg-red-400/70 shrink-0"></span>
+            <span>El historial de movimientos y saldos</span>
           </li>
         </ul>
       </div>
     </div>
-
     <!-- ======= FOOTER ======== -->
-    <div class="flex item-center gap-3 border-t border-slate-700/50 px-7 py-4">
+    <div
+      class="flex items-center gap-3 border-t border-slate-800/80 bg-slate-900/40 px-6 sm:px-8 py-4"
+    >
+      <!-- Botón Cancelar -->
       <button
         type="button"
         (click)="close()"
-        class="flex-1 cursor-pointer rounded-lg border border-slate-600/70 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white"
+        class="flex-1 cursor-pointer rounded-xl border border-slate-750/80 bg-slate-800/50 hover:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition-all duration-150 active:scale-[0.98]"
       >
         Cancelar
       </button>
-
+      <!-- Botón Eliminar / Confirmar -->
       <button
         type="button"
         (click)="confirm.emit()"
         [disabled]="loading()"
-        class="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/60 disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-500 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-red-600/25 hover:shadow-red-600/35 transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500/50 disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none disabled:active:scale-100"
       >
         <i
-          class="fa-regular"
+          class="fa-regular text-xs"
           [class.fa-trash-can]="!loading()"
           [class.fa-hourglass-half]="loading()"
+          [class.animate-spin]="loading()"
         ></i>
         <span>{{ loading() ? 'Eliminando...' : 'Eliminar' }}</span>
       </button>

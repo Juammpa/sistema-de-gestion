@@ -28,14 +28,14 @@ export class EditCutMeatModal implements OnInit {
   deleting = signal<boolean>(false);
   activating = signal<boolean>(false);
 
-  CutMeatForm: FormGroup = this.fb.group({
+  cutMeatForm: FormGroup = this.fb.group({
     cutMeatName: ['', [Validators.required, Validators.minLength(3)]],
     pricePerKilo: [1, [Validators.required, Validators.min(1)]],
   });
 
   ngOnInit() {
     const current = this.cutMeat();
-    this.CutMeatForm.patchValue({
+    this.cutMeatForm.patchValue({
       cutMeatName: current.cutMeatName,
       pricePerKilo: current.pricePerKilo,
     });
@@ -46,12 +46,12 @@ export class EditCutMeatModal implements OnInit {
   }
 
   onSave() {
-    if (this.CutMeatForm.invalid) {
-      this.CutMeatForm.markAllAsTouched();
+    if (this.cutMeatForm.invalid) {
+      this.cutMeatForm.markAllAsTouched();
       return;
     }
 
-    const request: CutMeatRequest = this.CutMeatForm.value;
+    const request: CutMeatRequest = this.cutMeatForm.value;
 
     this.cutMeatService.updateCutMeat(this.cutMeat().id, request).subscribe({
       next: () => {

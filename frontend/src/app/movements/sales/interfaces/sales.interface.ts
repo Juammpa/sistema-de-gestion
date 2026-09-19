@@ -3,7 +3,7 @@ export interface Sale {
   clientId: number;
   date: Date;
   cutMeatId: number;
-  cutMeatType: string;
+  cutMeatName: string;
   unit: number;
   kilograms: number;
   pricePerKilo: number;

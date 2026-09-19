@@ -1,147 +1,182 @@
 <!-- Backdrop: cierra al hacer click fuera del panel -->
 <div
   (click)="close()"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-[#070b14]/10 p-4 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md transition-opacity duration-200"
 >
   <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
   <div
     (click)="$event.stopPropagation()"
-    class="w-full max-w-lg overflow-hidden rounded-2xl border border-slate-700/60 bg-[#151d2e] shadow-2xl shadow-black/60 ring-1 ring-white/5"
+    class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
   >
+    <!-- Línea superior de acento -->
+    <div
+      class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-blue-500/50 to-transparent"
+    ></div>
     <!-- ====== HEADER ====== -->
-    <div class="flex items-start justify-between gap-4 border-b border-slate-700/50 px-7 py-5">
-      <div class="flex items-center gap-3">
+    <div
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-6 sm:px-7 py-5"
+    >
+      <div class="flex items-center gap-3.5">
         <!-- Badge con ícono -->
         <span
-          class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/15 text-blue-400"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600/20 to-indigo-600/10 text-blue-400 border border-blue-500/20 shadow-sm shadow-blue-500/10"
         >
-          <i class="fa-solid fa-tag"></i>
+          <i class="fa-solid fa-cart-shopping text-base"></i>
         </span>
-        <div>
+        <div class="space-y-0.5">
           <h2 class="text-lg font-bold tracking-tight text-white">Crear Compra</h2>
-          <p class="mt-0.5 text-xs text-slate-400">Datos de la compra</p>
+          <p class="text-xs text-slate-400">Datos y valores de la nueva compra</p>
         </div>
       </div>
-
       <!-- Botón cerrar -->
       <button
         type="button"
         (click)="close()"
-        class="rounded-lg p-1.5 cursor-pointer text-slate-400 transition-colors hover:bg-slate-700/60 hover:text-white"
+        class="rounded-xl p-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150 active:scale-95"
+        title="Cerrar modal"
       >
-        <i class="fa-solid fa-xmark"></i>
+        <i class="fa-solid fa-xmark text-sm block"></i>
       </button>
     </div>
-
     <!-- ====== BODY (form) ====== -->
-    <form [formGroup]="purchaseForm" (ngSubmit)="onSave()" class="space-y-5 px-7 py-6">
-      <!-- Grid: TipoCompra y Unidades -->
+    <form [formGroup]="purchaseForm" (ngSubmit)="onSave()" class="space-y-5 px-6 sm:px-7 py-6">
+      <!-- Grid: Tipo de Compra y Unidades -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- Tipo Compra -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-medium text-slate-300">Tipo de Compra</label>
-          <select
-            formControlName="purchaseType"
-            class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          >
-            <!-- Opcion placeholder: value null obliga a elegir -->
-            <option [ngValue]="null" disabled>Seleccionar corte...</option>
-            @for (option of purchaseTypesOptions; track option.value) {
-              <option [ngValue]="option.value">
-                {{ translatePurchaseType(option.value) }}
+          <label class="block text-xs font-semibold tracking-wider text-slate-300">
+            Tipo de Compra <span class="text-blue-400">*</span>
+          </label>
+          <div class="relative">
+            <select
+              formControlName="purchaseType"
+              [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'purchaseType')"
+              [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'purchaseType')"
+              class="w-full appearance-none rounded-xl border border-slate-800 bg-[#0a0f1d] pl-3.5 pr-9 py-2.5 text-sm text-slate-100 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 cursor-pointer"
+            >
+              <option [ngValue]="null" disabled class="bg-[#0f1728] text-slate-500">
+                Seleccionar corte...
               </option>
-            }
-          </select>
+              @for (option of purchaseTypesOptions; track option.value) {
+                <option [ngValue]="option.value" class="bg-[#0f1728] text-slate-200">
+                  {{ translatePurchaseType(option.value) }}
+                </option>
+              }
+            </select>
+            <!-- Chevron decorativo -->
+            <div
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
           @if (formUtils.isValidField(purchaseForm, 'purchaseType')) {
-            <span class="flex items-center gap-1 text-xs text-red-400">
-              <i class="fa-solid fa-triangle-exclamation"></i>
+            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+              <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'purchaseType') }}
             </span>
           }
         </div>
-
         <!-- Unidades -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-medium text-slate-300">Unidades</label>
+          <label class="block text-xs font-semibold tracking-wider text-slate-300">
+            Unidades <span class="text-blue-400">*</span>
+          </label>
           <input
             type="text"
             formControlName="unit"
             placeholder="Ej. 1"
-            [class.!border-red-500]="formUtils.isValidField(purchaseForm, 'unit')"
-            class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'unit')"
+            [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'unit')"
+            class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
           />
-          <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(purchaseForm, 'unit')) {
-            <span class="flex items-center gap-1 text-xs text-red-400">
-              <i class="fa-solid fa-triangle-exclamation"></i>
+            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+              <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'unit') }}
             </span>
           }
         </div>
       </div>
-
+      <!-- Grid: Kilogramos y Precio Kilo -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- Kilogramos -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-medium text-slate-300">Kilogramos</label>
-          <div>
+          <label class="block text-xs font-semibold tracking-wider text-slate-300">
+            Kilogramos <span class="text-blue-400">*</span>
+          </label>
+          <div class="relative group">
             <input
               type="tel"
               formControlName="kilograms"
               placeholder="Ej. 100"
-              [class.!border-red-500]="formUtils.isValidField(purchaseForm, 'kilograms')"
-              class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'kilograms')"
+              [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'kilograms')"
+              class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
             />
+            <span
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 group-focus-within:text-blue-400 transition-colors"
+            >
+              kg
+            </span>
           </div>
-          <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(purchaseForm, 'kilograms')) {
-            <span class="flex items-center gap-1 text-xs text-red-400">
-              <i class="fa-solid fa-triangle-exclamation"></i>
+            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+              <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'kilograms') }}
             </span>
           }
         </div>
-
         <!-- Precio por Kilo -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-medium text-slate-300">Precio Kilo</label>
-          <div>
+          <label class="block text-xs font-semibold tracking-wider text-slate-300">
+            Precio Kilo <span class="text-blue-400">*</span>
+          </label>
+          <div class="relative group">
+            <span
+              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 group-focus-within:text-blue-400 transition-colors"
+            >
+              $
+            </span>
             <input
               type="tel"
               formControlName="pricePerKilo"
               placeholder="Ej. 10000"
-              [class.!border-red-500]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
-              class="w-full rounded-xl border border-slate-700 bg-[#0f1626] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 shadow-inner outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
+              [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
+              class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] py-2.5 pl-8 pr-3.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
             />
           </div>
-          <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(purchaseForm, 'pricePerKilo')) {
-            <span class="flex items-center gap-1 text-xs text-red-400">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              {{ formUtils.getFieldError(purchaseForm, 'pricePerKilo) }}
+            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+              <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
+              {{ formUtils.getFieldError(purchaseForm, 'pricePerKilo') }}
             </span>
           }
         </div>
       </div>
-
       <!-- ====== FOOTER ====== -->
-      <div class="mt-6 flex items-center justify-end gap-3 border-t border-slate-700/50 pt-5">
+      <div class="mt-6 flex items-center justify-end gap-3 border-t border-slate-800/80 pt-5">
         <button
           type="button"
           (click)="close()"
-          class="cursor-pointer rounded-xl border border-slate-600/70 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white"
+          class="cursor-pointer rounded-xl border border-slate-750/80 bg-slate-800/50 hover:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition-all duration-150 active:scale-[0.98]"
         >
           Cancelar
         </button>
-
-        <!-- Deshabilitado mientras el form es inválido -->
         <button
           type="submit"
           [disabled]="purchaseForm.invalid"
-          class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/25 transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
-          <i class="fa-solid fa-check"></i>
-          <span>Crear compra</span>
+          <i class="fa-solid fa-check text-xs"></i> <span>Crear compra</span>
         </button>
       </div>
     </form>
