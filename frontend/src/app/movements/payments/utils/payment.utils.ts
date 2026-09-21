@@ -1,10 +1,11 @@
 // Valores exactos del enum PaymentType
-export type PaymentTypeValue = 'CASH' | 'TRANSFER' | 'CHECK';
+export type PaymentTypeValue = 'CASH' | 'TRANSFER' | 'CHECK' | 'SUPPLIER_TRANSFER';
 
 const PAYMENT_TYPE_LABELS: Record<PaymentTypeValue, string> = {
   CASH: 'Efectivo',
   TRANSFER: 'Transferencia',
   CHECK: 'Cheque',
+  SUPPLIER_TRANSFER: 'Transferencia a proveedor',
 };
 
 // Opciones listas para el <select>

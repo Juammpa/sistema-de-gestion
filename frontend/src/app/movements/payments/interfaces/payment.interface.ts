@@ -4,6 +4,9 @@ export interface Payment {
   date: Date;
   currentAccountId: number;
   amount: number;
+  mirror: boolean;
+  supplierId: number | null;
+  supplierName: string | null;
 }
 
 export interface PaymentRequest {
@@ -11,4 +14,5 @@ export interface PaymentRequest {
   amount: number;
   currentAccountId: number;
   date: string;
+  supplierId?: number | null;
 }

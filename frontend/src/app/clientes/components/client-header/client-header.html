@@ -105,5 +105,6 @@
     (cancel)="showPaymentModal.set(false)"
     (saved)="showPaymentModal.set(false); paymentCreated.emit()"
     [currentAccountId]="selectedButcherShop()!.currentAccountId"
+    [allowSupplierTransfer]="true"
   />
 }

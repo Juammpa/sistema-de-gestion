@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
@@ -6,6 +6,9 @@ import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import translatePaymentType from '../../utils/payment.utils';
 import { Payment, PaymentRequest } from '../../interfaces/payment.interface';
+import { SupplierService } from '../../../../supplier/services/supplier.service';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'edit-payment-modal',
@@ -15,25 +18,56 @@ import { Payment, PaymentRequest } from '../../interfaces/payment.interface';
 export class EditPaymentModal implements OnInit {
   private fb = inject(FormBuilder);
   private paymentService = inject(PaymentService);
+  private supplierService = inject(SupplierService);
   formUtils = FormUtils;
 
-  paymentTypeOptions = PAYMENT_TYPE_OPTIONS;
   translatePaymentType = translatePaymentType;
 
   // Inputs
   payment = input.required<Payment>();
+  allowSupplierTransfer = input<boolean>(false);
+
+  paymentTypeOptions = computed(() =>
+    PAYMENT_TYPE_OPTIONS.filter(
+      (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
+    ),
+  );
+
+  suppliers = rxResource({
+    params: () => this.allowSupplierTransfer(),
+    stream: ({ params }) => (params ? this.supplierService.getAllSuppliers() : of([])),
+  });
 
   // Definimos el formulario
   paymentForm: FormGroup = this.fb.group({
     date: [null as string | null, [Validators.required]],
     paymentType: [null as string | null, [Validators.required]],
     amount: [0, [Validators.required, Validators.min(0)]],
+    supplierId: [null as number | null],
   });
 
   // Output
   cancel = output();
   saved = output();
   deleted = output();
+
+  constructor() {
+    this.paymentForm.controls['paymentType'].valueChanges.subscribe((type) => {
+      const supplierControl = this.paymentForm.controls['supplierId'];
+
+      if (type === 'SUPPLIER_TRANSFER') {
+        supplierControl.setValidators([Validators.required]);
+      } else {
+        supplierControl.clearValidators();
+        supplierControl.setValue(null);
+      }
+      supplierControl.updateValueAndValidity();
+    });
+  }
+
+  get isSupplierTransfer() {
+    return this.paymentForm.controls['paymentType'].value === 'SUPPLIER_TRANSFER';
+  }
 
   close() {
     this.cancel.emit();
@@ -44,8 +78,14 @@ export class EditPaymentModal implements OnInit {
     this.paymentForm.patchValue({
       date: current.date,
       paymentType: current.paymentType,
+      supplierId: current.supplierId,
       amount: current.amount,
     });
+
+    // Un pago espejo (generado automaticamente) es de solo lectura
+    if (current.mirror) {
+      this.paymentForm.disable();
+    }
   }
 
   // Señales

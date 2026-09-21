@@ -96,6 +96,7 @@
     (cancel)="showPaymentDetail.set(false)"
     (saved)="onPaymentChanged()"
     (deleted)="onPaymentChanged()"
+    [allowSupplierTransfer]="butcherShopId() !== null"
   />
 }
 
