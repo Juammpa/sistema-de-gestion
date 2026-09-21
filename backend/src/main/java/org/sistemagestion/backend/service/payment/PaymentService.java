@@ -8,7 +8,7 @@ import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PaymentMapper;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Payment;
-import org.sistemagestion.backend.repository.ButcherShopRepository;
+import org.sistemagestion.backend.model.Supplier;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
 import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
@@ -22,6 +22,7 @@ public class PaymentService implements IPaymentService{
 
     private final PaymentRepository paymentRepository;
     private final CurrentAccountRepository currentAccountRepository;
+    private final PaymentMirrorService paymentMirrorService;
     private final BalanceRecalculationService balanceRecalculationService;
     private final PaymentMapper mapper;
 
@@ -32,9 +33,13 @@ public class PaymentService implements IPaymentService{
        CurrentAccount currentAccount = currentAccountRepository.findById(request.getCurrentAccountId())
                .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
 
+       Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), currentAccount);
+
        Payment payment = mapper.toPayment(request, currentAccount);
+       payment.setSupplier(supplier);
        Payment paymentSaved = paymentRepository.save(payment);
 
+       paymentMirrorService.sync(paymentSaved);
        balanceRecalculationService.recalculate(currentAccount);
 
        log.info("Pago creado correctamente. ID: {}", paymentSaved.getId());
@@ -56,12 +61,17 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
 
+        paymentMirrorService.assertEditable(payment);
+        Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), payment.getCurrentAccount());
+
         payment.setDate(request.getDate());
         payment.setPaymentType(request.getPaymentType());
         payment.setAmount(request.getAmount());
+        payment.setSupplier(supplier);
 
         Payment paymentUpdated = paymentRepository.saveAndFlush(payment);
 
+        paymentMirrorService.sync(paymentUpdated);
         balanceRecalculationService.recalculate(payment.getCurrentAccount());
 
         log.info("Pago actualizado correctamente. ID: {}", payment.getId());
@@ -75,8 +85,11 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment","id", id));
 
+        paymentMirrorService.assertEditable(payment);
+
         // Actualizamos el balance de la cuenta
         CurrentAccount currentAccount = payment.getCurrentAccount();
+        paymentMirrorService.deleteMirrorOf(payment);
         paymentRepository.delete(payment);
         paymentRepository.flush();
 

@@ -20,4 +20,7 @@ public class PaymentResponseDto {
     private PaymentType paymentType;
     private Double amount;
 
+    private boolean mirror;
+    private Long supplierId;
+    private String supplierName;
 }

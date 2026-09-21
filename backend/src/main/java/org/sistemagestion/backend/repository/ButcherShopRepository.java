@@ -10,5 +10,5 @@ import java.util.List;
 public interface ButcherShopRepository extends JpaRepository<ButcherShop, Long> {
 
     List<ButcherShop> findByClientId(Long clientId);
-
+    boolean existsByCurrentAccountId(Long currentAccountId);
 }

@@ -27,4 +27,5 @@ public class PaymentRequestDto {
     private Long currentAccountId;
 
     private LocalDate date;
+    private Long supplierId;
 }

@@ -35,6 +35,18 @@ public class GlobalControllerAdvice {
         return problemDetail;
     }
 
+    @ExceptionHandler(BusinessRuleException.class) // Conflict 409
+    public ProblemDetail handleBusinessRuleException(BusinessRuleException ex) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+
+        problemDetail.setTitle("Regla de negocio incumplida");
+        problemDetail.setType(URI.create("https://api.sistema_gestion/errors/business-rule"));
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class) // Bad Request 400
     public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
