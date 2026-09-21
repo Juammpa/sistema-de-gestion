@@ -1,0 +1,21 @@
+<!-- Encabezado y filtro de fechas -->
+<cash-date-filter [(from)]="from" [(to)]="to" />
+
+<!-- Un bloque por día -->
+<div class="mx-auto flex max-h-[68vh] max-w-3xl flex-col gap-4 overflow-y-auto pr-1">
+  <!---->
+  @if (cashResource.isLoading()) {
+    <div class="m-auto py-12"><loading-spinner /></div>
+    <!---->
+  } @else if (cashResource.error()) {
+    <empty-state infoMessage="No se pudo cargar la caja" />
+    <!---->
+  } @else {
+    @for (day of cashResource.value(); track day.date) {
+      <cash-item [day]="day" />
+      <!---->
+    } @empty {
+      <empty-state infoMessage="No hay movimientos en el rango seleccionado" />
+    }
+  }
+</div>

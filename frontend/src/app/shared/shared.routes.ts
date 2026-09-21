@@ -19,6 +19,10 @@ export const Sharedroutes: Routes = [
         path: 'cortes',
         loadComponent: () => import('../cut-meat/pages/cut-meat-page/cut-meat-page'),
       },
+      {
+        path: 'caja-ahorro',
+        loadComponent: () => import('../cash/pages/cash-page/cash-page'),
+      },
     ],
   },
   {

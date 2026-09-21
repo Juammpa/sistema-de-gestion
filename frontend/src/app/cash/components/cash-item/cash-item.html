@@ -1,0 +1,146 @@
+<section
+  class="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-linear-to-b from-[#121929] to-[#0c1220] shadow-xl shadow-black/40 ring-1 ring-white/5 transition-all duration-200 hover:border-slate-700/80"
+>
+  <!-- Línea superior de acento minimalista -->
+  <div
+    class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r opacity-70 group-hover:opacity-100 transition-opacity"
+  ></div>
+  <!-- ====== HEADER DEL DÍA (clickeable) ====== -->
+  <button
+    type="button"
+    (click)="toggle()"
+    [attr.aria-expanded]="expanded()"
+    [class.border-b]="expanded()"
+    class="flex w-full cursor-pointer items-center justify-between border-slate-800/70 bg-slate-900/40 px-5 py-3.5 text-left transition-colors duration-150 hover:bg-slate-800/40"
+  >
+    <div class="flex items-center gap-3">
+      <span
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/20 text-amber-400 shadow-xs"
+      >
+        <i class="fa-regular fa-calendar text-xs"></i>
+      </span>
+      <h3 class="text-sm font-bold tracking-tight text-white">Caja {{ title() }}</h3>
+    </div>
+    <div class="flex items-center gap-3">
+      <span
+        class="rounded-full border border-slate-700/60 bg-slate-800/70 px-2.5 py-0.5 text-[11px] font-medium tracking-wide text-slate-300"
+      >
+        Jornada
+      </span>
+      <i
+        class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200"
+        [class.rotate-180]="expanded()"
+      ></i>
+    </div>
+  </button>
+
+  @if (expanded()) {
+    <!-- ====== LISTADO DE MOVIMIENTOS (PAGOS Y EXTRACCIONES) ====== -->
+    <ul class="divide-y divide-slate-800/40 text-sm">
+      <!-- Pagos de clientes -->
+      @for (payment of day().payments; track payment.id) {
+        <li
+          class="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-800/25 transition-colors duration-150"
+        >
+          <div class="min-w-0 flex items-center gap-3">
+            <!-- Icono de ingreso -->
+            <span
+              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/15"
+            >
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-100 font-medium truncate text-sm">{{
+                  payment.clientName
+                }}</span>
+                @if (methodLabel(payment); as label) {
+                  <span
+                    class="rounded-md bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-rose-300"
+                  >
+                    {{ label }}
+                  </span>
+                }
+              </div>
+              <p class="text-xs text-slate-400 truncate">{{ payment.butcherShopName }}</p>
+            </div>
+          </div>
+          <span class="font-mono text-sm font-semibold text-slate-100 tabular-nums shrink-0">
+            +{{ payment.amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </li>
+      }
+      <!-- Extracciones / Pago a proveedores -->
+      @for (withdrawal of day().withdrawals; track withdrawal.id) {
+        <li
+          class="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-800/25 transition-colors duration-150"
+        >
+          <div class="min-w-0 flex items-center gap-3">
+            <!-- Icono de egreso -->
+            <span
+              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/15"
+            >
+              <i class="fa-solid fa-arrow-up-right text-[11px]"></i>
+            </span>
+            <div class="min-w-0">
+              <p class="text-slate-100 font-medium text-sm">Pago a proveedor</p>
+              <p class="text-xs text-slate-400 truncate">{{ withdrawal.supplierName }}</p>
+            </div>
+          </div>
+          <span class="font-mono text-sm font-semibold text-amber-400/90 tabular-nums shrink-0">
+            - {{ withdrawal.amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </li>
+      }
+    </ul>
+    <!-- ====== RESUMEN Y TOTALES ====== -->
+    <div class="border-t border-slate-800/70 bg-slate-950/40 p-4 space-y-3">
+      <!-- Sub-métricas: Total, Efectivo y Extracciones en formato grid balanceado -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+        <!-- Total -->
+        <div class="rounded-xl border border-slate-800/80 bg-[#0a0f1d]/70 px-3 py-2">
+          <span class="block text-[11px] font-medium uppercase tracking-wider text-slate-400"
+            >Total</span
+          >
+          <span class="font-mono text-sm font-semibold text-slate-200 tabular-nums">
+            {{ day().total | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </div>
+        <!-- Efectivo -->
+        <div class="rounded-xl border border-slate-800/80 bg-[#0a0f1d]/70 px-3 py-2">
+          <span class="block text-[11px] font-medium uppercase tracking-wider text-slate-400"
+            >Ingreso</span
+          >
+          <span class="font-mono text-sm font-semibold text-blue-400 tabular-nums">
+            {{ day().cash | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </div>
+        <!-- Extracciones (condicional) -->
+        @if (day().withdrawn > 0) {
+          <div
+            class="col-span-2 sm:col-span-1 rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-2"
+          >
+            <span class="block text-[11px] font-medium uppercase tracking-wider text-amber-400/80"
+              >Extracciones</span
+            >
+            <span class="font-mono text-sm font-semibold text-amber-400 tabular-nums">
+              - {{ day().withdrawn | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+            </span>
+          </div>
+        }
+      </div>
+      <!-- Saldo Final de Caja -->
+      <div
+        class="flex items-center justify-between rounded-xl border border-emerald-500/25 bg-linear-to-r from-emerald-950/30 via-emerald-900/20 to-transparent px-4 py-2.5"
+      >
+        <div class="flex items-center gap-2 text-emerald-400">
+          <i class="fa-solid fa-vault text-xs opacity-90"></i>
+          <span class="text-xs font-semibold uppercase tracking-wider">Cierre de Caja</span>
+        </div>
+        <span class="font-mono text-base font-bold text-emerald-300 tabular-nums">
+          {{ day().closingBalance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+        </span>
+      </div>
+    </div>
+  }
+</section>
