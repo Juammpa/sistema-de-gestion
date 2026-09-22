@@ -38,7 +38,7 @@ public interface CashRepository extends Repository<Payment, Long> {
             """)
     List<CashWithdrawalDto> findSupplierPayments(@Param("type")PaymentType type, @Param("from") LocalDate from, @Param("to") LocalDate to);
 
-    // Saldo de arrastre: efectivo cobrado a clientes antes de una fecha
+    // Saldo de arrastre: todoo lo cobrado a clientes antes de una fecha (menos transf. a proveedor)
     @Query("""
             select sum(p.amount)
             from Payment p
@@ -56,5 +56,21 @@ public interface CashRepository extends Repository<Payment, Long> {
             """)
     Double sumSupplierPaymentsBefore(@Param("type") PaymentType type, @Param("date") LocalDate date);
 
+    // Total historico que entro a la caja por cobros a clientes (todoo menos SUPPLIER_TRANSFER)
+    @Query("""
+        select sum(p.amount)
+        from Payment p
+        where p.paymentType <> :excluded
+          and exists (select 1 from ButcherShop bs where bs.currentAccount = p.currentAccount)
+        """)
+    Double sumClientPayments(@Param("excluded") PaymentType excluded);
 
+    // Total historico pagado en efectivo a proveedores
+    @Query("""
+        select sum(p.amount)
+        from Payment p
+        where p.paymentType = :type
+          and exists (select 1 from Supplier sup where sup.currentAccount = p.currentAccount)
+        """)
+    Double sumSupplierPayments(@Param("type") PaymentType type);
 }

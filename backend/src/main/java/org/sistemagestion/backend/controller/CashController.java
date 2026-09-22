@@ -25,4 +25,10 @@ public class CashController {
 
         return ResponseEntity.ok(cashService.getCashDays(from, to));
     }
+
+    @GetMapping("/balance")
+    public ResponseEntity<Double> getBalance() {
+
+        return ResponseEntity.ok(cashService.getCurrentBalance());
+    }
 }

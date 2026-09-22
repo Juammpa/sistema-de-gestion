@@ -11,6 +11,7 @@ import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.model.Supplier;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
+import org.sistemagestion.backend.service.cash.CashService;
 import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class PaymentService implements IPaymentService{
     private final CurrentAccountRepository currentAccountRepository;
     private final PaymentMirrorService paymentMirrorService;
     private final BalanceRecalculationService balanceRecalculationService;
+    private final CashService cashService;
     private final PaymentMapper mapper;
 
     @Override
@@ -34,6 +36,7 @@ public class PaymentService implements IPaymentService{
                .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
 
        Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), currentAccount);
+       cashService.assertSufficientBalance(currentAccount, request.getPaymentType(), request.getAmount(), null);
 
        Payment payment = mapper.toPayment(request, currentAccount);
        payment.setSupplier(supplier);
@@ -63,6 +66,7 @@ public class PaymentService implements IPaymentService{
 
         paymentMirrorService.assertEditable(payment);
         Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), payment.getCurrentAccount());
+        cashService.assertSufficientBalance(payment.getCurrentAccount(), request.getPaymentType(), request.getAmount(), payment);
 
         payment.setDate(request.getDate());
         payment.setPaymentType(request.getPaymentType());

@@ -2,7 +2,6 @@ package org.sistemagestion.backend.mapper;
 
 import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
-import org.sistemagestion.backend.model.Client;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.model.Supplier;

@@ -4,6 +4,7 @@ import org.sistemagestion.backend.model.enums.PaymentType;
 
 import java.time.LocalDate;
 
+// Un pago recibido de un cliente, listo para mostrar en caja
 public record CashPaymentDto(
         Long id,
         LocalDate date,
