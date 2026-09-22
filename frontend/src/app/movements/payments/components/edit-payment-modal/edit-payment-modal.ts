@@ -9,16 +9,19 @@ import { Payment, PaymentRequest } from '../../interfaces/payment.interface';
 import { SupplierService } from '../../../../supplier/services/supplier.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
+import { CashService } from '../../../../cash/services/cash.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'edit-payment-modal',
-  imports: [ReactiveFormsModule, DeleteModal],
+  imports: [ReactiveFormsModule, DeleteModal, CurrencyPipe],
   templateUrl: './edit-payment-modal.html',
 })
 export class EditPaymentModal implements OnInit {
   private fb = inject(FormBuilder);
   private paymentService = inject(PaymentService);
   private supplierService = inject(SupplierService);
+  private cashService = inject(CashService);
   formUtils = FormUtils;
 
   translatePaymentType = translatePaymentType;
@@ -26,12 +29,18 @@ export class EditPaymentModal implements OnInit {
   // Inputs
   payment = input.required<Payment>();
   allowSupplierTransfer = input<boolean>(false);
+  showCashBalance = input<boolean>(false); // true solo en la pagina de proveedor
 
   paymentTypeOptions = computed(() =>
     PAYMENT_TYPE_OPTIONS.filter(
       (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
     ),
   );
+
+  cashBalance = rxResource({
+    params: () => this.showCashBalance(),
+    stream: ({ params }) => (params ? this.cashService.getBalance() : of(null)),
+  });
 
   suppliers = rxResource({
     params: () => this.allowSupplierTransfer(),

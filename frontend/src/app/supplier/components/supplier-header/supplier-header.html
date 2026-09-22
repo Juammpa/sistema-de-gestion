@@ -71,6 +71,7 @@
     (cancel)="showPaymentModal.set(false)"
     (saved)="showPaymentModal.set(false); paymentCreated.emit()"
     [currentAccountId]="supplier().currentAccountId"
+    [showCashBalance]="true"
   />
 }
 

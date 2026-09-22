@@ -97,6 +97,7 @@
     (saved)="onPaymentChanged()"
     (deleted)="onPaymentChanged()"
     [allowSupplierTransfer]="butcherShopId() !== null"
+    [showCashBalance]="butcherShopId() === null"
   />
 }
 

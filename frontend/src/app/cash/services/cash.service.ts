@@ -13,4 +13,9 @@ export class CashService {
       params: { from, to },
     });
   }
+
+  // Saldo actual de la caja
+  getBalance() {
+    return this.http.get<number>(`${environment.apiUrl}/cash/balance`);
+  }
 }

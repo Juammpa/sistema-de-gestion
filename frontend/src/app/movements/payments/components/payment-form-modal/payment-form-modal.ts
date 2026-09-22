@@ -7,21 +7,25 @@ import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
 import { SupplierService } from '../../../../supplier/services/supplier.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
+import { CashService } from '../../../../cash/services/cash.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'payment-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CurrencyPipe],
   templateUrl: './payment-form-modal.html',
 })
 export class PaymentFormModal {
   private paymentService = inject(PaymentService);
   private supplierService = inject(SupplierService);
+  private cashService = inject(CashService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
 
   // Input
   currentAccountId = input.required<number>();
   allowSupplierTransfer = input<boolean>(false);
+  showCashBalance = input<boolean>(false); // true solo en la pagina de un proveedor
 
   // Output
   cancel = output();
@@ -33,6 +37,11 @@ export class PaymentFormModal {
       (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
     ),
   );
+
+  cashBalance = rxResource({
+    params: () => this.showCashBalance(),
+    stream: ({ params }) => (params ? this.cashService.getBalance() : of(null)),
+  });
 
   // Proveedores (solo se cargan si se permite la transferencia a proveedor)
   suppliers = rxResource({
