@@ -2,7 +2,7 @@ package org.sistemagestion.backend.mapper;
 
 
 import lombok.RequiredArgsConstructor;
-import org.sistemagestion.backend.dto.client.ClientRequestDto;
+import org.sistemagestion.backend.dto.client.ClientCreateRequestDto;
 import org.sistemagestion.backend.dto.client.ClientResponseDto;
 import org.sistemagestion.backend.model.Client;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class ClientMapper {
 
     private final ButcherShopMapper butcherShopMapper;
 
-    public Client toClient(ClientRequestDto request) {
+    public Client toClient(ClientCreateRequestDto request) {
         return Client.builder()
                 .name(request.getName())
                 .lastName(request.getLastName())

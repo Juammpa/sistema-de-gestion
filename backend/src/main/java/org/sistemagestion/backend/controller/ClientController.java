@@ -2,6 +2,7 @@ package org.sistemagestion.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.client.ClientCreateRequestDto;
 import org.sistemagestion.backend.dto.client.ClientRequestDto;
 import org.sistemagestion.backend.dto.client.ClientResponseDto;
 import org.sistemagestion.backend.service.client.IClientService;
@@ -20,7 +21,7 @@ public class ClientController {
     private final IClientService clientService;
 
     @PostMapping
-    public ResponseEntity<ClientResponseDto> createClient(@Valid @RequestBody ClientRequestDto request) {
+    public ResponseEntity<ClientResponseDto> createClient(@Valid @RequestBody ClientCreateRequestDto request) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(request));
     }

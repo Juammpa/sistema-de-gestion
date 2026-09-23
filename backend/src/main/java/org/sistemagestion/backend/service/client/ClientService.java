@@ -1,13 +1,17 @@
 package org.sistemagestion.backend.service.client;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
+import org.sistemagestion.backend.dto.client.ClientCreateRequestDto;
 import org.sistemagestion.backend.dto.client.ClientRequestDto;
 import org.sistemagestion.backend.dto.client.ClientResponseDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.ClientMapper;
 import org.sistemagestion.backend.model.Client;
 import org.sistemagestion.backend.repository.ClientRepository;
+import org.sistemagestion.backend.service.butcher_shop.IButcherShopService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,16 +20,27 @@ import java.util.List;
 public class ClientService implements IClientService{
 
     private final ClientRepository clientRepository;
+    private final IButcherShopService butcherShopService;
     private final ClientMapper mapper;
 
     @Override
-    public ClientResponseDto createClient(ClientRequestDto requestDto) {
-        return mapper.toDto(
-                clientRepository.save(
-                        mapper.toClient(requestDto)));
+    @Transactional
+    public ClientResponseDto createClient(ClientCreateRequestDto requestDto) {
+
+        Client clientSaved = clientRepository.save(mapper.toClient(requestDto));
+
+        ButcherShopRequestDto butcherShopRequest = new ButcherShopRequestDto(
+                requestDto.getButcherShopName(),
+                requestDto.getButcherShopAddress(),
+                clientSaved.getId());
+
+        butcherShopService.createButcherShop(butcherShopRequest);
+
+        return mapper.toDto(clientSaved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClientResponseDto getById(Long id) {
 
         Client client =  clientRepository.findById(id)
@@ -35,6 +50,7 @@ public class ClientService implements IClientService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClientResponseDto> getAllClients() {
         return clientRepository.findAll().stream()
                 .map(mapper::toDto)
@@ -42,6 +58,7 @@ public class ClientService implements IClientService{
     }
 
     @Override
+    @Transactional
     public ClientResponseDto updateClient(Long id, ClientRequestDto requestDto) {
 
         Client client = clientRepository.findById(id)
@@ -55,6 +72,7 @@ public class ClientService implements IClientService{
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
 
        Client client = clientRepository.findById(id)
