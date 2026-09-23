@@ -4,6 +4,7 @@ import { CutMeat, CutMeatRequest } from '../../interfaces/cut-meat.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../utils/form-utils';
 import { DeleteModal } from '../../../shared/components/delete-modal/delete-modal';
+import { SPECIE_OPTIONS } from '../../utils/specie.utils';
 
 @Component({
   selector: 'edit-cut-meat-modal',
@@ -23,6 +24,8 @@ export class EditCutMeatModal implements OnInit {
   deleted = output();
   saved = output();
 
+  specieOptions = SPECIE_OPTIONS;
+
   // Señales
   showDeleteConfirm = signal<boolean>(false);
   deleting = signal<boolean>(false);
@@ -31,6 +34,7 @@ export class EditCutMeatModal implements OnInit {
   cutMeatForm: FormGroup = this.fb.group({
     cutMeatName: ['', [Validators.required, Validators.minLength(3)]],
     pricePerKilo: [1, [Validators.required, Validators.min(1)]],
+    specie: [null as string | null, [Validators.required]],
   });
 
   ngOnInit() {
@@ -38,6 +42,7 @@ export class EditCutMeatModal implements OnInit {
     this.cutMeatForm.patchValue({
       cutMeatName: current.cutMeatName,
       pricePerKilo: current.pricePerKilo,
+      specie: current.specie,
     });
   }
 

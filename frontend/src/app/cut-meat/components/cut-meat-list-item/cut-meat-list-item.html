@@ -9,9 +9,12 @@
       {{ cutMeatName() | titlecase }}
     </span>
     <span
-      class="inline-flex shrink-0 items-center rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-300"
+      [class]="
+        'inline-flex shrink-0 items-center rounded-md border  px-2 py-0.5 text-[11px] font-medium' +
+        specieBadgeClass()
+      "
     >
-      {{ specie() }}
+      {{ translateSpecie(specie()) }}
     </span>
     @if (isActive()) {
       <span

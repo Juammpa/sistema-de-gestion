@@ -27,7 +27,7 @@
       <!-- Mostrar unicamente los cortes de carnes activos -->
       <cut-meat-list-item
         [cutMeatName]="item.cutMeatName"
-        specie="Bovino"
+        [specie]="item.specie"
         [price]="item.pricePerKilo"
         [isActive]="item.isActive"
         (click)="openCutMeatDetail(item)"

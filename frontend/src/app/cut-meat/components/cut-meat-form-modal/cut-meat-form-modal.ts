@@ -3,6 +3,7 @@ import { CutMeatService } from '../../services/cut-meat.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../utils/form-utils';
 import { CutMeatRequest } from '../../interfaces/cut-meat.interface';
+import { SPECIE_OPTIONS } from '../../utils/specie.utils';
 
 @Component({
   selector: 'cut-meat-form-modal',
@@ -18,10 +19,13 @@ export class CutMeatFormModal {
   created = output();
   cancel = output();
 
+  specieOptions = SPECIE_OPTIONS;
+
   // Definimos el formulario
   cutMeatForm: FormGroup = this.fb.group({
     cutMeatName: ['', [Validators.required, Validators.minLength(3)]],
     pricePerKilo: [0, [Validators.required, Validators.min(1)]],
+    specie: [null as string | null, [Validators.required]],
   });
 
   close() {
