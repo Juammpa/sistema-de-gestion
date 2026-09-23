@@ -8,6 +8,7 @@ import { AddSaleButton } from '../../../movements/sales/components/add-sale-butt
 import { AddPaymentButton } from '../../../movements/payments/components/add-payment-button/add-payment-button';
 import { SaleFormModal } from '../../../movements/sales/components/sale-form-modal/sale-form-modal';
 import { PaymentFormModal } from '../../../movements/payments/components/payment-form-modal/payment-form-modal';
+import { ButcherShopFormModal } from '../../../butcher-shop/components/butcher-shop-form-modal/butcher-shop-form-modal';
 
 @Component({
   selector: 'client-header',
@@ -19,6 +20,7 @@ import { PaymentFormModal } from '../../../movements/payments/components/payment
     AddPaymentButton,
     SaleFormModal,
     PaymentFormModal,
+    ButcherShopFormModal,
   ],
   templateUrl: './client-header.html',
 })
@@ -32,9 +34,11 @@ export class ClientHeader {
   saleCreated = output();
   paymentCreated = output();
   shopSelected = output<number | null>();
+  butcherShopCreated = output();
 
   showSaleModal = signal<boolean>(false); // Modal de Venta
   showPaymentModal = signal<boolean>(false); // Modal de Pago
+  showButcherShopModal = signal<boolean>(false); // Modal de Sucursal
 
   // Aviso cuando se intenta crear una venta/pago sin elegir sucursal
   showShopWarning = signal<boolean>(false);

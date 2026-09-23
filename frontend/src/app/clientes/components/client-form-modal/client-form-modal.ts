@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../utils/form-utils';
-import { Client, ClientRequest } from '../../interfaces/client.interface';
+import { Client, ClientCreateRequest, ClientRequest } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/cliente.service';
 
 @Component({
@@ -27,6 +27,8 @@ export class ClientFormModal implements OnInit {
     name: ['', [Validators.required, Validators.minLength(3)]],
     lastName: ['', [Validators.required, Validators.minLength(3)]],
     phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
+    butcherShopName: ['', this.client() ? [] : [Validators.required, Validators.minLength(3)]],
+    butcherShopAddress: ['', this.client() ? [] : [Validators.required]],
   });
 
   // true si estamos editanto un cliente existente
@@ -51,7 +53,7 @@ export class ClientFormModal implements OnInit {
     }
 
     // Obtenemos el request
-    const request: ClientRequest = this.clientForm.value;
+    const request: ClientCreateRequest = this.clientForm.value;
 
     // Segun el request: editar o crear
     const request$ = this.isEdit()

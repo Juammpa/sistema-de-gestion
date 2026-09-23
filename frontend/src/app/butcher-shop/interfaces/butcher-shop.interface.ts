@@ -7,8 +7,8 @@ export interface ButcherShop {
   currentBalance: number;
 }
 
-export interface ButcherShopCurrentAccount {
-  id: number;
-  balance: number;
-  // movements: Movements[]
+export interface ButcherShopRequest {
+  name: string;
+  address: string;
+  clientId: number;
 }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Client, ClientRequest } from '../interfaces/client.interface';
+import { Client, ClientCreateRequest, ClientRequest } from '../interfaces/client.interface';
 import { catchError, Observable, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -20,7 +20,7 @@ export class ClientService {
   }
 
   // Crea un nuevo cliente
-  createClient(client: ClientRequest) {
+  createClient(client: ClientCreateRequest) {
     return this.http.post<Client>(`${environment.apiUrl}/clients`, client);
   }
 
