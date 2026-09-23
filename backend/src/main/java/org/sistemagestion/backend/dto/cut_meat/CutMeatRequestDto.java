@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.sistemagestion.backend.model.enums.Specie;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +20,8 @@ public class CutMeatRequestDto {
     @NotNull(message = "The price is mandatory")
     @PositiveOrZero(message = "The price must be positive")
     private Double pricePerKilo;
+
+    @NotNull(message = "The specie is mandatory")
+    private Specie specie;
 
 }

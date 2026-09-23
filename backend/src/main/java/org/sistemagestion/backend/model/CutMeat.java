@@ -2,6 +2,7 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.sistemagestion.backend.model.enums.Specie;
 
 @Entity
 @Table(name = "cut_meats")
@@ -19,4 +20,7 @@ public class CutMeat {
     private String cutMeatName;
     private Double pricePerKilo;
     private Boolean isActive;
+
+    @Enumerated(EnumType.STRING)
+    private Specie specie;
 }

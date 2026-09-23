@@ -54,6 +54,7 @@ public class CutMeatService implements ICutMeatService{
 
         cutMeat.setCutMeatName(request.getCutMeatName());
         cutMeat.setPricePerKilo(request.getPricePerKilo());
+        cutMeat.setSpecie(request.getSpecie());
         log.info("Corte de carne actualizado correctamente");
 
         return mapper.toDto(cutMeatRepository.save(cutMeat));

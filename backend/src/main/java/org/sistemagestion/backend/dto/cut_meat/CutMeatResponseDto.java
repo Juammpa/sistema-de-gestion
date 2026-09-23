@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.sistemagestion.backend.model.enums.Specie;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,5 +16,6 @@ public class CutMeatResponseDto {
     private String cutMeatName;
     private Double pricePerKilo;
     private Boolean isActive;
+    private Specie specie;
 
 }
