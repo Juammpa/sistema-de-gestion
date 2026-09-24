@@ -1,4 +1,7 @@
-<!-- Encabezado y filtro de fechas -->
+<!-- Encabezado con saldo actual -->
+<cash-header [balance]="balanceResource.value()" />
+
+<!-- Filtro de fechas -->
 <cash-date-filter [(from)]="from" [(to)]="to" />
 
 <!-- Un bloque por día -->

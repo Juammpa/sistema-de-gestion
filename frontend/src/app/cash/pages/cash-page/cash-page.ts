@@ -5,10 +5,11 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { CashItem } from '../../components/cash-item/cash-item';
 import { CashDateFilter } from '../../components/cash-date-filter/cash-date-filter';
+import { CashHeader } from '../../components/cash-header/cash-header';
 
 @Component({
   selector: 'app-cash-page',
-  imports: [LoadingSpinner, EmptyState, CashItem, CashDateFilter],
+  imports: [LoadingSpinner, EmptyState, CashItem, CashDateFilter, CashHeader],
   templateUrl: './cash-page.html',
 })
 export default class CashPage {
@@ -21,6 +22,10 @@ export default class CashPage {
   cashResource = rxResource({
     params: () => ({ from: this.from(), to: this.to() }),
     stream: ({ params }) => this.cashService.getCash(params.from, params.to),
+  });
+
+  balanceResource = rxResource({
+    stream: () => this.cashService.getBalance(),
   });
 
   // Fecha de hace 'days' dias

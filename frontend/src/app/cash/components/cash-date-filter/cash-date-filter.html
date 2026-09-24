@@ -1,47 +1,60 @@
-<!-- Encabezado y filtro de fechas -->
+<!-- Filtro de fechas -->
 <div
-  class="relative mx-auto mb-6 mt-2 max-w-3xl overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] px-5 py-5 text-white shadow-xl shadow-black/40 ring-1 ring-white/10 sm:px-6 sm:py-6"
+  class="mx-auto mb-4 max-w-3xl rounded-xl border border-slate-800/90 bg-[#111828] px-3 py-3 shadow-md shadow-black/30 ring-1 ring-white/5 sm:px-4 sm:py-2.5"
 >
-  <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-5">
-    <!-- Título y descripción con badge de contexto -->
-    <div class="flex min-w-0 items-center gap-3.5">
-      <span
-        aria-hidden="true"
-        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-linear-to-br from-blue-600/25 to-indigo-600/10 text-blue-300 shadow-sm shadow-blue-500/10 ring-1 ring-inset ring-white/5"
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+    <!-- Rango Desde / Hasta -->
+    <div
+      role="group"
+      aria-label="Rango de fechas"
+      class="flex w-full items-end gap-3 sm:w-auto sm:items-center sm:gap-4"
+    >
+      <div
+        class="min-w-0 flex-1 space-y-1 sm:flex sm:flex-none sm:items-center sm:gap-2 sm:space-y-0"
       >
-        <i class="fa-solid fa-vault text-base"></i>
-      </span>
-      <div class="min-w-0">
-        <h1 class="text-balance text-lg font-bold tracking-tight text-white sm:text-xl">
-          Caja Ahorro
-        </h1>
-        <p class="text-xs text-slate-400 sm:text-sm">
-          Pagos recibidos por día y efectivo acumulado
-        </p>
-      </div>
-    </div>
-    <!-- Filtros de fecha (Desde / Hasta) -->
-    <div role="group" aria-label="Rango de fechas" class="flex w-full items-end gap-3 sm:w-auto">
-      <div class="min-w-0 flex-1 space-y-1.5 sm:flex-none">
-        <label for="cash-from" class="block text-sm font-medium text-slate-200"> Desde </label>
+        <label for="cash-from" class="block text-[13px] font-medium text-slate-300 sm:shrink-0">
+          Desde
+        </label>
         <input
           id="cash-from"
           type="date"
           [value]="from()"
           (change)="onFromChange($event)"
-          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-[#0a0f1d] px-3 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:h-9 sm:text-sm"
         />
       </div>
-      <div class="min-w-0 flex-1 space-y-1.5 sm:flex-none">
-        <label for="cash-to" class="block text-sm font-medium text-slate-200"> Hasta </label>
+      <div
+        class="min-w-0 flex-1 space-y-1 sm:flex sm:flex-none sm:items-center sm:gap-2 sm:space-y-0"
+      >
+        <label for="cash-to" class="block text-[13px] font-medium text-slate-300 sm:shrink-0">
+          Hasta
+        </label>
         <input
           id="cash-to"
           type="date"
           [value]="to()"
           (change)="onToChange($event)"
-          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-[#0a0f1d] px-3 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:h-9 sm:text-sm"
         />
       </div>
+    </div>
+
+    <!-- Atajos -->
+    <div role="group" aria-label="Atajos de fecha" class="flex w-full gap-2 sm:ml-auto sm:w-auto">
+      <button
+        type="button"
+        (click)="setToday()"
+        class="h-11 flex-1 cursor-pointer rounded-lg border border-[#2a3247] bg-[#1a2235] px-3.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none sm:h-9 sm:flex-none"
+      >
+        Hoy
+      </button>
+      <button
+        type="button"
+        (click)="setLastDays(7)"
+        class="h-11 flex-1 cursor-pointer rounded-lg border border-[#2a3247] bg-[#1a2235] px-3.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none sm:h-9 sm:flex-none"
+      >
+        Últimos 7 días
+      </button>
     </div>
   </div>
 </div>
