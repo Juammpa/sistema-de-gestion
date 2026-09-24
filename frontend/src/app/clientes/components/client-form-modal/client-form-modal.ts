@@ -38,6 +38,9 @@ export class ClientFormModal implements OnInit {
   ngOnInit() {
     const current = this.client();
     if (current) this.clientForm.patchValue(current);
+
+    this.clientForm.removeControl('butcherShopName');
+    this.clientForm.removeControl('butcherShopAddress');
   }
 
   // Cierra el modal
