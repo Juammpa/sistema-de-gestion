@@ -8,7 +8,7 @@
     <div class="m-auto py-12"><loading-spinner /></div>
     <!---->
   } @else if (cashResource.error()) {
-    <empty-state infoMessage="No se pudo cargar la caja" />
+    <empty-state infoMessage="No se pudo cargar la caja" icon="fa-solid fa-box-archive" />
     <!---->
   } @else {
     @for (day of cashResource.value(); track day.date) {

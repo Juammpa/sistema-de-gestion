@@ -1,18 +1,22 @@
 <div
   [routerLink]="pathRoute()"
   (click)="itemClick.emit(item())"
-  class="px-3 py-4 mb-2 border-slate-800 border rounded-2xl text-white bg-slate-900 hover:cursor-pointer hover:opacity-90"
+  class="group mb-2 cursor-pointer rounded-2xl border border-[#2a3247] bg-[#161c2e] px-4 py-3.5 text-white shadow-sm shadow-black/20 transition-all duration-150 hover:border-blue-500/40 hover:bg-[#1a2235] hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.99] motion-reduce:transition-none"
 >
   <div class="flex items-center gap-4">
     <!-- Foto -->
-    <div class="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center shrink-0">
-      <span class="text-sm font-medium text-white">{{ item().initials }}</span>
+    <div
+      class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/25 bg-linear-to-br from-blue-600/25 to-indigo-600/10 shadow-sm shadow-blue-500/10 transition-colors duration-150 group-hover:border-blue-400/50 group-hover:from-blue-600/35"
+    >
+      <span class="text-sm font-semibold uppercase tracking-wide text-blue-200">{{
+        item().initials
+      }}</span>
     </div>
 
     <!-- Info -->
-    <div>
-      <p class="text-sm font-medium text-white">{{ item().title }}</p>
-      <p class="text-xs text-slate-400 mt-0.5">{{ item().subtitle }}</p>
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-[15px] font-semibold text-slate-100">{{ item().title }}</p>
+      <p class="mt-0.5 truncate text-xs text-slate-400 sm:text-sm">{{ item().subtitle }}</p>
     </div>
   </div>
 </div>

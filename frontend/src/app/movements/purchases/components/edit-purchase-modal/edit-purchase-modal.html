@@ -6,67 +6,81 @@
   <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
   <div
     (click)="$event.stopPropagation()"
-    class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="edit-purchase-modal-title"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
   >
     <!-- Línea superior de acento -->
-    <div
-      class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-blue-500/50 to-transparent"
-    ></div>
+    <div class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r"></div>
     <!-- ====== HEADER ====== -->
     <div
-      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-6 sm:px-7 py-5"
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-5 py-5 sm:px-7"
     >
-      <div class="flex items-center gap-3.5">
+      <div class="flex min-w-0 items-center gap-3.5">
         <!-- Badge con ícono -->
         <span
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600/20 to-indigo-600/10 text-blue-400 border border-blue-500/20 shadow-sm shadow-blue-500/10"
+          aria-hidden="true"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-linear-to-br from-blue-600/25 to-indigo-600/10 text-blue-300 shadow-sm shadow-blue-500/10 ring-1 ring-inset ring-white/5"
         >
           <i class="fa-solid fa-cart-shopping text-base"></i>
         </span>
-        <div class="space-y-0.5">
-          <h2 class="text-lg font-bold tracking-tight text-white">Editar Compra</h2>
-          <p class="text-xs text-slate-400">Modificá los detalles del registro de compra</p>
+        <div class="min-w-0 space-y-0.5">
+          <h2
+            id="edit-purchase-modal-title"
+            class="text-balance text-lg font-bold tracking-tight text-white sm:text-xl"
+          >
+            Editar Compra
+          </h2>
+          <p class="text-xs text-slate-400 sm:text-sm">
+            Modificá los detalles del registro de compra
+          </p>
         </div>
       </div>
       <!-- Botón cerrar -->
       <button
         type="button"
         (click)="close()"
-        class="rounded-xl p-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150 active:scale-95"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-95"
         title="Cerrar modal"
+        aria-label="Cerrar modal"
       >
-        <i class="fa-solid fa-xmark text-sm block"></i>
+        <i class="fa-solid fa-xmark block text-base"></i>
       </button>
     </div>
     <!-- ====== BODY (form) ====== -->
-    <form [formGroup]="purchaseForm" (ngSubmit)="onSave()" class="space-y-5 px-6 sm:px-7 py-6">
+    <form [formGroup]="purchaseForm" (ngSubmit)="onSave()" class="space-y-5 px-5 py-6 sm:px-7">
       <!-- Fecha -->
-      <div class="space-y-1.5">
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-          Fecha <span class="text-blue-400">*</span>
+      <div class="space-y-1.5 sm:w-1/2">
+        <label for="edit-purchase-date" class="block text-sm font-medium text-slate-200">
+          Fecha <span aria-hidden="true" class="text-blue-400">*</span>
         </label>
         <input
+          id="edit-purchase-date"
           type="date"
           formControlName="date"
+          [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'date')"
           [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'date')"
           [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'date')"
-          class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 cursor-pointer scheme-dark"
+          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder-slate-500 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
         />
       </div>
       <!-- Grid: Tipo Compra y Unidades -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- Tipo Compra -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-semibold tracking-wider text-slate-300">
-            Tipo de Compra <span class="text-blue-400">*</span>
+          <label for="edit-purchase-type" class="block text-sm font-medium text-slate-200">
+            Tipo de Compra <span aria-hidden="true" class="text-blue-400">*</span>
           </label>
-          <div class="relative">
+          <div class="group relative">
             <select
+              id="edit-purchase-type"
               formControlName="purchaseType"
               [value]="purchaseForm.controls['purchaseType']"
+              [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'purchaseType')"
               [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'purchaseType')"
               [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'purchaseType')"
-              class="w-full appearance-none rounded-xl border border-slate-800 bg-[#0a0f1d] pl-3.5 pr-9 py-2.5 text-sm text-slate-100 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 cursor-pointer"
+              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-[#0a0f1d] py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             >
               <option [ngValue]="null" disabled class="bg-[#0f1728] text-slate-500">
                 Seleccionar tipo...
@@ -79,9 +93,15 @@
             </select>
             <!-- Chevron decorativo -->
             <div
-              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-blue-400"
             >
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                aria-hidden="true"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -92,7 +112,10 @@
             </div>
           </div>
           @if (formUtils.isValidField(purchaseForm, 'purchaseType')) {
-            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
               <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'purchaseType') }}
             </span>
@@ -100,20 +123,27 @@
         </div>
         <!-- Unidades -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-semibold tracking-wider text-slate-300">
-            Unidades <span class="text-blue-400">*</span>
+          <label for="edit-purchase-unit" class="block text-sm font-medium text-slate-200">
+            Unidades <span aria-hidden="true" class="text-blue-400">*</span>
           </label>
           <input
+            id="edit-purchase-unit"
             type="text"
+            inputmode="numeric"
+            autocomplete="off"
             [value]="purchaseForm.controls['unit']"
             formControlName="unit"
             placeholder="Ej. 1"
+            [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'unit')"
             [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'unit')"
             [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'unit')"
-            class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
+            class="w-full rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder-slate-500 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
           />
           @if (formUtils.isValidField(purchaseForm, 'unit')) {
-            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
               <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'unit') }}
             </span>
@@ -124,27 +154,35 @@
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- Kilogramos -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-semibold tracking-wider text-slate-300">
-            Kilogramos <span class="text-blue-400">*</span>
+          <label for="edit-purchase-kilograms" class="block text-sm font-medium text-slate-200">
+            Kilogramos <span aria-hidden="true" class="text-blue-400">*</span>
           </label>
-          <div class="relative group">
+          <div class="group relative">
             <input
+              id="edit-purchase-kilograms"
               type="tel"
+              inputmode="decimal"
+              autocomplete="off"
               [value]="purchaseForm.controls['kilograms']"
               formControlName="kilograms"
               placeholder="Ej. 100"
+              [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'kilograms')"
               [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'kilograms')"
               [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'kilograms')"
-              class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
+              class="w-full rounded-xl border border-slate-700/70 bg-[#0a0f1d] py-3 pl-3.5 pr-10 text-base tabular-nums text-slate-100 placeholder-slate-500 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             />
             <span
-              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 group-focus-within:text-blue-400 transition-colors"
+              aria-hidden="true"
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500 transition-colors group-focus-within:text-blue-400"
             >
               kg
             </span>
           </div>
           @if (formUtils.isValidField(purchaseForm, 'kilograms')) {
-            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
               <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'kilograms') }}
             </span>
@@ -152,27 +190,35 @@
         </div>
         <!-- Precio por Kilo -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-semibold tracking-wider text-slate-300">
-            Precio por Kilo <span class="text-blue-400">*</span>
+          <label for="edit-purchase-price" class="block text-sm font-medium text-slate-200">
+            Precio por Kilo <span aria-hidden="true" class="text-blue-400">*</span>
           </label>
-          <div class="relative group">
+          <div class="group relative">
             <span
-              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 group-focus-within:text-blue-400 transition-colors"
+              aria-hidden="true"
+              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500 transition-colors group-focus-within:text-blue-400"
             >
               $
             </span>
             <input
+              id="edit-purchase-price"
               type="tel"
+              inputmode="decimal"
+              autocomplete="off"
               formControlName="pricePerKilo"
               [value]="purchaseForm.controls['pricePerKilo']"
               placeholder="Ej. 2500"
+              [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
               [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
               [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
-              class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] py-2.5 pl-8 pr-3.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
+              class="w-full rounded-xl border border-slate-700/70 bg-[#0a0f1d] py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder-slate-500 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             />
           </div>
           @if (formUtils.isValidField(purchaseForm, 'pricePerKilo')) {
-            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
               <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(purchaseForm, 'pricePerKilo') }}
             </span>
@@ -182,27 +228,27 @@
       <!-- ====== FOOTER ====== -->
       <!-- Eliminar a la izquierda, Cancelar/Guardar a la derecha -->
       <div
-        class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80 pt-5"
+        class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
       >
         <button
           type="button"
           (click)="showDeleteConfirm.set(true)"
-          class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 px-4 py-2.5 text-xs font-semibold text-red-400 hover:text-red-300 transition-all duration-150 active:scale-[0.98]"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-300 transition-all duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 active:scale-[0.98] sm:w-auto"
         >
           <i class="fa-solid fa-trash-can text-xs"></i> <span>Eliminar</span>
         </button>
-        <div class="flex items-center gap-3">
+        <div class="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row sm:items-center">
           <button
             type="button"
             (click)="close()"
-            class="cursor-pointer rounded-xl border border-slate-750/80 bg-slate-800/50 hover:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition-all duration-150 active:scale-[0.98]"
+            class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-all duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 active:scale-[0.98] sm:w-auto"
           >
             Cancelar
           </button>
           <button
             type="submit"
             [disabled]="purchaseForm.invalid"
-            class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+            class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1626] disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
           >
             <i class="fa-solid fa-check text-xs"></i> <span>Guardar cambios</span>
           </button>

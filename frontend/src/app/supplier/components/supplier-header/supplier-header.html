@@ -1,6 +1,6 @@
-<div class="flex items-start gap-4 m-2">
+<div class="m-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
   <!-- Boton Volver -->
-  <div class="flex flex-col justify-center gap-1.5">
+  <div class="flex shrink-0 flex-row flex-wrap gap-2 sm:flex-col sm:justify-center sm:gap-1.5">
     <back-button />
     <add-payment-button (addPayment)="showPaymentModal.set(true)" />
     <add-purchase-button (addPurchase)="showPurchaseModal.set(true)" />
@@ -8,43 +8,50 @@
 
   <!-- Seccion info proveedor -->
   <section
-    class="w-full rounded-2xl border border-[#2a3247] bg-[#161c2e] p-6 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]"
+    class="min-w-0 w-full rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#161d31] to-[#0f1524] p-5 shadow-xl shadow-black/40 ring-1 ring-white/5 sm:p-6"
   >
-    <div class="flex flex-wrap items-start justify-between gap-6">
+    <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-5">
       <!-- Informacion proveedor -->
-      <div class="min-w-0 flex flex-col gap-2">
-        <!-- Nombre y Apellido + Accion Editar/Eliminar -->
+      <div class="flex min-w-0 flex-1 flex-col gap-3">
+        <!-- Nombre de la empresa + Accion Editar/Eliminar -->
         <div class="flex flex-wrap items-center gap-3">
-          <!-- Nombre y Apellido -->
-          <h1 class="text-2xl font-bold tracking-tight text-slate-100 sm:text-3xl">
+          <!-- Nombre de la empresa -->
+          <h1
+            class="min-w-0 text-balance wrap-break-word text-2xl font-bold tracking-tight text-slate-100 sm:text-3xl"
+          >
             {{ supplier().companyName }}
           </h1>
-          <!-- Boton Editar cliente -->
+          <!-- Boton Editar proveedor -->
           <button
             (click)="edit.emit()"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-sm text-slate-300 transition cursor-pointer hover:border-blue-500 hover:text-blue-400"
+            class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.98]"
           >
-            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-pen text-xs"></i>
             Editar
           </button>
-          <!-- Boton Eliminar cliente -->
+          <!-- Boton Eliminar proveedor -->
           <button
             (click)="remove.emit()"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-sm text-red-400 transition cursor-pointer hover:border-red-700 hover:text-red-500"
+            class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-300 transition-all duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 active:scale-[0.98]"
           >
-            <i class="fa-solid fa-trash-can"></i>
+            <i class="fa-solid fa-trash-can text-xs"></i>
             Eliminar
           </button>
         </div>
         <!-- Boton WhatsApp -->
-        <whatsapp-button [phoneNumber]="supplier().phoneNumber" />
-        <!-- Boton agregar sucursal (siempre visible) -->
+        <whatsapp-button class="self-start" [phoneNumber]="supplier().phoneNumber" />
       </div>
       <!-- Info Saldo Pendiente -->
-      <div class="flex flex-col items-end gap-3">
-        <div class="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-3">
-          <p class="flex items-center gap-2 text-lg font-bold text-red-400 sm:text-xl">
+      <div class="ml-auto flex shrink-0 flex-col items-end gap-3">
+        <div
+          class="min-w-48 rounded-2xl border border-red-500/25 bg-linear-to-br from-red-500/15 to-red-500/5 px-5 py-3.5 shadow-lg shadow-red-950/20 ring-1 ring-inset ring-red-400/10"
+        >
+          <p
+            class="flex items-center gap-2 text-xl font-bold tabular-nums tracking-tight text-red-300 sm:text-2xl"
+          >
             <svg
+              aria-hidden="true"
+              class="shrink-0 opacity-80"
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
@@ -59,7 +66,7 @@
             </svg>
             {{ displayedBalance() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
           </p>
-          <p class="mt-0.5 text-right text-xs text-slate-400">Saldo deudor total</p>
+          <p class="mt-1 text-right text-xs font-medium text-slate-300/80">Saldo deudor total</p>
         </div>
       </div>
     </div>

@@ -1,40 +1,45 @@
 <!-- Encabezado y filtro de fechas -->
 <div
-  class="relative max-w-3xl mx-auto px-6 py-6 mt-2 mb-6 overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] text-white shadow-xl shadow-black/40 ring-1 ring-white/10"
+  class="relative mx-auto mb-6 mt-2 max-w-3xl overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] px-5 py-5 text-white shadow-xl shadow-black/40 ring-1 ring-white/10 sm:px-6 sm:py-6"
 >
-  <!-- Línea sutil de acento superior -->
-  <div class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r"></div>
-  <div class="flex flex-wrap items-end justify-between gap-4">
+  <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-5">
     <!-- Título y descripción con badge de contexto -->
-    <div class="flex items-center gap-3.5">
+    <div class="flex min-w-0 items-center gap-3.5">
       <span
-        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600/20 to-indigo-600/10 text-blue-400 border border-blue-500/20 shadow-sm shadow-blue-500/10"
+        aria-hidden="true"
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-linear-to-br from-blue-600/25 to-indigo-600/10 text-blue-300 shadow-sm shadow-blue-500/10 ring-1 ring-inset ring-white/5"
       >
         <i class="fa-solid fa-vault text-base"></i>
       </span>
-      <div>
-        <h1 class="text-lg font-bold tracking-tight text-white">Caja Ahorro</h1>
-        <p class="text-xs text-slate-400">Pagos recibidos por día y efectivo acumulado</p>
+      <div class="min-w-0">
+        <h1 class="text-balance text-lg font-bold tracking-tight text-white sm:text-xl">
+          Caja Ahorro
+        </h1>
+        <p class="text-xs text-slate-400 sm:text-sm">
+          Pagos recibidos por día y efectivo acumulado
+        </p>
       </div>
     </div>
     <!-- Filtros de fecha (Desde / Hasta) -->
-    <div class="flex items-end gap-3">
-      <div class="space-y-1.5">
-        <label class="block text-xs font-semibold tracking-wider text-slate-300"> Desde </label>
+    <div role="group" aria-label="Rango de fechas" class="flex w-full items-end gap-3 sm:w-auto">
+      <div class="min-w-0 flex-1 space-y-1.5 sm:flex-none">
+        <label for="cash-from" class="block text-sm font-medium text-slate-200"> Desde </label>
         <input
+          id="cash-from"
           type="date"
           [value]="from()"
           (change)="onFromChange($event)"
-          class="cursor-pointer rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2 text-sm text-slate-100 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 scheme-dark"
+          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
         />
       </div>
-      <div class="space-y-1.5">
-        <label class="block text-xs font-semibold tracking-wider text-slate-300"> Hasta </label>
+      <div class="min-w-0 flex-1 space-y-1.5 sm:flex-none">
+        <label for="cash-to" class="block text-sm font-medium text-slate-200"> Hasta </label>
         <input
+          id="cash-to"
           type="date"
           [value]="to()"
           (change)="onToChange($event)"
-          class="cursor-pointer rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2 text-sm text-slate-100 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 scheme-dark"
+          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
         />
       </div>
     </div>

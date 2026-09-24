@@ -6,57 +6,69 @@
   <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
   <div
     (click)="$event.stopPropagation()"
-    class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="create-cut-modal-title"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
   >
-    <!-- Línea sutil de acento superior -->
-    <div
-      class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-blue-500/50 to-transparent"
-    ></div>
     <!-- ====== HEADER ====== -->
     <div
-      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-6 sm:px-7 py-5"
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-5 py-5 sm:px-7"
     >
-      <div class="flex items-center gap-3.5">
+      <div class="flex min-w-0 items-center gap-3.5">
         <!-- Badge con ícono temático enriquecido -->
         <span
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600/20 to-indigo-600/10 text-blue-400 border border-blue-500/20 shadow-sm shadow-blue-500/10"
+          aria-hidden="true"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-linear-to-br from-blue-600/25 to-indigo-600/10 text-blue-300 shadow-sm shadow-blue-500/10 ring-1 ring-inset ring-white/5"
         >
           <i class="fa-solid fa-tag text-base"></i>
         </span>
-        <div class="space-y-0.5">
-          <h2 class="text-lg font-bold tracking-tight text-white">Crear Corte de Carne</h2>
-          <p class="text-xs text-slate-400">Datos del corte de carne y valor de venta</p>
+        <div class="min-w-0 space-y-0.5">
+          <h2
+            id="create-cut-modal-title"
+            class="text-balance text-lg font-bold tracking-tight text-white sm:text-xl"
+          >
+            Crear Corte de Carne
+          </h2>
+          <p class="text-xs text-slate-400 sm:text-sm">Datos del corte de carne y valor de venta</p>
         </div>
       </div>
       <!-- Botón cerrar -->
       <button
         type="button"
         (click)="close()"
-        class="rounded-xl p-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150 active:scale-95"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-95"
         title="Cerrar modal"
+        aria-label="Cerrar modal"
       >
-        <i class="fa-solid fa-xmark text-sm block"></i>
+        <i class="fa-solid fa-xmark block text-base"></i>
       </button>
     </div>
     <!-- ====== BODY (form) ====== -->
-    <form [formGroup]="cutMeatForm" (ngSubmit)="onSave()" class="space-y-5 px-6 sm:px-7 py-6">
+    <form [formGroup]="cutMeatForm" (ngSubmit)="onSave()" class="space-y-5 px-5 py-6 sm:px-7">
       <!-- Grid: Nombre del Corte y Precio Kilo -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- Nombre del Corte -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-semibold tracking-wider text-slate-300">
-            Nombre del Corte <span class="text-blue-400">*</span>
+          <label for="create-cut-name" class="block text-sm font-medium text-slate-200">
+            Nombre del Corte <span aria-hidden="true" class="text-blue-400">*</span>
           </label>
           <input
+            id="create-cut-name"
             type="text"
+            autocomplete="off"
             formControlName="cutMeatName"
             placeholder="Ej. Asado"
+            [attr.aria-invalid]="formUtils.isValidField(cutMeatForm, 'cutMeatName')"
             [class.!border-red-500/80]="formUtils.isValidField(cutMeatForm, 'cutMeatName')"
             [class.!ring-red-500/20]="formUtils.isValidField(cutMeatForm, 'cutMeatName')"
-            class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
+            class="w-full rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3.5 py-3 text-base text-slate-100 placeholder-slate-500 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
           />
           @if (formUtils.isValidField(cutMeatForm, 'cutMeatName')) {
-            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
               <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(cutMeatForm, 'cutMeatName') }}
             </span>
@@ -64,28 +76,36 @@
         </div>
         <!-- Precio Kilo -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-semibold tracking-wider text-slate-300">
-            Precio Kilo <span class="text-blue-400">*</span>
+          <label for="create-cut-price" class="block text-sm font-medium text-slate-200">
+            Precio Kilo <span aria-hidden="true" class="text-blue-400">*</span>
           </label>
-          <div class="relative group">
+          <div class="group relative">
             <!-- Prefijo moneda -->
             <span
-              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 group-focus-within:text-blue-400 transition-colors"
+              aria-hidden="true"
+              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500 transition-colors group-focus-within:text-blue-400"
             >
               $
             </span>
             <input
+              id="create-cut-price"
               type="text"
+              inputmode="decimal"
+              autocomplete="off"
               formControlName="pricePerKilo"
               placeholder="Ej. 10000"
+              [attr.aria-invalid]="formUtils.isValidField(cutMeatForm, 'pricePerKilo')"
               [class.!border-red-500/80]="formUtils.isValidField(cutMeatForm, 'pricePerKilo')"
               [class.!ring-red-500/20]="formUtils.isValidField(cutMeatForm, 'pricePerKilo')"
-              class="w-full rounded-xl border border-slate-800 bg-[#0a0f1d] py-2.5 pl-8 pr-3.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
+              class="w-full rounded-xl border border-slate-700/70 bg-[#0a0f1d] py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder-slate-500 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             />
           </div>
           <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(cutMeatForm, 'pricePerKilo')) {
-            <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
               <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
               {{ formUtils.getFieldError(cutMeatForm, 'pricePerKilo') }}
             </span>
@@ -94,13 +114,15 @@
       </div>
       <!-- Especie -->
       <div class="space-y-1.5 sm:w-1/2">
-        <label class="block text-xs font-semibold tracking-wider text-slate-300">
-          Especie <span class="text-blue-400">*</span>
+        <label for="create-cut-specie" class="block text-sm font-medium text-slate-200">
+          Especie <span aria-hidden="true" class="text-blue-400">*</span>
         </label>
         <select
+          id="create-cut-specie"
           formControlName="specie"
+          [attr.aria-invalid]="formUtils.isValidField(cutMeatForm, 'specie')"
           [class.!border-red-500/80]="formUtils.isValidField(cutMeatForm, 'specie')"
-          class="w-full appearance-none rounded-xl border border-slate-800 bg-[#0a0f1d] px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all duration-150 hover:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 cursor-pointer"
+          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3 py-3 text-base text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
         >
           <option [ngValue]="null" disabled>Seleccionar especie...</option>
           @for (option of specieOptions; track option.value) {
@@ -108,19 +130,24 @@
           }
         </select>
         @if (formUtils.isValidField(cutMeatForm, 'specie')) {
-          <span class="flex items-center gap-1.5 text-xs text-red-400 pt-0.5 animate-fadeIn">
+          <span
+            role="alert"
+            class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+          >
             <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
             {{ formUtils.getFieldError(cutMeatForm, 'specie') }}
           </span>
         }
       </div>
       <!-- ====== FOOTER ====== -->
-      <div class="mt-6 flex items-center justify-end gap-3 border-t border-slate-800/80 pt-5">
+      <div
+        class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:items-center sm:justify-end"
+      >
         <!-- Cancelar -->
         <button
           type="button"
           (click)="close()"
-          class="cursor-pointer rounded-xl border border-slate-750/80 bg-slate-800/50 hover:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition-all duration-150 active:scale-[0.98]"
+          class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-all duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 active:scale-[0.98] sm:w-auto"
         >
           Cancelar
         </button>
@@ -128,7 +155,7 @@
         <button
           type="submit"
           [disabled]="cutMeatForm.invalid"
-          class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:active:scale-100"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1626] disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i class="fa-solid fa-check text-xs"></i> <span>Crear Corte</span>
         </button>

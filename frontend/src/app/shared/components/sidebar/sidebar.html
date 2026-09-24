@@ -1,18 +1,20 @@
-<div class="flex h-screen bg-[#0a0f1d] text-slate-100 font-sans antialiased overflow-hidden">
+<div class="flex h-dvh overflow-hidden bg-[#0a0f1d] font-sans text-slate-100 antialiased">
   <!-- ASIDE SIDEBAR -->
   <aside
-    class="flex flex-col gap-4 bg-[#0d1424] px-2.5 py-4 transition-all duration-300 ease-in-out border-r border-slate-800/80 shrink-0 z-20 select-none shadow-xl shadow-black/20"
+    class="z-20 flex shrink-0 select-none flex-col gap-4 border-r border-slate-800/80 bg-[#0d1424] px-2.5 py-4 shadow-xl shadow-black/20 transition-all duration-300 ease-in-out motion-reduce:transition-none"
     [class]="sidebarService.isCollapsed() ? 'w-16 items-center' : 'w-64 overflow-hidden'"
   >
     <!-- LOGO / BRANDING -->
     <div
-      class="flex h-11 items-center w-full"
+      class="flex h-11 w-full items-center"
       [class]="sidebarService.isCollapsed() ? 'justify-center' : 'px-2.5'"
     >
       @if (sidebarService.isCollapsed()) {
         <!-- Logo Colapsado: Cuadrado con gradiente azul e iniciales -->
         <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-md shadow-blue-600/20 border border-blue-400/20"
+          role="img"
+          aria-label="Sistema de Gestión"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-400/20 bg-linear-to-br from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-md shadow-blue-600/25 ring-1 ring-inset ring-white/10"
         >
           SG
         </div>
@@ -20,29 +22,34 @@
         <!-- Logo Expandido: Isotipo + Texto completo -->
         <div class="flex items-center gap-3">
           <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-blue-600/20 border border-blue-400/20"
+            aria-hidden="true"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-400/20 bg-linear-to-br from-blue-600 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-blue-600/25 ring-1 ring-inset ring-white/10"
           >
             SG
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-bold tracking-tight text-white leading-tight">
+            <span class="text-sm font-bold leading-tight tracking-tight text-white">
               Sistema de Gestión
             </span>
-            <span class="text-[10px] text-blue-400 font-medium tracking-wide uppercase">
-              Workspace CRM
-            </span>
+            <span class="text-[11px] font-medium tracking-wide text-blue-400"> Workspace CRM </span>
           </div>
         </div>
       }
     </div>
     <!-- SEPARADOR SUTIL -->
-    <div class="h-px bg-slate-800/80 w-full"></div>
+    <div class="h-px w-full bg-linear-to-r from-transparent via-slate-700/70 to-transparent"></div>
     <!-- NAVEGACIÓN -->
-    <nav class="flex flex-1 flex-col gap-4 w-full overflow-y-auto overflow-x-hidden">
+    <nav
+      aria-label="Navegación principal"
+      class="flex w-full flex-1 flex-col gap-4 [scrollbar-color:#1e293b_transparent] scrollbar-thin"
+      [class]="
+        sidebarService.isCollapsed() ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'
+      "
+    >
       <!-- SECCIÓN 1: PRINCIPAL -->
-      <div class="flex flex-col gap-1 w-full">
+      <div class="flex w-full flex-col gap-1">
         @if (!sidebarService.isCollapsed()) {
-          <h3 class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 py-1">
+          <h3 class="px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
             Principal
           </h3>
         }
@@ -50,21 +57,24 @@
         @for (item of principalItems; track $index) {
           <a
             routerLink="{{ item.route }}"
-            routerLinkActive="bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/20"
-            class="group relative flex items-center rounded-xl text-slate-400 transition-all duration-150 hover:bg-slate-800/60 hover:text-slate-100"
+            routerLinkActive="!bg-blue-500/15 !text-white ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full"
+            ariaCurrentWhenActive="page"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
             [class]="
-              sidebarService.isCollapsed() ? 'h-10 w-10 justify-center mx-auto' : 'px-3 py-2.5 mx-1'
+              sidebarService.isCollapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'
             "
           >
             <!-- Icono del item con tamaño constante -->
             <i
-              class="{{ item.icon }} text-base shrink-0 group-hover:scale-105 transition-transform"
+              class="{{
+                item.icon
+              }} w-5 shrink-0 text-center text-base transition-transform duration-150 group-hover:scale-105 motion-reduce:transform-none"
             ></i>
             <!-- Etiqueta de texto (solo modo expandido) -->
             <span
-              class="whitespace-nowrap overflow-hidden transition-all duration-150 text-sm"
+              class="overflow-hidden whitespace-nowrap text-sm transition-all duration-150 motion-reduce:transition-none"
               [class]="
-                sidebarService.isCollapsed() ? 'w-0 opacity-0 ml-0' : 'w-auto opacity-100 ml-3'
+                sidebarService.isCollapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'
               "
             >
               {{ item.name }}
@@ -72,7 +82,8 @@
             <!-- Tooltip flotante (solo modo colapsado) -->
             @if (sidebarService.isCollapsed()) {
               <div
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl border border-slate-700/80 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-1"
+                aria-hidden="true"
+                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-[#131b2e] px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
               >
                 {{ item.name }}
                 <!-- Flechita decorativa hacia la izquierda -->
@@ -85,11 +96,13 @@
         }
       </div>
       <!-- SEPARADOR SUTIL -->
-      <div class="h-px bg-slate-800/80 w-full"></div>
+      <div
+        class="h-px w-full bg-linear-to-r from-transparent via-slate-700/70 to-transparent"
+      ></div>
       <!-- SECCIÓN 2: MANAGEMENT -->
-      <div class="flex flex-col gap-1 w-full">
+      <div class="flex w-full flex-col gap-1">
         @if (!sidebarService.isCollapsed()) {
-          <h3 class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 py-1">
+          <h3 class="px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
             Management
           </h3>
         }
@@ -97,21 +110,24 @@
         @for (item of managementItems; track $index) {
           <a
             routerLink="{{ item.route }}"
-            routerLinkActive="bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/20"
-            class="group relative flex items-center rounded-xl text-slate-400 transition-all duration-150 hover:bg-slate-800/60 hover:text-slate-100"
+            routerLinkActive="!bg-blue-500/15 !text-white ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
+            ariaCurrentWhenActive="page"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
             [class]="
-              sidebarService.isCollapsed() ? 'h-10 w-10 justify-center mx-auto' : 'px-3 py-2.5 mx-1'
+              sidebarService.isCollapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'
             "
           >
             <!-- Icono del item con tamaño constante -->
             <i
-              class="{{ item.icon }} text-base shrink-0 group-hover:scale-105 transition-transform"
+              class="{{
+                item.icon
+              }} w-5 shrink-0 text-center text-base transition-transform duration-150 group-hover:scale-105 motion-reduce:transform-none"
             ></i>
             <!-- Etiqueta de texto (solo modo expandido) -->
             <span
-              class="whitespace-nowrap overflow-hidden transition-all duration-150 text-sm"
+              class="overflow-hidden whitespace-nowrap text-sm transition-all duration-150 motion-reduce:transition-none"
               [class]="
-                sidebarService.isCollapsed() ? 'w-0 opacity-0 ml-0' : 'w-auto opacity-100 ml-3'
+                sidebarService.isCollapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'
               "
             >
               {{ item.name }}
@@ -119,7 +135,8 @@
             <!-- Tooltip flotante (solo modo colapsado) -->
             @if (sidebarService.isCollapsed()) {
               <div
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl border border-slate-700/80 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-1"
+                aria-hidden="true"
+                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-[#131b2e] px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
               >
                 {{ item.name }}
                 <!-- Flechita decorativa hacia la izquierda -->
@@ -134,5 +151,5 @@
     </nav>
   </aside>
   <!-- MAIN CONTENT CONTAINER -->
-  <div class="flex-1 flex flex-col overflow-hidden bg-[#0a0f1d]"><router-outlet /></div>
+  <div class="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#0a0f1d]"><router-outlet /></div>
 </div>
