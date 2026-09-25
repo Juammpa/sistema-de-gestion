@@ -5,7 +5,9 @@
 <cash-date-filter [(from)]="from" [(to)]="to" />
 
 <!-- Un bloque por día -->
-<div class="mx-auto flex max-h-[68vh] max-w-3xl flex-col gap-4 overflow-y-auto pr-1">
+<div
+  class="mx-3 flex max-h-[68dvh] max-w-3xl flex-col gap-4 overflow-y-auto pb-4 scrollbar-none md:mx-auto"
+>
   <!---->
   @if (cashResource.isLoading()) {
     <div class="m-auto py-12"><loading-spinner /></div>
@@ -15,10 +17,14 @@
     <!---->
   } @else {
     @for (day of cashResource.value(); track day.date) {
-      <cash-item [day]="day" />
+      <cash-item [day]="day" (open)="selectedDay.set(day)" />
       <!---->
     } @empty {
       <empty-state infoMessage="No hay movimientos en el rango seleccionado" />
     }
   }
 </div>
+
+@if (selectedDay(); as day) {
+  <cash-day-modal [day]="day" (cancel)="selectedDay.set(null)" />
+}

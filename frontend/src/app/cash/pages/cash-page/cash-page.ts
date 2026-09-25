@@ -6,10 +6,12 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { CashItem } from '../../components/cash-item/cash-item';
 import { CashDateFilter } from '../../components/cash-date-filter/cash-date-filter';
 import { CashHeader } from '../../components/cash-header/cash-header';
+import { CashDayModal } from '../../components/cash-day-modal/cash-day-modal';
+import { CashDay } from '../../interfaces/cash.interface';
 
 @Component({
   selector: 'app-cash-page',
-  imports: [LoadingSpinner, EmptyState, CashItem, CashDateFilter, CashHeader],
+  imports: [LoadingSpinner, EmptyState, CashItem, CashDateFilter, CashHeader, CashDayModal],
   templateUrl: './cash-page.html',
 })
 export default class CashPage {
@@ -18,6 +20,9 @@ export default class CashPage {
   // Por defecto: los ultimos 7 dias.
   to = signal<string>(this.toIsoDate(new Date()));
   from = signal<string>(this.toIsoDate(this.dayAgo(6)));
+
+  // Dia seleccionado para ver su detalle (null = modal cerrado)
+  selectedDay = signal<CashDay | null>(null);
 
   cashResource = rxResource({
     params: () => ({ from: this.from(), to: this.to() }),
