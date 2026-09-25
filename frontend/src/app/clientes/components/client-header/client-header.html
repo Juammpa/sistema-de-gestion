@@ -17,24 +17,26 @@
         <div class="flex flex-wrap items-center gap-3">
           <!-- Nombre y Apellido -->
           <h1
-            class="min-w-0 text-balance wrap-break-word text-2xl font-bold tracking-tight text-slate-100 sm:text-3xl"
+            class="min-w-0 text-balance wrap-break-word text-2xl font-bold leading-tight tracking-tight text-slate-100 sm:text-3xl"
           >
             {{ client().lastName.trim() }} {{ client().name.trim() }}
           </h1>
           <!-- Boton Editar cliente -->
           <button
+            type="button"
             (click)="edit.emit()"
-            class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.98]"
+            class="inline-flex min-h-10 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1524] motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9"
           >
-            <i class="fa-solid fa-pen text-xs"></i>
+            <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
             Editar
           </button>
           <!-- Boton Eliminar cliente -->
           <button
+            type="button"
             (click)="remove.emit()"
-            class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-300 transition-all duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 active:scale-[0.98]"
+            class="inline-flex min-h-10 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-300 transition-all duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1524] motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9"
           >
-            <i class="fa-solid fa-trash-can text-xs"></i>
+            <i class="fa-solid fa-trash-can text-xs" aria-hidden="true"></i>
             Eliminar
           </button>
         </div>
@@ -44,46 +46,51 @@
           <!--  Carnicerias -->
           @for (butcherShop of client().butcherShops; track butcherShop.id) {
             <button
+              type="button"
               (click)="selectButcherShop(butcherShop.id)"
               [attr.aria-pressed]="selectedButcherShopId() === butcherShop.id"
-              [class.!border-blue-500/60]="selectedButcherShopId() === butcherShop.id"
-              [class.!bg-blue-500/15]="selectedButcherShopId() === butcherShop.id"
-              [class.!text-blue-100]="selectedButcherShopId() === butcherShop.id"
-              class="group inline-flex max-w-full cursor-pointer items-center gap-1.5 rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-left text-sm text-slate-300 transition-all duration-150 hover:border-slate-500 hover:bg-[#1f2942] hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.98]"
+              [title]="butcherShop.name + ' - ' + butcherShop.address"
+              class="group inline-flex min-h-10 max-w-full cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-left text-sm leading-snug text-slate-300 transition-all duration-150 hover:border-slate-500 hover:bg-[#1f2942] hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1524] motion-reduce:transition-none motion-safe:active:scale-[0.98] aria-pressed:border-blue-500/60 aria-pressed:bg-blue-500/15 aria-pressed:text-blue-100 aria-pressed:shadow-sm aria-pressed:shadow-blue-500/10 sm:min-h-9"
             >
               <i
-                class="fa-solid fa-shop text-slate-500 transition-colors duration-150 group-hover:text-slate-300 group-aria-pressed:text-blue-300"
+                class="fa-solid fa-shop shrink-0 text-slate-500 transition-colors duration-150 group-hover:text-slate-300 group-aria-pressed:text-blue-300 motion-reduce:transition-none"
+                aria-hidden="true"
               ></i>
               {{ butcherShop.name }} - {{ butcherShop.address }}
             </button>
           }
           <!-- Agregar sucursal -->
           <button
+            type="button"
             (click)="showButcherShopModal.set(true)"
             title="Agregar sucursal"
             aria-label="Agregar sucursal"
-            class="inline-flex size-8.5 cursor-pointer items-center justify-center rounded-lg border border-dashed border-slate-600/70 text-sm text-slate-400 transition-all duration-150 hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-95"
+            class="inline-flex size-10 cursor-pointer touch-manipulation items-center justify-center rounded-lg border border-dashed border-slate-600/70 text-sm text-slate-400 transition-all duration-150 hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1524] motion-reduce:transition-none motion-safe:active:scale-95 sm:size-9"
           >
-            <i class="fa-solid fa-plus"></i>
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
           </button>
         </div>
         @if (showShopWarning()) {
           <p
             role="alert"
-            class="inline-flex self-start items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300"
+            class="inline-flex self-start items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-sm font-medium text-amber-300"
           >
-            <i class="fa-solid fa-circle-exclamation"></i>
+            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
             Seleccioná una sucursal para continuar
           </p>
         }
       </div>
       <!-- Info Saldo Pendiente -->
-      <div class="flex flex-col items-end gap-3 shrink-0 ml-auto">
+      <div
+        class="flex w-full flex-col items-stretch gap-3 shrink-0 sm:ml-auto sm:w-auto sm:items-end"
+      >
         <div
-          class="min-w-48 rounded-2xl border border-red-500/25 bg-linear-to-br from-red-500/15 to-red-500/5 px-5 py-3.5 shadow-lg shadow-red-950/20 ring-1 ring-inset ring-red-400/10"
+          role="group"
+          aria-label="Saldo deudor"
+          class="w-full min-w-48 rounded-2xl border border-red-500/25 bg-linear-to-br from-red-500/15 to-red-500/5 px-5 py-3.5 shadow-lg shadow-red-950/20 ring-1 ring-inset ring-red-400/10 sm:w-auto"
         >
           <p
-            class="flex items-center gap-2 text-xl font-bold tabular-nums tracking-tight text-red-300 sm:text-2xl"
+            class="flex items-center gap-2 text-2xl font-bold tabular-nums tracking-tight text-red-300 sm:text-3xl"
           >
             <svg
               aria-hidden="true"
@@ -102,7 +109,7 @@
             </svg>
             {{ displayedBalance() | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
           </p>
-          <p class="mt-1 text-right text-xs font-medium text-slate-300/80">
+          <p class="mt-1 wrap-break-word text-right text-xs font-medium text-slate-300">
             @if (selectedButcherShop(); as shop) {
               {{ shop.name.trim() }} - {{ shop.address.trim() }}
             } @else {

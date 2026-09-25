@@ -1,20 +1,22 @@
 <div class="flex gap-2">
   <!-- Input + botón buscar integrados -->
   <div
-    class="flex h-11 flex-1 overflow-hidden rounded-xl border border-slate-700/70 bg-[#0a0f1d] transition-all duration-150 hover:border-slate-600 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/15"
+    class="flex h-11 flex-1 overflow-hidden rounded-xl border border-slate-700/70 bg-[#0a0f1d] transition-all duration-150 hover:border-slate-600 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/15 motion-reduce:transition-none"
   >
     <input
       type="search"
       [placeholder]="placeholder()"
       aria-label="Buscar"
       autocomplete="off"
-      class="min-w-0 flex-1 bg-transparent px-4 text-base text-slate-100 outline-none placeholder:text-slate-500 sm:text-sm"
+      spellcheck="false"
+      enterkeyhint="search"
+      class="min-w-0 flex-1 bg-transparent px-4 text-base text-slate-100 outline-none scheme-dark placeholder:text-slate-400 sm:text-sm"
     />
     <button
       type="button"
       title="Buscar"
       aria-label="Buscar"
-      class="flex w-11 shrink-0 cursor-pointer items-center justify-center border-l border-slate-700/70 text-slate-400 transition-colors duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:bg-slate-700"
+      class="flex w-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center border-l border-slate-700/70 text-slate-400 transition-colors duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:bg-slate-700 motion-reduce:transition-none"
     >
       <svg
         aria-hidden="true"
@@ -35,20 +37,26 @@
   </div>
 
   <button
+    type="button"
     (click)="add.emit()"
-    class="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 hover:bg-blue-500 hover:shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1120] active:scale-[0.98]"
+    class="inline-flex h-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 hover:bg-blue-500 hover:shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1120] motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:px-5"
   >
-    <i class="fa-solid fa-plus text-xs"></i>
+    <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
     Agregar
   </button>
 </div>
 <!-- Contador + Ordenar + Filtrar -->
 <div class="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
   <!-- Contador -->
-  <div class="flex items-center gap-2 text-xs text-slate-400 sm:text-sm" aria-live="polite">
+  <div
+    class="flex items-center gap-2 text-sm text-slate-400"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >
     <span
       aria-hidden="true"
-      class="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px] shadow-blue-500/60"
+      class="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500 shadow-[0_0_8px] shadow-blue-500/60"
     ></span>
     <span
       ><strong class="font-semibold tabular-nums text-slate-100">{{ numberFound() ?? 0 }}</strong>
@@ -57,15 +65,15 @@
   </div>
 
   <!-- Ordenar y Filtrar -->
-  <div class="flex gap-2">
+  <div class="flex w-full gap-2 sm:w-auto">
     <select
       aria-label="Ordenar resultados"
-      class="h-10 max-w-full cursor-pointer rounded-xl border border-slate-700/70 bg-slate-800/60 px-3 text-sm text-slate-300 outline-none transition-all duration-150 scheme-dark hover:border-slate-600 hover:text-slate-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15"
+      class="h-11 w-full max-w-full cursor-pointer truncate rounded-xl border border-slate-700/70 bg-slate-800/60 pr-8 pl-3 text-sm text-slate-300 outline-none transition-all duration-150 scheme-dark hover:border-slate-600 hover:text-slate-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-10 sm:w-auto"
     >
       <option>Ordenar: nombre A-Z</option>
       <option>Ordenar: nombre Z-A</option>
-      <option>Más recientes</option>
-      <option>Más compras</option>
+      <option>Ordenar: más recientes</option>
+      <option>Ordenar: más compras</option>
     </select>
   </div>
 </div>

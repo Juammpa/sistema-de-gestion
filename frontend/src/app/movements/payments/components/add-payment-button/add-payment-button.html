@@ -1,8 +1,9 @@
 <button
+  type="button"
   (click)="addPayment.emit()"
-  class="flex w-full justify-center items-center gap-2 cursor-pointer rounded-lg bg-amber-500 text-white px-4 py-2 border border-amber-500 text-sm transition hover:border-amber-200 hover:text-amber-100"
+  class="flex min-h-10 w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-lg border border-amber-400/60 bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-md shadow-amber-950/30 transition-all duration-150 hover:border-amber-300 hover:bg-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/80 motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9"
 >
-  <i class="fa-solid fa-plus"></i>
+  <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
 
   Pago
 </button>

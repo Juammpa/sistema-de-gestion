@@ -1,6 +1,7 @@
 <!-- Backdrop: cierra al hacer click fuera del panel con blur cinematográfico -->
 <div
   (click)="close()"
+  (document:keydown.escape)="close()"
   class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md transition-opacity duration-200"
 >
   <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
@@ -17,11 +18,11 @@
       <button
         type="button"
         (click)="close()"
-        class="absolute right-3 top-3 z-10 flex size-10 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-95"
+        class="absolute right-3 top-3 z-10 flex size-10 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-95"
         title="Cerrar modal"
         aria-label="Cerrar modal"
       >
-        <i class="fa-solid fa-xmark block text-base"></i>
+        <i aria-hidden="true" class="fa-solid fa-xmark block text-base"></i>
       </button>
     </div>
     <!-- ====== BODY ======== -->
@@ -91,7 +92,7 @@
       <button
         type="button"
         (click)="close()"
-        class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 active:scale-[0.98]"
+        class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.98]"
       >
         Cancelar
       </button>
@@ -101,7 +102,7 @@
         (click)="confirm.emit()"
         [disabled]="loading()"
         [attr.aria-busy]="loading()"
-        class="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-600/25 transition-all duration-150 enabled:hover:bg-red-500 enabled:hover:shadow-red-600/35 enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1626] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+        class="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-600/25 transition-all duration-150 enabled:hover:bg-red-500 enabled:hover:shadow-red-600/35 motion-safe:enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1626] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
       >
         <i
           aria-hidden="true"

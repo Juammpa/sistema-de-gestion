@@ -3,13 +3,13 @@
 </td>
 <td class="whitespace-nowrap px-4 py-3.5 font-sans">
   <span
-    class="inline-flex items-center rounded-md border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400"
+    class="inline-flex shrink-0 items-center rounded-md border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 text-xs font-medium leading-none text-blue-400"
   >
     Venta
   </span>
 </td>
 <td class="px-4 py-3.5 font-sans">
-  <div class="font-medium text-slate-200">{{ sale().cutMeatName | titlecase }}</div>
+  <div class="wrap-break-word font-medium text-slate-200">{{ sale().cutMeatName | titlecase }}</div>
   <!-- <div class="text-[11px] text-slate-500">Tropa 4820 - Novillo Pesado</div> -->
 </td>
 <td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-400">
@@ -19,11 +19,15 @@
 <td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400">
   {{ sale().pricePerKilo | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-slate-100">
+<td
+  class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-slate-100"
+>
   {{ sale().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
 <!-- Balance total -->
-<td class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right font-bold text-rose-400">
+<td
+  class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right text-sm font-bold tabular-nums text-rose-400"
+>
   {{ sale().balance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>

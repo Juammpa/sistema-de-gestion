@@ -1,35 +1,64 @@
-<table class="w-full text-left text-sm text-slate-300">
+<table aria-label="Movimientos de cuenta corriente" class="w-full text-left text-sm text-slate-300">
   <!-- Encabezado de la Tabla -->
   <thead
-    class="border-b border-slate-800 bg-[#0F172A]/70 text-[11px] font-semibold uppercase tracking-wider text-slate-400"
+    class="border-b border-slate-800 bg-[#0F172A]/70 text-xs font-semibold uppercase tracking-wider text-slate-400"
   >
     <tr>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] py-3.5 pl-6 pr-4">Fecha</th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5">Tipo</th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5">Corte / Detalle</th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5 text-center">Unidad</th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5 text-right">Kg/s</th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5 text-right">
+      <th scope="col" class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] py-3.5 pl-6 pr-4">
+        Fecha
+      </th>
+      <th scope="col" class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5">Tipo</th>
+      <th scope="col" class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5">
+        Corte / Detalle
+      </th>
+      <th
+        scope="col"
+        class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5 text-center"
+      >
+        Unidad
+      </th>
+      <th
+        scope="col"
+        class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5 text-right"
+      >
+        Kg/s
+      </th>
+      <th
+        scope="col"
+        class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5 text-right"
+      >
         Precio Unit.
       </th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5 text-right text-slate-300">
+      <th
+        scope="col"
+        class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5 text-right text-slate-300"
+      >
         Debe (+)
       </th>
       <th
         scope="col"
-        class="sticky top-0 z-10 bg-[#0f172a] px-4 py-3.5 text-right text-emerald-400"
+        class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] px-4 py-3.5 text-right text-emerald-400"
       >
         Haber (-)
       </th>
-      <th scope="col" class="sticky top-0 z-10 bg-[#0f172a] py-3.5 pl-4 pr-6 text-right">Saldo</th>
+      <th
+        scope="col"
+        class="sticky top-0 z-10 whitespace-nowrap bg-[#0f172a] py-3.5 pl-4 pr-6 text-right"
+      >
+        Saldo
+      </th>
     </tr>
   </thead>
 
   <!-- Cuerpo de la Tabla -->
-  <tbody class="divide-y divide-slate-800/60 font-mono text-xs">
+  <tbody
+    aria-live="polite"
+    [attr.aria-busy]="movementResource.isLoading()"
+    class="divide-y divide-slate-800/60 font-mono text-xs"
+  >
     @if (currentCurrentId() === null) {
       <tr>
-        <td colspan="9" class="py-10 text-center text-sm text-slate-500">
+        <td colspan="9" class="py-10 text-center text-sm text-slate-400">
           Seleccioná una sucursal para ver sus movimientos
         </td>
       </tr>
@@ -47,7 +76,7 @@
       </tr>
     } @else if (movements().length === 0) {
       <tr>
-        <td colspan="9" class="py-10 text-center text-sm text-slate-500">
+        <td colspan="9" class="py-10 text-center text-sm text-slate-400">
           Todavía no hay movimientos registrados
         </td>
       </tr>
@@ -57,22 +86,31 @@
           <tr
             sale-item
             [sale]="movement"
-            class="transition-colors hover:bg-slate-800/30 cursor-pointer"
+            tabindex="0"
+            class="cursor-pointer transition-colors hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
             (click)="openSaleDetail(movement)"
+            (keydown.enter)="openSaleDetail(movement)"
+            (keydown.space)="openSaleDetail(movement); $event.preventDefault()"
           ></tr>
         } @else if (movement.type === 'PAYMENT') {
           <tr
             payment-item
             [payment]="movement"
+            tabindex="0"
             (click)="openPaymentDetail(movement)"
-            class="transition-colors hover:bg-slate-800/30 cursor-pointer"
+            (keydown.enter)="openPaymentDetail(movement)"
+            (keydown.space)="openPaymentDetail(movement); $event.preventDefault()"
+            class="cursor-pointer transition-colors hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
           ></tr>
         } @else {
           <tr
             purchase-item
             [purchase]="movement"
+            tabindex="0"
             (click)="openPurchaseDetail(movement)"
-            class="transition-colors hover:bg-slate-800/30 cursor-pointer"
+            (keydown.enter)="openPurchaseDetail(movement)"
+            (keydown.space)="openPurchaseDetail(movement); $event.preventDefault()"
+            class="cursor-pointer transition-colors hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
           ></tr>
         }
       }

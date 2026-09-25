@@ -3,14 +3,20 @@
 </td>
 <td class="whitespace-nowrap px-4 py-3.5 font-sans">
   <span
-    class="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400"
+    class="inline-flex shrink-0 items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium leading-none text-emerald-400"
   >
     Pago
   </span>
 </td>
 <td class="px-4 py-3.5 font-sans">
   <div class="flex items-center gap-1.5 font-medium text-emerald-300">
-    <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg
+      aria-hidden="true"
+      class="h-3.5 w-3.5 shrink-0"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -18,16 +24,20 @@
         d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
       />
     </svg>
-    <span>{{ translatePaymentType(payment().paymentType) }}</span>
+    <span class="wrap-break-word">{{ translatePaymentType(payment().paymentType) }}</span>
   </div>
 </td>
-<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-500">-</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">-</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-emerald-400">
+<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-500">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
+<td
+  class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-emerald-400"
+>
   {{ payment().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>
-<td class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right font-bold text-rose-400">
+<td
+  class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right text-sm font-bold tabular-nums text-rose-400"
+>
   {{ payment().balance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>

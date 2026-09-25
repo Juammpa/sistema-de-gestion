@@ -1,6 +1,6 @@
 <!-- Búsqueda y creación de cortes -->
 <div
-  class="max-w-3xl mx-auto px-6 py-6 mt-2 mb-6 border-slate-800 border rounded-2xl text-white bg-slate-900"
+  class="mx-3 mb-6 mt-2 max-w-3xl rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#161d31] to-[#0f1524] p-5 text-white shadow-xl shadow-black/40 ring-1 ring-white/5 sm:p-6 md:mx-auto"
 >
   <search-input
     placeholder="Buscar cortes..."
@@ -11,7 +11,7 @@
 </div>
 
 <!-- Lista de cortes -->
-<div class="flex flex-col gap-3 max-w-3xl mx-auto max-h-105 overflow-y-auto scrollbar-none">
+<div class="mx-3 flex max-h-[calc(100dvh-11.5rem)] max-w-3xl flex-col gap-3 overflow-y-auto pb-4 scrollbar-none md:mx-auto">
   <!--  -->
   @if (cutMeatResource.isLoading()) {
     <!-- Mostrar estado de carga -->
@@ -30,7 +30,12 @@
         [specie]="item.specie"
         [price]="item.pricePerKilo"
         [isActive]="item.isActive"
+        role="button"
+        tabindex="0"
+        class="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
         (click)="openCutMeatDetail(item)"
+        (keydown.enter)="openCutMeatDetail(item)"
+        (keydown.space)="openCutMeatDetail(item); $event.preventDefault()"
       />
     }
   }
