@@ -23,7 +23,8 @@ export class FormUtils {
 
   // Valida campo del formulario
   static isValidField(form: FormGroup, fieldName: string): boolean | null {
-    return form.controls[fieldName].errors && form.controls[fieldName].touched;
+    const control = form.controls[fieldName];
+    return control && control.errors && control.touched;
   }
 
   // Retorna el mensaje descriptivo

@@ -37,10 +37,12 @@ export class ClientFormModal implements OnInit {
   // Si llega un cliente, precargamos el formulario (modo edicion)
   ngOnInit() {
     const current = this.client();
-    if (current) this.clientForm.patchValue(current);
+    if (current) {
+      this.clientForm.patchValue(current);
 
-    this.clientForm.removeControl('butcherShopName');
-    this.clientForm.removeControl('butcherShopAddress');
+      this.clientForm.removeControl('butcherShopName');
+      this.clientForm.removeControl('butcherShopAddress');
+    }
   }
 
   // Cierra el modal
