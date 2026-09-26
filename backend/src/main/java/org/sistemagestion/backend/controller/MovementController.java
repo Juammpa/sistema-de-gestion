@@ -1,12 +1,11 @@
 package org.sistemagestion.backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.common.SliceResponseDto;
 import org.sistemagestion.backend.dto.movement.MovementResponseDto;
 import org.sistemagestion.backend.service.movement.IMovementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -14,12 +13,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovementController {
 
+    private static final int MAX_PAGE_SIZE = 100;
     private final IMovementService movementService;
 
     @GetMapping
-    public ResponseEntity<List<MovementResponseDto>> getMovementsByCurrentAccount(@RequestParam Long currentAccountId) {
+    public ResponseEntity<SliceResponseDto<MovementResponseDto>> getMovementsByCurrentAccount(
+            @RequestParam Long currentAccountId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
 
-        return ResponseEntity.ok(movementService.getMovementsByCurrentAccount(currentAccountId));
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+
+        return ResponseEntity.ok(movementService.getMovementsByCurrentAccount(currentAccountId,safePage,safeSize));
     }
 
 

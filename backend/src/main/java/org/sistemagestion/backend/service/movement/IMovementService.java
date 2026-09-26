@@ -1,9 +1,8 @@
 package org.sistemagestion.backend.service.movement;
 
+import org.sistemagestion.backend.dto.common.SliceResponseDto;
 import org.sistemagestion.backend.dto.movement.MovementResponseDto;
 
-import java.util.List;
-
 public interface IMovementService {
-    List<MovementResponseDto> getMovementsByCurrentAccount(Long currenAccountId);
+    SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, int page, int size);
 }
