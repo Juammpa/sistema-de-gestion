@@ -23,4 +23,8 @@ public class PaymentResponseDto {
     private boolean mirror;
     private Long supplierId;
     private String supplierName;
+
+    // Solo en pagos espejo: cliente y sucursal que hicieron el pago original
+    private String originClientName;
+    private String originButcherShopName;
 }

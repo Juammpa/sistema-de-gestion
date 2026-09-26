@@ -6,9 +6,11 @@ import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PaymentMapper;
+import org.sistemagestion.backend.model.ButcherShop;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.model.Supplier;
+import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
 import org.sistemagestion.backend.service.cash.CashService;
@@ -23,6 +25,7 @@ public class PaymentService implements IPaymentService{
 
     private final PaymentRepository paymentRepository;
     private final CurrentAccountRepository currentAccountRepository;
+    private final ButcherShopRepository butcherShopRepository;
     private final PaymentMirrorService paymentMirrorService;
     private final BalanceRecalculationService balanceRecalculationService;
     private final CashService cashService;
@@ -53,7 +56,7 @@ public class PaymentService implements IPaymentService{
     @Transactional(readOnly = true)
     public PaymentResponseDto getPaymentById(Long id) {
         return paymentRepository.findById(id)
-                .map(mapper::toDto)
+                .map(payment -> mapper.toDto(payment,findOriginShop(payment)))
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
     }
 
@@ -100,5 +103,14 @@ public class PaymentService implements IPaymentService{
         balanceRecalculationService.recalculate(currentAccount);
 
         log.info("Pago eliminado corectamente. ID: {}", payment.getId());
+    }
+
+    // Sucursal del cliente que hizo el pago original (null si el pago no es espejo)
+    private ButcherShop findOriginShop(Payment payment) {
+        Payment origin = payment.getOriginPayment();
+        if (origin == null) return null;
+
+        return butcherShopRepository.findByCurrentAccountId(origin.getCurrentAccount().getId())
+                .orElse(null);
     }
 }
