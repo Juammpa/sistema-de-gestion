@@ -7,6 +7,8 @@ export interface Payment {
   mirror: boolean;
   supplierId: number | null;
   supplierName: string | null;
+  originClientName?: string | null;
+  originButcherShopName?: string | null;
 }
 
 export interface PaymentRequest {
