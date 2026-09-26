@@ -53,7 +53,7 @@
   <!-- Cuerpo de la Tabla -->
   <tbody
     aria-live="polite"
-    [attr.aria-busy]="movementResource.isLoading()"
+    [attr.aria-busy]="isLoading()"
     class="divide-y divide-slate-800/60 font-mono text-xs"
   >
     @if (currentCurrentId() === null) {
@@ -62,13 +62,13 @@
           Seleccioná una sucursal para ver sus movimientos
         </td>
       </tr>
-    } @else if (movementResource.isLoading()) {
+    } @else if (isLoading()) {
       <tr>
         <td colspan="9" class="py-10 text-center">
           <loading-spinner />
         </td>
       </tr>
-    } @else if (movementResource.error()) {
+    } @else if (hasError() && movements().length === 0) {
       <tr>
         <td colspan="9" class="py-10 text-center text-sm text-red-400">
           No se pudieron cargar los movimientos
@@ -117,6 +117,32 @@
     }
   </tbody>
 </table>
+
+<!-- Scroll infinito: al llegar a este bloque se pide la página siguiente -->
+@if (hasNext()) {
+  <div #sentinel aria-hidden="true" class="flex h-14 items-center justify-center">
+    @if (isLoadingMore()) {
+      <loading-spinner />
+    }
+  </div>
+}
+
+<!-- Falló la carga de una página posterior -->
+@if (hasError() && movements().length > 0) {
+  <div
+    role="alert"
+    class="flex flex-wrap items-center justify-center gap-3 py-4 text-sm text-red-400"
+  >
+    No se pudieron cargar más movimientos
+    <button
+      type="button"
+      (click)="loadNextPage()"
+      class="cursor-pointer rounded-lg border border-[#2a3247] bg-[#1a2235] px-3 py-1.5 text-sm font-medium text-slate-300 transition-colors duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+    >
+      Reintentar
+    </button>
+  </div>
+}
 
 @if (showSaleDetail() && saleDetail.value(); as sale) {
   <edit-sale-modal

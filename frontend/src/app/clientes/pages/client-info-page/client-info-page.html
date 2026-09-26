@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-5xl px-3 pb-6 sm:px-4">
+<div class="mx-auto max-w-6xl px-3 pb-6 sm:px-4">
   @if (clientResource.value(); as client) {
     <!-- Contenedor de Info del Cliente -->
     <client-header
@@ -16,7 +16,7 @@
 
     <!-- Tabla Movimientos -->
     <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
-      <div class="overflow-x-auto">
+      <div class="max-h-100 overflow-auto scrollbar-none">
         <movements-table
           #movementsTable
           [butcherShopId]="selectedButcherShopId()"
