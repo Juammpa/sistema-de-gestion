@@ -2,7 +2,7 @@ import { Component, inject, input, OnInit, output, signal } from '@angular/core'
 import { CutMeatService } from '../../services/cut-meat.service';
 import { CutMeat, CutMeatRequest } from '../../interfaces/cut-meat.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../utils/form-utils';
+import { FormUtils } from '../../../shared/utils/form-utils';
 import { DeleteModal } from '../../../shared/components/delete-modal/delete-modal';
 import { SPECIE_OPTIONS } from '../../utils/specie.utils';
 

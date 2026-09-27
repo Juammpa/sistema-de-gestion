@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../../utils/form-utils';
+import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
 import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';

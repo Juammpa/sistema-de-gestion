@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../utils/form-utils';
+import { FormUtils } from '../../../shared/utils/form-utils';
 import { Client, ClientCreateRequest, ClientRequest } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/cliente.service';
 

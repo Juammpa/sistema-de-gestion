@@ -9,6 +9,9 @@ import { CutMeatFormModal } from '../../components/cut-meat-form-modal/cut-meat-
 import { EditCutMeatModal } from '../../components/edit-cut-meat-modal/edit-cut-meat-modal';
 import { CutMeat } from '../../interfaces/cut-meat.interface';
 import { of } from 'rxjs';
+import { FilterChange, SearchFilter } from '../../../shared/interfaces/search-filter.interface';
+import { SPECIE_OPTIONS } from '../../utils/specie.utils';
+import { compareText, defaultFilterValues } from '../../../shared/utils/search-filter.utils';
 
 @Component({
   selector: 'cut-meat-page',
@@ -29,8 +32,63 @@ export default class CutMeatPage {
     stream: () => this.cutMeatService.getAllCutMeats(),
   });
 
-  // Numero de cortes activos
-  cutMeatsActive = computed(() => this.cutMeatResource.value()?.filter((cm) => cm.isActive).length);
+  // Filtros de esta pagina
+  filters: SearchFilter[] = [
+    {
+      key: 'sort',
+      label: 'Ordenar resultados',
+      options: [
+        { value: 'name-asc', label: 'Ordenar: nombre A-Z' },
+        { value: 'name-desc', label: 'Ordenar: nombre Z-A' },
+        { value: 'price-asc', label: 'Ordenar: menor precio' },
+        { value: 'price-desc', label: 'Ordenar: mayor precio' },
+      ],
+    },
+    {
+      key: 'specie',
+      label: 'Filtrar por especie',
+      options: [{ value: 'all', label: 'Todas las especies' }, ...SPECIE_OPTIONS],
+    },
+    {
+      key: 'status',
+      label: 'Filtrar por estado',
+      options: [
+        { value: 'all', label: 'Activos e inactivos' },
+        { value: 'active', label: 'Solo activos' },
+        { value: 'inactive', label: 'Solo inactivos' },
+      ],
+    },
+  ];
+
+  // Valor elegido de cada filtro
+  filterValues = signal<Record<string, string>>(defaultFilterValues(this.filters));
+
+  onFilterChange({ key, value }: FilterChange) {
+    this.filterValues.update((current) => ({ ...current, [key]: value }));
+  }
+
+  // Cortes que se muestran: primero se filtra (devuelve un arreglo nuevo) y despues se ordena
+  visibleCutMeats = computed(() => {
+    const { sort, specie, status } = this.filterValues();
+
+    const cutMeats = (this.cutMeatResource.value() ?? [])
+      .filter((cutMeat) => specie === 'all' || cutMeat.specie === specie)
+      .filter((cutMeat) => status === 'all' || cutMeat.isActive === (status === 'active'));
+
+    switch (sort) {
+      case 'name-desc':
+        return cutMeats.sort((a, b) => compareText(b.cutMeatName, a.cutMeatName));
+
+      case 'price-asc':
+        return cutMeats.sort((a, b) => a.pricePerKilo - b.pricePerKilo);
+
+      case 'price-desc':
+        return cutMeats.sort((a, b) => b.pricePerKilo - a.pricePerKilo);
+
+      default:
+        return cutMeats.sort((a, b) => compareText(a.cutMeatName, b.cutMeatName));
+    }
+  });
 
   reload() {
     this.cutMeatResource.reload();

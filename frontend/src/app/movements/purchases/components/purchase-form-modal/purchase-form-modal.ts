@@ -2,7 +2,7 @@ import { Component, inject, input, output } from '@angular/core';
 import translatePurchaseType, { PURCHASE_TYPE_OPTIONS } from '../../utils/purchase.utils';
 import { PurchaseService } from '../../services/purchase.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../../utils/form-utils';
+import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PurchaseRequest } from '../../interfaces/purchase.interface';
 
 @Component({

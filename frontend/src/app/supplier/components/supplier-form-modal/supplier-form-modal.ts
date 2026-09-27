@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
-import { FormUtils } from '../../../utils/form-utils';
+import { FormUtils } from '../../../shared/utils/form-utils';
 import { Supplier, SupplierRequest } from '../../interfaces/supplier.interface';
 
 @Component({

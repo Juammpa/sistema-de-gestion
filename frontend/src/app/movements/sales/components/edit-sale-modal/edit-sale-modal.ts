@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../../utils/form-utils';
+import { FormUtils } from '../../../../shared/utils/form-utils';
 import { SaleService } from '../../services/sale.service';
 import { CutMeatService } from '../../../../cut-meat/services/cut-meat.service';
 import { rxResource } from '@angular/core/rxjs-interop';

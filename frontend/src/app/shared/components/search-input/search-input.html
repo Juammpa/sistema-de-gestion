@@ -64,16 +64,20 @@
     >
   </div>
 
-  <!-- Ordenar y Filtrar -->
-  <div class="flex w-full gap-2 sm:w-auto">
-    <select
-      aria-label="Ordenar resultados"
-      class="h-11 w-full max-w-full cursor-pointer truncate rounded-xl border border-slate-700/70 bg-slate-800/60 pr-8 pl-3 text-sm text-slate-300 outline-none transition-all duration-150 scheme-dark hover:border-slate-600 hover:text-slate-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-10 sm:w-auto"
-    >
-      <option>Ordenar: nombre A-Z</option>
-      <option>Ordenar: nombre Z-A</option>
-      <option>Ordenar: más recientes</option>
-      <option>Ordenar: más compras</option>
-    </select>
-  </div>
+  <!-- Filtros y orden (los define cada página) -->
+  @if (filters().length > 0) {
+    <div class="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+      @for (filter of filters(); track filter.key) {
+        <select
+          [attr.aria-label]="filter.label"
+          (change)="onFilterChange(filter.key, $event)"
+          class="h-11 min-w-40 flex-1 cursor-pointer truncate rounded-xl border border-slate-700/70 bg-slate-800/60 pr-8 pl-3 text-sm text-slate-300 outline-none transition-all duration-150 scheme-dark hover:border-slate-600 hover:text-slate-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-10 sm:flex-none"
+        >
+          @for (option of filter.options; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+    </div>
+  }
 </div>

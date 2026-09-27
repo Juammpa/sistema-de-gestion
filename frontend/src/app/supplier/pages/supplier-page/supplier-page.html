@@ -6,7 +6,9 @@
     placeholder="Buscar proveedores..."
     [numberFound]="supplierResource.value()?.length || 0"
     searchName="proveedores"
+    [filters]="filters"
     (add)="showModal.set(true)"
+    (filterChange)="onFilterChange($event)"
   />
 </div>
 

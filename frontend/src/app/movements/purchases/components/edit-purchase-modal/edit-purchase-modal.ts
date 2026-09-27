@@ -1,7 +1,7 @@
 import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PurchaseService } from '../../services/purchase.service';
-import { FormUtils } from '../../../../utils/form-utils';
+import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PURCHASE_TYPE_OPTIONS } from '../../utils/purchase.utils';
 import translatePurchaseType from '../../utils/purchase.utils';
 import { Purchase, PurchaseRequest } from '../../interfaces/purchase.interface';

@@ -6,7 +6,9 @@
     placeholder="Buscar clientes..."
     [numberFound]="clientResource.value()?.length || 0"
     searchName="clientes"
+    [filters]="filters"
     (add)="showModal.set(true)"
+    (filterChange)="onFilterChange($event)"
   />
 </div>
 

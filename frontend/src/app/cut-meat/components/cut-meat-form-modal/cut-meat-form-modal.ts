@@ -1,7 +1,7 @@
 import { Component, inject, output } from '@angular/core';
 import { CutMeatService } from '../../services/cut-meat.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../utils/form-utils';
+import { FormUtils } from '../../../shared/utils/form-utils';
 import { CutMeatRequest } from '../../interfaces/cut-meat.interface';
 import { SPECIE_OPTIONS } from '../../utils/specie.utils';
 

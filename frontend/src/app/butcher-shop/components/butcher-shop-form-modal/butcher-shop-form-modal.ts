@@ -1,7 +1,7 @@
 import { Component, inject, input, output } from '@angular/core';
 import { ButcherShopService } from '../../services/butcher-shop.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '../../../utils/form-utils';
+import { FormUtils } from '../../../shared/utils/form-utils';
 import { ButcherShopRequest } from '../../interfaces/butcher-shop.interface';
 
 @Component({

@@ -8,6 +8,8 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
 import { ListItem } from '../../../shared/interfaces/list-item.interface';
 import { SupplierMapper } from '../../mappers/supplier.mapper';
 import { SupplierFormModal } from '../../components/supplier-form-modal/supplier-form-modal';
+import { FilterChange, SearchFilter } from '../../../shared/interfaces/search-filter.interface';
+import { compareText, defaultFilterValues } from '../../../shared/utils/search-filter.utils';
 
 @Component({
   selector: 'app-supplier-page',
@@ -21,9 +23,49 @@ export default class SupplierPage {
   // Obtiene todos los proveedores
   supplierResource = rxResource({ stream: () => this.supplierService.getAllSuppliers() });
 
+  // Filtros de esta pagina
+  filters: SearchFilter[] = [
+    {
+      key: 'sort',
+      label: 'Ordenar resultados',
+      options: [
+        { value: 'name-asc', label: 'Ordenar: nombre A-Z' },
+        { value: 'name-desc', label: 'Ordenar: nombre Z-A' },
+        { value: 'recent', label: 'Ordenar: más recientes' },
+        { value: 'debt', label: 'Ordenar: mayor saldo deudor' },
+      ],
+    },
+  ];
+
+  // Valor elegido de cada filtro
+  filterValues = signal<Record<string, string>>(defaultFilterValues(this.filters));
+
+  onFilterChange({ key, value }: FilterChange) {
+    this.filterValues.update((current) => ({ ...current, [key]: value }));
+  }
+
+  // Proveedores ordenados segun el filtro (se copia el arreglo para no mutar el recurso)
+  private sortedSuppliers = computed(() => {
+    const suppliers = [...(this.supplierResource.value() ?? [])];
+
+    switch (this.filterValues()['sort']) {
+      case 'name-desc':
+        return suppliers.sort((a, b) => compareText(b.companyName, a.companyName));
+
+      case 'recent':
+        return suppliers.sort((a, b) => b.id - a.id);
+
+      case 'debt':
+        return suppliers.sort((a, b) => b.currentBalance - a.currentBalance);
+
+      default:
+        return suppliers.sort((a, b) => compareText(a.companyName, b.companyName));
+    }
+  });
+
   // Mapeamos arreglo de proveedores
   supplierList = computed<ListItem[]>(() =>
-    SupplierMapper.mapSuppliersToListItems(this.supplierResource.value() ?? []),
+    SupplierMapper.mapSuppliersToListItems(this.sortedSuppliers()),
   );
 
   // Señal para mostrar o no el modal

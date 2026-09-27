@@ -4,27 +4,27 @@
 >
   <search-input
     placeholder="Buscar cortes..."
-    [numberFound]="cutMeatsActive() ?? 0"
+    [numberFound]="visibleCutMeats().length"
     searchName="cortes activos"
+    [filters]="filters"
     (add)="showModal.set(true)"
+    (filterChange)="onFilterChange($event)"
   />
 </div>
 
 <!-- Lista de cortes -->
-<div class="mx-3 flex max-h-[calc(100dvh-11.5rem)] max-w-3xl flex-col gap-3 overflow-y-auto pb-4 scrollbar-none md:mx-auto">
+<div
+  class="mx-3 flex max-h-[calc(100dvh-11.5rem)] max-w-3xl flex-col gap-3 overflow-y-auto pb-4 scrollbar-none md:mx-auto"
+>
   <!--  -->
   @if (cutMeatResource.isLoading()) {
     <!-- Mostrar estado de carga -->
     <div class="m-auto">
       <loading-spinner />
     </div>
-  } @else if (cutMeatResource.error()) {
-    <!-- Mostrar estado de error -->
-    <empty-state infoMessage="No se pudo conectar al servidor" />
   } @else if (cutMeatResource.hasValue()) {
-    <!-- Iterar lista de cortes (activos e inactivos) -->
-    @for (item of cutMeatResource.value(); track item.id) {
-      <!-- Mostrar unicamente los cortes de carnes activos -->
+    <!-- Iterar lista de cortes (segun los filtros elegidos) -->
+    @for (item of visibleCutMeats(); track item.id) {
       <cut-meat-list-item
         [cutMeatName]="item.cutMeatName"
         [specie]="item.specie"
@@ -36,6 +36,11 @@
         (click)="openCutMeatDetail(item)"
         (keydown.enter)="openCutMeatDetail(item)"
         (keydown.space)="openCutMeatDetail(item); $event.preventDefault()"
+      />
+    } @empty {
+      <empty-state
+        infoMessage="No hay cortes que coincidan con los filtros"
+        icon="fa-solid fa-filter-circle-xmark"
       />
     }
   }
