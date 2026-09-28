@@ -20,6 +20,7 @@ import { PurchaseItem } from '../../purchases/components/purchase-item/purchase-
 import { EditSaleModal } from '../../sales/components/edit-sale-modal/edit-sale-modal';
 import {
   Movement,
+  MovementType,
   PaymentMovement,
   PurchaseMovement,
   SaleMovement,
@@ -58,6 +59,9 @@ export class MovementsTable {
   // Cuenta corriente a mostrar (sucursal o proveedor)
   currentCurrentId = input<number | null>(null);
 
+  // Tipo de movimiento a mostrar (null = todos)
+  movementType = input<MovementType | null>(null);
+
   // Avisa al padre que un movimiento cambio (para refrescar el saldo)
   movementChanged = output();
 
@@ -78,6 +82,7 @@ export class MovementsTable {
     // Al cambiar de cuenta corriente (sucursal o proveedor) se empieza de cero
     effect(() => {
       this.currentCurrentId();
+      this.movementType();
       untracked(() => this.reload());
     });
 
@@ -124,7 +129,7 @@ export class MovementsTable {
     this.hasError.set(false);
 
     this.request = this.movementService
-      .getMovementsByCurrentAccount(accountId, this.nextPage, PAGE_SIZE)
+      .getMovementsByCurrentAccount(accountId, this.nextPage, PAGE_SIZE, this.movementType())
       .subscribe({
         next: (page) => {
           this.movements.update((current) => [...current, ...page.content]);

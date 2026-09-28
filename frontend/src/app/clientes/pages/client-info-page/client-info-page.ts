@@ -10,6 +10,10 @@ import { ClientFormModal } from '../../components/client-form-modal/client-form-
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { DeleteModal } from '../../../shared/components/delete-modal/delete-modal';
+import {
+  MovementFilterOption,
+  MovementType,
+} from '../../../movements/interfaces/movement.interface';
 
 @Component({
   selector: 'client-info-page',
@@ -47,11 +51,19 @@ export default class ClientInfoPage implements OnDestroy {
     stream: () => this.clientService.getClientById(this.clientId),
   });
 
-  // Señal para mostrar o no modal
+  // Filtros de tipo de movimiento de un cliente
+  movementFilters: MovementFilterOption[] = [
+    { value: null, label: 'Todos' },
+    { value: 'SALE', label: 'Solo Ventas' },
+    { value: 'PAYMENT', label: 'Solo Cobranzas' },
+  ];
+
+  // Señales
   showModal = signal<boolean>(false);
   showRemoveModal = signal<boolean>(false);
   deleting = signal<boolean>(false); // Estado de la request de borrado
   selectedButcherShopId = signal<number | null>(null);
+  movementType = signal<MovementType | null>(null); // Tipo de movimiento elegido (null = todos)
 
   selectedCurrentAccountId = computed(() => {
     const shopId = this.selectedButcherShopId();

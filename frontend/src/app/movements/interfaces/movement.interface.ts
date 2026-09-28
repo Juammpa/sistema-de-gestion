@@ -1,4 +1,4 @@
-export type MovementType = 'SALE' | 'PAYMENT';
+export type MovementType = 'SALE' | 'PAYMENT' | 'PURCHASE';
 
 interface BaseMovement {
   id: number;
@@ -26,6 +26,12 @@ export interface PurchaseMovement extends BaseMovement {
 export interface PaymentMovement extends BaseMovement {
   type: 'PAYMENT';
   paymentType: string;
+}
+
+// Un boton del filtro de tipo de movimiento (value null = todos)
+export interface MovementFilterOption {
+  value: MovementType | null;
+  label: string;
 }
 
 export type Movement = SaleMovement | PaymentMovement | PurchaseMovement;

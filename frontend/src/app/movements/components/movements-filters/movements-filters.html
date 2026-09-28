@@ -32,38 +32,22 @@
       />
     </div>
 
-    <!-- Segmented Tabs / Filtros rápidos -->
+    <!-- Segmented Tabs / Filtros rápidos (los define cada página) -->
     <div
       role="group"
       aria-label="Tipo de movimiento"
       class="inline-flex w-full items-center gap-0.5 rounded-lg border border-slate-800 bg-[#0F172A]/60 p-1 sm:w-auto"
     >
-      <!-- Pestaña Activa: Todos -->
-      <button
-        type="button"
-        aria-pressed="true"
-        class="min-h-9 flex-1 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none aria-pressed:bg-blue-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-blue-500 sm:flex-none sm:text-sm"
-      >
-        Todos
-      </button>
-
-      <!-- Pestaña: Solo Ventas -->
-      <button
-        type="button"
-        aria-pressed="false"
-        class="min-h-9 flex-1 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none aria-pressed:bg-blue-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-blue-500 sm:flex-none sm:text-sm"
-      >
-        Solo Ventas
-      </button>
-
-      <!-- Pestaña: Solo Cobranzas -->
-      <button
-        type="button"
-        aria-pressed="false"
-        class="min-h-9 flex-1 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none aria-pressed:bg-blue-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-blue-500 sm:flex-none sm:text-sm"
-      >
-        Solo Cobranzas
-      </button>
+      @for (option of options(); track option.label) {
+        <button
+          type="button"
+          [attr.aria-pressed]="selectedType() === option.value"
+          (click)="selectedType.set(option.value)"
+          class="min-h-9 flex-1 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none aria-pressed:bg-blue-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-blue-500 sm:flex-none sm:text-sm"
+        >
+          {{ option.label }}
+        </button>
+      }
     </div>
   </div>
 
