@@ -9,7 +9,11 @@ import { ListItem } from '../../../shared/interfaces/list-item.interface';
 import { SupplierMapper } from '../../mappers/supplier.mapper';
 import { SupplierFormModal } from '../../components/supplier-form-modal/supplier-form-modal';
 import { FilterChange, SearchFilter } from '../../../shared/interfaces/search-filter.interface';
-import { compareText, defaultFilterValues } from '../../../shared/utils/search-filter.utils';
+import {
+  compareText,
+  defaultFilterValues,
+  matchesSearch,
+} from '../../../shared/utils/search-filter.utils';
 
 @Component({
   selector: 'app-supplier-page',
@@ -44,9 +48,15 @@ export default class SupplierPage {
     this.filterValues.update((current) => ({ ...current, [key]: value }));
   }
 
-  // Proveedores ordenados segun el filtro (se copia el arreglo para no mutar el recurso)
-  private sortedSuppliers = computed(() => {
-    const suppliers = [...(this.supplierResource.value() ?? [])];
+  // Señales
+  showModal = signal<boolean>(false);
+  searchText = signal<string>(''); // Texto escrito en el buscador
+
+  // Proveedores que se muestran: primero se busca (devuelve un arreglo nuevo) y despues se ordena
+  private visibleSuppliers = computed(() => {
+    const suppliers = (this.supplierResource.value() ?? []).filter((supplier) =>
+      matchesSearch(this.searchText(), supplier.companyName, supplier.phoneNumber),
+    );
 
     switch (this.filterValues()['sort']) {
       case 'name-desc':
@@ -65,9 +75,6 @@ export default class SupplierPage {
 
   // Mapeamos arreglo de proveedores
   supplierList = computed<ListItem[]>(() =>
-    SupplierMapper.mapSuppliersToListItems(this.sortedSuppliers()),
+    SupplierMapper.mapSuppliersToListItems(this.visibleSuppliers()),
   );
-
-  // Señal para mostrar o no el modal
-  showModal = signal<boolean>(false);
 }

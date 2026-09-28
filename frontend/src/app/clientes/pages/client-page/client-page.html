@@ -9,6 +9,7 @@
     [filters]="filters"
     (add)="showModal.set(true)"
     (filterChange)="onFilterChange($event)"
+    (searchChange)="searchText.set($event)"
   />
 </div>
 
@@ -34,6 +35,14 @@
     clientResource.value()?.length === 0 && !clientResource.isLoading() && !clientResource.error()
   ) {
     <empty-state infoMessage="No hay clientes registrados" />
+  }
+
+  <!-- Mostrar estado sin resultados de la busqueda -->
+  @if (clientResource.value()?.length && clientList().length === 0) {
+    <empty-state
+      infoMessage="No se encontraron clientes con esa búsqueda"
+      icon="fa-solid fa-magnifying-glass"
+    />
   }
 
   <!-- Iterar lista de usuarios -->

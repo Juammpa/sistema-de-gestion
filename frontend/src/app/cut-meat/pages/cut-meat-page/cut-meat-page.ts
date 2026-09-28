@@ -10,8 +10,12 @@ import { EditCutMeatModal } from '../../components/edit-cut-meat-modal/edit-cut-
 import { CutMeat } from '../../interfaces/cut-meat.interface';
 import { of } from 'rxjs';
 import { FilterChange, SearchFilter } from '../../../shared/interfaces/search-filter.interface';
-import { SPECIE_OPTIONS } from '../../utils/specie.utils';
-import { compareText, defaultFilterValues } from '../../../shared/utils/search-filter.utils';
+import translateSpecie, { SPECIE_OPTIONS } from '../../utils/specie.utils';
+import {
+  compareText,
+  defaultFilterValues,
+  matchesSearch,
+} from '../../../shared/utils/search-filter.utils';
 
 @Component({
   selector: 'cut-meat-page',
@@ -67,11 +71,17 @@ export default class CutMeatPage {
     this.filterValues.update((current) => ({ ...current, [key]: value }));
   }
 
+  // Texto escrito en el buscador
+  searchText = signal<string>('');
+
   // Cortes que se muestran: primero se filtra (devuelve un arreglo nuevo) y despues se ordena
   visibleCutMeats = computed(() => {
     const { sort, specie, status } = this.filterValues();
 
     const cutMeats = (this.cutMeatResource.value() ?? [])
+      .filter((cutMeat) =>
+        matchesSearch(this.searchText(), cutMeat.cutMeatName, translateSpecie(cutMeat.specie)),
+      )
       .filter((cutMeat) => specie === 'all' || cutMeat.specie === specie)
       .filter((cutMeat) => status === 'all' || cutMeat.isActive === (status === 'active'));
 

@@ -16,9 +16,15 @@ export class SearchInput {
   // Output
   add = output();
   filterChange = output<FilterChange>();
+  searchChange = output<string>(); // Texto escrito en el buscador
 
   // Emite que filtro cambio y a que valor
   onFilterChange(key: string, event: Event) {
     this.filterChange.emit({ key, value: (event.target as HTMLSelectElement).value });
+  }
+
+  // Emite el texto cada vez que el usuario escribe (o lo borra con la X del navegador)
+  onSearch(event: Event) {
+    this.searchChange.emit((event.target as HTMLInputElement).value);
   }
 }

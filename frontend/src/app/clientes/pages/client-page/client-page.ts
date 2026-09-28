@@ -10,7 +10,11 @@ import { ClientMapper } from '../../mappers/client.mapper';
 import { ClientFormModal } from '../../components/client-form-modal/client-form-modal';
 import { Client } from '../../interfaces/client.interface';
 import { FilterChange, SearchFilter } from '../../../shared/interfaces/search-filter.interface';
-import { compareText, defaultFilterValues } from '../../../shared/utils/search-filter.utils';
+import {
+  compareText,
+  defaultFilterValues,
+  matchesSearch,
+} from '../../../shared/utils/search-filter.utils';
 
 // Nombre tal como se muestra en la lista
 const fullName = (client: Client) => `${client.lastName} ${client.name}`;
@@ -54,9 +58,21 @@ export default class ClientPage {
     this.filterValues.update((current) => ({ ...current, [key]: value }));
   }
 
-  // Cliente ordenados segun el filtro (se copia el arreglo para no mutar el recurso)
-  private sortedClients = computed(() => {
-    const clients = [...(this.clientResource.value() ?? [])];
+  // Señales
+  showModal = signal<boolean>(false);
+  searchText = signal<string>('');
+
+  // Clientes que se muestran: primero se busca (devuelve un arreglo nuevo) y despues ordena
+  private visibleClients = computed(() => {
+    const clients = (this.clientResource.value() ?? []).filter((client) =>
+      matchesSearch(
+        this.searchText(),
+        client.lastName,
+        client.name,
+        client.phoneNumber,
+        ...client.butcherShops.map((shop) => shop.name),
+      ),
+    );
 
     switch (this.filterValues()['sort']) {
       case 'name-desc':
@@ -74,8 +90,7 @@ export default class ClientPage {
   });
 
   // Mapeamos arreglo de clientes
-  clientList = computed<ListItem[]>(() => ClientMapper.mapClientsToListItems(this.sortedClients()));
-
-  // Señal para mostrar o no el modal
-  showModal = signal<boolean>(false);
+  clientList = computed<ListItem[]>(() =>
+    ClientMapper.mapClientsToListItems(this.visibleClients()),
+  );
 }

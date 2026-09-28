@@ -9,6 +9,7 @@
     [filters]="filters"
     (add)="showModal.set(true)"
     (filterChange)="onFilterChange($event)"
+    (searchChange)="searchText.set($event)"
   />
 </div>
 
@@ -36,6 +37,14 @@
     !supplierResource.error()
   ) {
     <empty-state infoMessage="No hay proveedores registrados" />
+  }
+
+  <!-- Mostrar estado sin resultados de la busqueda -->
+  @if (supplierResource.value()?.length && supplierList().length === 0) {
+    <empty-state
+      infoMessage="No se encontraron proveedores con esa búsqueda"
+      icon="fa-solid fa-magnifying-glass"
+    />
   }
 
   <!-- Iterar lista de usuarios -->

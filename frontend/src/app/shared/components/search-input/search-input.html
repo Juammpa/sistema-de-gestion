@@ -4,8 +4,10 @@
     class="flex h-11 flex-1 overflow-hidden rounded-xl border border-slate-700/70 bg-[#0a0f1d] transition-all duration-150 hover:border-slate-600 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/15 motion-reduce:transition-none"
   >
     <input
+      #searchBox
       type="search"
       [placeholder]="placeholder()"
+      (input)="onSearch($event)"
       aria-label="Buscar"
       autocomplete="off"
       spellcheck="false"
@@ -14,6 +16,7 @@
     />
     <button
       type="button"
+      (click)="searchBox.focus()"
       title="Buscar"
       aria-label="Buscar"
       class="flex w-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center border-l border-slate-700/70 text-slate-400 transition-colors duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:bg-slate-700 motion-reduce:transition-none"
