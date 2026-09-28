@@ -14,6 +14,7 @@ import {
   MovementFilterOption,
   MovementType,
 } from '../../../movements/interfaces/movement.interface';
+import { DateRange } from '../../../shared/interfaces/date-range.interface';
 
 @Component({
   selector: 'supplier-info-page',
@@ -61,6 +62,7 @@ export default class SupplierInfoPage implements OnDestroy {
   showRemoveModal = signal<boolean>(false);
   deleting = signal<boolean>(false); // Estado de la request de borrado
   movementType = signal<MovementType | null>(null); // Tipo de movimiento elegido (null = todos)
+  dateRange = signal<DateRange>({ from: null, to: null }); // Rango de fechas elegido
 
   deleteSupplier(supplierId: number) {
     this.deleting.set(true);

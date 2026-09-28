@@ -77,8 +77,8 @@
     } @else if (movements().length === 0) {
       <tr>
         <td colspan="9" class="py-10 text-center text-sm text-slate-400">
-          @if (movementType()) {
-            No hay movimientos de este tipo
+          @if (movementType() || dateRange().from || dateRange().to) {
+            No hay movimientos con los filtros elegidos
           } @else {
             Todavía no hay movimientos registrados
           }

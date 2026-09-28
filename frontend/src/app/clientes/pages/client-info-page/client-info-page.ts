@@ -14,6 +14,7 @@ import {
   MovementFilterOption,
   MovementType,
 } from '../../../movements/interfaces/movement.interface';
+import { DateRange } from '../../../shared/interfaces/date-range.interface';
 
 @Component({
   selector: 'client-info-page',
@@ -64,6 +65,7 @@ export default class ClientInfoPage implements OnDestroy {
   deleting = signal<boolean>(false); // Estado de la request de borrado
   selectedButcherShopId = signal<number | null>(null);
   movementType = signal<MovementType | null>(null); // Tipo de movimiento elegido (null = todos)
+  dateRange = signal<DateRange>({ from: null, to: null }); // Rango de fechas elegido
 
   selectedCurrentAccountId = computed(() => {
     const shopId = this.selectedButcherShopId();

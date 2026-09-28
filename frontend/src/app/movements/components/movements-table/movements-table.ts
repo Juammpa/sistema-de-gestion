@@ -30,6 +30,7 @@ import { PaymentService } from '../../payments/services/payment.service';
 import { EditPaymentModal } from '../../payments/components/edit-payment-modal/edit-payment-modal';
 import { PurchaseService } from '../../purchases/services/purchase.service';
 import { EditPurchaseModal } from '../../purchases/components/edit-purchase-modal/edit-purchase-modal';
+import { DateRange } from '../../../shared/interfaces/date-range.interface';
 
 // Cantidad de movimientos que se piden por pagina
 const PAGE_SIZE = 20;
@@ -62,6 +63,9 @@ export class MovementsTable {
   // Tipo de movimiento a mostrar (null = todos)
   movementType = input<MovementType | null>(null);
 
+  // Rango de fechas a mostrar (null en un lado = sin limite)
+  dateRange = input<DateRange>({ from: null, to: null });
+
   // Avisa al padre que un movimiento cambio (para refrescar el saldo)
   movementChanged = output();
 
@@ -83,6 +87,7 @@ export class MovementsTable {
     effect(() => {
       this.currentCurrentId();
       this.movementType();
+      this.dateRange();
       untracked(() => this.reload());
     });
 
@@ -129,7 +134,13 @@ export class MovementsTable {
     this.hasError.set(false);
 
     this.request = this.movementService
-      .getMovementsByCurrentAccount(accountId, this.nextPage, PAGE_SIZE, this.movementType())
+      .getMovementsByCurrentAccount(
+        accountId,
+        this.nextPage,
+        PAGE_SIZE,
+        this.movementType(),
+        this.dateRange(),
+      )
       .subscribe({
         next: (page) => {
           this.movements.update((current) => [...current, ...page.content]);

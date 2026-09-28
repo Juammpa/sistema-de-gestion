@@ -10,7 +10,11 @@
     />
 
     <!-- Divisior (filtros) -->
-    <movements-filters [options]="movementFilters" [(selectedType)]="movementType" />
+    <movements-filters
+      [options]="movementFilters"
+      [(selectedType)]="movementType"
+      [(dateRange)]="dateRange"
+    />
 
     <!-- Tabla Movimientos -->
     <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0B111E] shadow-2xl">
@@ -19,6 +23,7 @@
           #movementsTable
           [currentCurrentId]="supplierResource.value()?.currentAccountId ?? null"
           (movementChanged)="supplierResource.reload()"
+          [dateRange]="dateRange()"
           [movementType]="movementType()"
         />
       </div>
