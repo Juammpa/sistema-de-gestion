@@ -13,10 +13,16 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 
 @Service
 @RequiredArgsConstructor
 public class MovementService implements IMovementService{
+
+    // Limites que se usan cuando no se indica "desde" o "hasta"
+    private static final LocalDate MIN_DATE = LocalDate.of(1900,1,1);
+    private static final LocalDate MAX_DATE = LocalDate.of(9999,12,31);
 
     private final MovementRepository movementRepository;
     private final SaleRepository saleRepository;
@@ -27,24 +33,28 @@ public class MovementService implements IMovementService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, MovementType type, int page, int size) {
+    public SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, MovementType type, LocalDate from, LocalDate to, int page, int size) {
 
-        Slice<? extends Movement> movements = findMovements(currentAccountId, type, PageRequest.of(page, size));
+        LocalDate start = from != null ? from : MIN_DATE;
+        LocalDate end = to != null ? to : MAX_DATE;
+
+        Slice<? extends Movement> movements =
+                findMovements(currentAccountId, type, start, end, PageRequest.of(page, size));
 
         return SliceResponseDto.from(movements, mapper::toDto);
     }
 
     // Sin tipo: todos los movimientos.
     // Con tipo: solo los de ese subtipo
-    private Slice<? extends Movement> findMovements(Long currentAccountId, MovementType type, Pageable pageable) {
+    private Slice<? extends Movement> findMovements(Long currentAccountId, MovementType type, LocalDate from, LocalDate to, Pageable pageable) {
         if (type == null) {
-            return movementRepository.findByCurrentAccountIdOrderByDateDescIdDesc(currentAccountId, pageable);
+            return movementRepository.findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(currentAccountId, from, to, pageable);
         }
 
         return switch (type) {
-            case SALE -> saleRepository.findByCurrentAccountIdOrderByDateDescIdDesc(currentAccountId, pageable);
-            case PURCHASE -> purchaseRepository.findByCurrentAccountIdOrderByDateDescIdDesc(currentAccountId, pageable);
-            case PAYMENT -> paymentRepository.findByCurrentAccountIdOrderByDateDescIdDesc(currentAccountId, pageable);
+            case SALE -> saleRepository.findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(currentAccountId, from, to, pageable);
+            case PURCHASE -> purchaseRepository.findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(currentAccountId, from, to,pageable);
+            case PAYMENT -> paymentRepository.findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(currentAccountId, from, to, pageable);
         };
     }
 }

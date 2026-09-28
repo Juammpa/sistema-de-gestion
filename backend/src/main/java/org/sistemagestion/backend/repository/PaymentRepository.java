@@ -6,6 +6,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -13,7 +14,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByOriginPaymentId(Long originPaymentId);
 
-    // Pagos de una cuenta corriente (paginado, del mas reciente al mas antiguo)
-    Slice<Payment> findByCurrentAccountIdOrderByDateDescIdDesc(Long currentAccountId, Pageable pageable);
+    // Pagos de una cuenta corriente (paginado, del mas reciente al mas antiguo, dentro de un rango)
+    Slice<Payment> findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(Long currentAccountId, LocalDate from, LocalDate to, Pageable pageable);
 
 }
