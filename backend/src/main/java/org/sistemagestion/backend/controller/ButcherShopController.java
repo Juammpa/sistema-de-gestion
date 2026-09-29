@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/butcher-shops")
@@ -31,31 +29,10 @@ public class ButcherShopController {
         return ResponseEntity.ok(butcherShopService.getById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ButcherShopResponseDto>> getByClient(@RequestParam Long clientId) {
-
-        return ResponseEntity.ok(butcherShopService.getByClient(clientId));
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<ButcherShopResponseDto>> getAllButcherShops() {
-
-        return ResponseEntity.ok(butcherShopService.getAllButcherShops());
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<ButcherShopResponseDto> updateButcherShop(@PathVariable Long id, @Valid @RequestBody ButcherShopRequestDto request) {
 
         return ResponseEntity.ok(butcherShopService.updateButcherShop(id, request));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-
-        butcherShopService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
 
 }

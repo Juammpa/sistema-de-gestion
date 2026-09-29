@@ -13,7 +13,6 @@ import org.sistemagestion.backend.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,22 +51,6 @@ public class ButcherShopService implements IButcherShopService{
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<ButcherShopResponseDto> getByClient(Long clientId) {
-        return butcherShopRepository.findByClientId(clientId).stream()
-                .map(mapper::toDto)
-                .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ButcherShopResponseDto> getAllButcherShops() {
-        return butcherShopRepository.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
-    }
-
-    @Override
     @Transactional
     public ButcherShopResponseDto updateButcherShop(Long id, ButcherShopRequestDto requestDto) {
 
@@ -84,13 +67,4 @@ public class ButcherShopService implements IButcherShopService{
         return mapper.toDto(butcherShopRepository.save(butcherShop));
     }
 
-    @Override
-    @Transactional
-    public void deleteById(Long id) {
-
-        ButcherShop butcherShop = butcherShopRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Butcher Shop", "id", id));
-
-        butcherShopRepository.delete(butcherShop);
-    }
 }
