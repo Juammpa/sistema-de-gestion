@@ -4,6 +4,7 @@ import org.sistemagestion.backend.model.Movement;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -17,5 +18,13 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
 
     // Para recalcular
     List<Movement> findByCurrentAccountIdOrderByDateAscIdAsc(Long currentAccountId);
+
+    // Ultimos movimientos de todas las cuentas (sin los pagos espejos, que duplican el cobro del cliente)
+    @Query("""
+            select m from Movement m
+            where m.id not in (select p.id from Payment p where p.originPayment is not null)
+            order by m.date desc, m.id desc
+            """)
+    List<Movement> findRecent(Pageable pageable);
 }
 
