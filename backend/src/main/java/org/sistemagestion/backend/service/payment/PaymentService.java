@@ -13,6 +13,7 @@ import org.sistemagestion.backend.model.Supplier;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
+import org.sistemagestion.backend.service.account.AccountGuard;
 import org.sistemagestion.backend.service.cash.CashService;
 import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class PaymentService implements IPaymentService{
     private final PaymentMirrorService paymentMirrorService;
     private final BalanceRecalculationService balanceRecalculationService;
     private final CashService cashService;
+    private final AccountGuard accountGuard;
     private final PaymentMapper mapper;
 
     @Override
@@ -37,6 +39,8 @@ public class PaymentService implements IPaymentService{
 
        CurrentAccount currentAccount = currentAccountRepository.findById(request.getCurrentAccountId())
                .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
+
+       accountGuard.assertOwnerActive(currentAccount);
 
        Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), currentAccount);
        cashService.assertSufficientBalance(currentAccount, request.getPaymentType(), request.getAmount(), null);

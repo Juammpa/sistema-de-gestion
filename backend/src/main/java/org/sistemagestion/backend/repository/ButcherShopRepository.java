@@ -13,4 +13,7 @@ public interface ButcherShopRepository extends JpaRepository<ButcherShop, Long> 
     List<ButcherShop> findByClientId(Long clientId);
     boolean existsByCurrentAccountId(Long currentAccountId);
     Optional<ButcherShop> findByCurrentAccountId(Long currentAccountId);
+
+    // true si la cuenta corriente pertenece a la sucursal de un cliente eliminado
+    boolean existsByCurrentAccountIdAndClientIsActiveFalse(Long currentAccountId);
 }

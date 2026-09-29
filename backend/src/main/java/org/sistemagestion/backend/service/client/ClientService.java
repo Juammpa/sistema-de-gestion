@@ -42,17 +42,13 @@ public class ClientService implements IClientService{
     @Override
     @Transactional(readOnly = true)
     public ClientResponseDto getById(Long id) {
-
-        Client client =  clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
-
-        return mapper.toDto(client);
+        return mapper.toDto(findActive(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDto> getAllClients() {
-        return clientRepository.findAll().stream()
+        return clientRepository.findByIsActiveTrue().stream()
                 .map(mapper::toDto)
                 .toList();
     }
@@ -61,8 +57,7 @@ public class ClientService implements IClientService{
     @Transactional
     public ClientResponseDto updateClient(Long id, ClientRequestDto requestDto) {
 
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+        Client client = findActive(id);
 
         client.setName(requestDto.getName());
         client.setLastName(requestDto.getLastName());
@@ -71,13 +66,21 @@ public class ClientService implements IClientService{
         return mapper.toDto(clientRepository.save(client));
     }
 
+    // Borrado logico: el cliente deja de aparecer, pero sus sucursales, cuentas y movimientos
+    // se conservan (la Caja y los reportes dependen de ese historial)
     @Override
     @Transactional
     public void deleteById(Long id) {
 
-       Client client = clientRepository.findById(id)
-               .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+       Client client = findActive(id);
 
-       clientRepository.delete(client);
+       client.setIsActive(false);
+       clientRepository.save(client);
+    }
+
+    // Un cliente eliminado se trata como inexistente
+    private Client findActive(Long id) {
+        return clientRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client","id",id));
     }
 }

@@ -11,6 +11,7 @@ import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.ClientRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ButcherShopService implements IButcherShopService{
     @Override
     public ButcherShopResponseDto createButcherShop(ButcherShopRequestDto requestDto) {
 
-        Client client = clientRepository.findById(requestDto.getClientId())
+        Client client = clientRepository.findByIdAndIsActiveTrue(requestDto.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", requestDto.getClientId()));
 
         ButcherShop butcherShop = mapper.toButcherShop(requestDto);
@@ -40,6 +41,7 @@ public class ButcherShopService implements IButcherShopService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ButcherShopResponseDto getById(Long id) {
 
         ButcherShop butcherShop = butcherShopRepository.findById(id)
@@ -50,6 +52,7 @@ public class ButcherShopService implements IButcherShopService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ButcherShopResponseDto> getByClient(Long clientId) {
         return butcherShopRepository.findByClientId(clientId).stream()
                 .map(mapper::toDto)
@@ -57,6 +60,7 @@ public class ButcherShopService implements IButcherShopService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ButcherShopResponseDto> getAllButcherShops() {
         return butcherShopRepository.findAll().stream()
                 .map(mapper::toDto)
@@ -64,9 +68,10 @@ public class ButcherShopService implements IButcherShopService{
     }
 
     @Override
+    @Transactional
     public ButcherShopResponseDto updateButcherShop(Long id, ButcherShopRequestDto requestDto) {
 
-        Client client = clientRepository.findById(requestDto.getClientId())
+        Client client = clientRepository.findByIdAndIsActiveTrue(requestDto.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client","id", requestDto.getClientId()));
 
         ButcherShop butcherShop = butcherShopRepository.findById(id)
@@ -80,6 +85,7 @@ public class ButcherShopService implements IButcherShopService{
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
 
         ButcherShop butcherShop = butcherShopRepository.findById(id)

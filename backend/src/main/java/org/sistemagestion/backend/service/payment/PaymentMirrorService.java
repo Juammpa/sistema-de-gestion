@@ -49,7 +49,7 @@ public class PaymentMirrorService {
             throw new BusinessRuleException("The supplierId is mandatory for SUPPLIER_TRANSFER payments");
         }
 
-        return supplierRepository.findById(supplierId)
+        return supplierRepository.findByIdAndIsActiveTrue(supplierId)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier","id", supplierId));
 
     }

@@ -19,6 +19,9 @@ public class Supplier {
     private String companyName;
     private String phoneNumber;
 
+    @Builder.Default
+    private Boolean isActive = true;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "current_account_id", nullable = false)
     private CurrentAccount currentAccount;

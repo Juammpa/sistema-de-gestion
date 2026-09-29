@@ -23,6 +23,9 @@ public class Client {
     private String lastName;
     private String phoneNumber;
 
+    @Builder.Default
+    private Boolean isActive = true;
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ButcherShop> butcherShops = new ArrayList<>();

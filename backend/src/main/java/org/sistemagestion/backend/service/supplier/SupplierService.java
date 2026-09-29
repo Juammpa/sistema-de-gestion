@@ -9,6 +9,7 @@ import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Supplier;
 import org.sistemagestion.backend.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,26 +34,24 @@ public class SupplierService implements ISupplierService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SupplierResponseDto getById(Long id) {
-
-        Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier", "id", id));
-
-        return mapper.toDto(supplier);
+        return mapper.toDto(findActive(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SupplierResponseDto> getAllSuppliers() {
-        return supplierRepository.findAll().stream()
+        return supplierRepository.findByIsActiveTrue().stream()
                 .map(mapper::toDto)
                 .toList();
     }
 
     @Override
+    @Transactional
     public SupplierResponseDto updateSupplier(Long id, SupplierRequestDto request) {
 
-        Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier", "id", id));
+        Supplier supplier = findActive(id);
 
         supplier.setCompanyName(request.getCompanyName());
         supplier.setPhoneNumber(request.getPhoneNumber());
@@ -60,13 +59,20 @@ public class SupplierService implements ISupplierService{
         return mapper.toDto(supplierRepository.save(supplier));
     }
 
+    // Borrado logico: el proveedor deja de aparecer, pero su cuenta y sus movimientos se conservan
     @Override
+    @Transactional
     public void deleteById(Long id) {
 
-        Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier", "id", id));
+        Supplier supplier = findActive(id);
 
-        supplierRepository.delete(supplier);
+        supplier.setIsActive(false);
+        supplierRepository.save(supplier);
+    }
 
+    // Un proveedor eliminado se trata como inexistente
+    private Supplier findActive(Long id) {
+        return supplierRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier","id",id));
     }
 }

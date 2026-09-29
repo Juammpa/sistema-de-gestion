@@ -10,6 +10,7 @@ import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PurchaseRepository;
+import org.sistemagestion.backend.service.account.AccountGuard;
 import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class PurchaseService implements IPurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final CurrentAccountRepository currentAccountRepository;
     private final BalanceRecalculationService balanceRecalculationService;
+    private final AccountGuard accountGuard;
     private final PurchaseMapper mapper;
 
     @Override
@@ -32,6 +34,8 @@ public class PurchaseService implements IPurchaseService {
 
         CurrentAccount currentAccount = currentAccountRepository.findById(request.getCurrentAccountId())
                 .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
+
+        accountGuard.assertOwnerActive(currentAccount);
 
         Purchase purchase = mapper.toPurchase(request, currentAccount);
         Purchase purchaseSaved = purchaseRepository.save(purchase);

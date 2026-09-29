@@ -71,6 +71,7 @@ public interface DashboardRepository extends Repository<Payment, Long> {
             from ButcherShop bs
             join bs.client c
             join bs.currentAccount a
+            where c.isActive = true
             group by c.id, c.lastName, c.name
             having sum(a.currentBalance) > 0
             order by sum(a.currentBalance) desc
@@ -83,7 +84,7 @@ public interface DashboardRepository extends Repository<Payment, Long> {
                 s.id, s.companyName, a.currentBalance)
             from Supplier s
             join s.currentAccount a
-            where a.currentBalance > 0
+            where a.currentBalance > 0 and s.isActive = true
             order by a.currentBalance desc
             """)
     List<DebtRankingDto> topSupplierDebts(Pageable pageable);

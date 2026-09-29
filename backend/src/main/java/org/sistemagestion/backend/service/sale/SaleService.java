@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.sales.SaleRequestDto;
 import org.sistemagestion.backend.dto.sales.SaleResponseDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.SaleMapper;
 import org.sistemagestion.backend.model.*;
@@ -15,7 +16,6 @@ import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,7 +34,7 @@ public class SaleService implements ISaleService{
     @Transactional
     public SaleResponseDto createSale(SaleRequestDto request) {
 
-        Client client = clientRepository.findById(request.getClientId())
+        Client client = clientRepository.findByIdAndIsActiveTrue(request.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client","id", request.getClientId()));
 
         CutMeat cutMeat = cutMeatRepository.findById(request.getCutMeatId())
@@ -45,7 +45,7 @@ public class SaleService implements ISaleService{
 
         // Validamos si la sucursal es del cliente
         if (!butcherShop.getClient().getId().equals(client.getId())) {
-            throw new IllegalArgumentException("The butcher shop does not belong to the given client.");
+            throw new BusinessRuleException("La sucursal no pertenece al cliente indicado.");
         }
 
         // Obtenemos cuenta corriente de la sucursal
