@@ -1,0 +1,24 @@
+<section
+  class="h-full rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] p-5 shadow-xl shadow-black/40 ring-1 ring-white/5 sm:p-6"
+>
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h2 class="text-sm font-semibold text-slate-100">Comparativa Mensual · Ventas vs Compras</h2>
+      <p class="text-xs text-slate-400">Distribución por mes — últimos 12 meses</p>
+    </div>
+    <ul class="flex gap-4 text-xs text-slate-400">
+      <li class="flex items-center gap-1.5">
+        <span aria-hidden="true" class="size-2.5 rounded-sm bg-blue-500"></span>Ventas
+      </li>
+      <li class="flex items-center gap-1.5">
+        <span aria-hidden="true" class="size-2.5 rounded-sm bg-amber-500"></span>Compras
+      </li>
+    </ul>
+  </div>
+
+  <chart-canvas
+    class="mt-4 h-64"
+    [config]="config()"
+    label="Comparativa mensual de ventas y compras, últimos 12 meses"
+  />
+</section>

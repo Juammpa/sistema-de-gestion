@@ -8,6 +8,15 @@ export const Sharedroutes: Routes = [
 
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'inicio',
+      },
+      {
+        path: 'inicio',
+        loadComponent: () => import('../dashboard/pages/dashboard-page/dashboard-page'),
+      },
+      {
         path: 'clientes',
         loadChildren: () => import('../clientes/clientes.routes'),
       },

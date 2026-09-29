@@ -1,0 +1,82 @@
+<div class="mx-auto max-w-7xl space-y-4 px-3 py-6 sm:px-6">
+  <header>
+    <h1 class="text-xl font-bold tracking-tight text-slate-100 sm:text-2xl">Panel de Inicio</h1>
+    <p class="text-xs text-blue-300/70 sm:text-sm">
+      Resumen financiero · Actualizado al {{ today }}
+    </p>
+  </header>
+
+  @if (dashboard.error()) {
+    <empty-state infoMessage="No se pudo cargar el panel de inicio" icon="fa-solid fa-chart-line" />
+  } @else if (view(); as v) {
+    <!-- Indicadores -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <kpi-card
+        label="Por cobrar"
+        tone="emerald"
+        subtitle="Saldo de clientes"
+        [value]="v.data.receivable"
+        [change]="v.receivableChange"
+      />
+      <kpi-card
+        label="Por pagar"
+        tone="rose"
+        subtitle="Deuda con proveedores"
+        [value]="v.data.payable"
+        [change]="v.payableChange"
+        [invertTrend]="true"
+      />
+      <kpi-card
+        label="Balance neto"
+        tone="amber"
+        [subtitle]="v.net >= 0 ? 'Saldo a favor' : 'Saldo en contra'"
+        [value]="v.net"
+      />
+      <kpi-card
+        [label]="'Ventas (' + v.monthLabel + ')'"
+        tone="amber"
+        subtitle="Mes en curso"
+        [value]="v.current.sales"
+        [change]="v.salesChange"
+      />
+    </div>
+
+    <!-- Evolución y resumen del mes -->
+    <div class="grid gap-4 lg:grid-cols-3">
+      <flow-chart-card class="lg:col-span-2" [months]="v.data.months" />
+      <monthly-summary-card [month]="v.current" />
+    </div>
+
+    <!-- Rankings y últimos movimientos -->
+    <div class="grid gap-4 lg:grid-cols-3">
+      <ranking-card
+        title="Top Clientes"
+        subtitle="Por saldo adeudado"
+        tone="emerald"
+        pathRoute="/home/clientes"
+        linkLabel="Ver todos los clientes"
+        emptyText="Ningún cliente con deuda"
+        [items]="v.data.topClients"
+        [total]="v.data.receivable"
+      />
+      <ranking-card
+        title="Top Proveedores"
+        subtitle="Por deuda pendiente"
+        tone="rose"
+        pathRoute="/home/proveedores"
+        linkLabel="Ver todos los proveedores"
+        emptyText="No le debés a ningún proveedor"
+        [items]="v.data.topSuppliers"
+        [total]="v.data.payable"
+      />
+      <recent-movements-card [movements]="v.data.recentMovements" />
+    </div>
+
+    <!-- Comparativa de 12 meses -->
+    <monthly-comparison-card [months]="v.data.months" />
+  } @else {
+    <div class="flex justify-center py-24">
+      <loading-spinner />
+    </div>
+  }
+</div>
