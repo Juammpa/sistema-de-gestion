@@ -54,35 +54,94 @@
         } @else {
           Vas a eliminar este elemento.
         }
-        Esta acción es permanente y no se puede deshacer.
+        @if (permanent()) {
+          Esta acción es permanente y no se puede deshacer.
+        } @else {
+          Dejará de aparecer en tus listas, pero su historial se conserva.
+        }
       </p>
-      <!-- Recuadro de advertencia: qué se elimina -->
-      <div class="mt-5 rounded-xl border border-red-500/25 bg-red-950/25 px-4 py-3.5 text-left">
-        <p class="flex items-center gap-2 text-sm font-semibold text-red-300">
-          <i aria-hidden="true" class="fa-solid fa-triangle-exclamation text-xs"></i>
-          Se eliminará de forma definitiva
+
+      <!-- Aviso extra (ej. saldo pendiente) -->
+      @if (warning(); as text) {
+        <p
+          role="note"
+          class="mt-5 flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left text-sm leading-relaxed text-amber-200"
+        >
+          <i aria-hidden="true" class="fa-solid fa-circle-info mt-0.5 shrink-0 text-amber-300"></i>
+          {{ text }}
         </p>
-        <ul class="mt-2.5 space-y-2 text-sm text-slate-300">
-          <li class="flex items-center gap-2.5">
-            <span aria-hidden="true" class="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/80"></span>
-            <span>{{ entityType() }} y sus datos asociados</span>
-          </li>
-          <!-- Mostrar solo si es cliente (proveedor no tiene sucursales) -->
-          @if (entityType() === 'El cliente') {
+      }
+
+      @if (permanent()) {
+        <!-- Recuadro de advertencia: qué se elimina -->
+        <div class="mt-5 rounded-xl border border-red-500/25 bg-red-950/25 px-4 py-3.5 text-left">
+          <p class="flex items-center gap-2 text-sm font-semibold text-red-300">
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation text-xs"></i>
+            Se eliminará de forma definitiva
+          </p>
+          <ul class="mt-2.5 space-y-2 text-sm text-slate-300">
             <li class="flex items-center gap-2.5">
               <span
                 aria-hidden="true"
                 class="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/80"
               ></span>
-              <span>Todas sus sucursales asociadas</span>
+              <span>{{ entityType() }} y sus datos asociados</span>
             </li>
-          }
-          <li class="flex items-center gap-2.5">
-            <span aria-hidden="true" class="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/80"></span>
-            <span>El historial de movimientos y saldos</span>
-          </li>
-        </ul>
-      </div>
+            <!-- Mostrar solo si es cliente (proveedor no tiene sucursales) -->
+            @if (entityType() === 'El cliente') {
+              <li class="flex items-center gap-2.5">
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/80"
+                ></span>
+                <span>Todas sus sucursales asociadas</span>
+              </li>
+            }
+            <li class="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                class="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/80"
+              ></span>
+              <span>El historial de movimientos y saldos</span>
+            </li>
+          </ul>
+        </div>
+      } @else {
+        <!-- Recuadro informativo: qué pasa al eliminar (no se borra el historial) -->
+        <div
+          class="mt-5 rounded-xl border border-slate-700/60 bg-slate-900/50 px-4 py-3.5 text-left"
+        >
+          <p class="flex items-center gap-2 text-sm font-semibold text-slate-200">
+            <i aria-hidden="true" class="fa-solid fa-box-archive text-xs text-slate-400"></i>
+            Qué va a pasar
+          </p>
+          <ul class="mt-2.5 space-y-2 text-sm text-slate-300">
+            <li class="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500/80"
+              ></span>
+              <span>{{ entityType() }} dejará de aparecer en las listas</span>
+            </li>
+            @if (entityType() === 'El cliente') {
+              <li class="flex items-center gap-2.5">
+                <span
+                  aria-hidden="true"
+                  class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500/80"
+                ></span>
+                <span>Sus sucursales también dejarán de aparecer</span>
+              </li>
+            }
+            <li class="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500/80"
+              ></span>
+              <span>Sus movimientos, saldos y la Caja se conservan</span>
+            </li>
+          </ul>
+        </div>
+      }
     </div>
     <!-- ======= FOOTER ======== -->
     <div

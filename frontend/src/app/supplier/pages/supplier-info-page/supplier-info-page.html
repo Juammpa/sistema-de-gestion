@@ -53,6 +53,8 @@
     description="Eliminar Proveedor"
     entityType="El proveedor"
     [entityName]="supplier.companyName"
+    [permanent]="false"
+    [warning]="deleteWarning()"
     [loading]="deleting()"
     (cancel)="showRemoveModal.set(false)"
     (confirm)="deleteSupplier(supplier.id)"

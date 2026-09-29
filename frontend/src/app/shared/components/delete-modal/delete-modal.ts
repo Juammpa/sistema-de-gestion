@@ -11,6 +11,8 @@ export class DeleteModal {
   loading = input<boolean>(false); //  Desabilita el boton mientras se ejecuta el DELETE
   description = input.required<string>();
   entityType = input.required<string>(); // cliente o proveedor
+  permanent = input<boolean>(true); // false = borrado logico (el historial se conserva)
+  warning = input<string | null>(null); // aviso extra (ej. saldo pendiente)
 
   // Outputs
   cancel = output(); // El usuario cancelo la eliminacion

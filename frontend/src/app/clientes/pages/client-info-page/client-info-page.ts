@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, LOCALE_ID, OnDestroy, signal } from '@angular/core';
 import { ClientService } from '../../services/cliente.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -15,6 +15,7 @@ import {
   MovementType,
 } from '../../../movements/interfaces/movement.interface';
 import { DateRange } from '../../../shared/interfaces/date-range.interface';
+import { formatCurrency } from '@angular/common';
 
 @Component({
   selector: 'client-info-page',
@@ -34,6 +35,7 @@ export default class ClientInfoPage implements OnDestroy {
   private clientService = inject(ClientService);
   private sidebarService = inject(SidebarService);
   private router = inject(Router);
+  private locale = inject(LOCALE_ID);
 
   // Contraemos el sidebar
   constructor() {
@@ -73,6 +75,20 @@ export default class ClientInfoPage implements OnDestroy {
       this.clientResource.value()?.butcherShops.find((bs) => bs.id === shopId)?.currentAccountId ??
       null
     );
+  });
+
+  // Aviso del modal de eliminar: un saldo pendiente sigue contando en "Por cobrar"
+  deleteWarning = computed(() => {
+    const client = this.clientResource.hasValue() ? this.clientResource.value() : null;
+    const balance = client?.butcherShops.reduce((sum, shop) => sum + shop.currentBalance, 0) ?? 0;
+
+    if (Math.abs(balance) < 0.005) return null;
+
+    const amount = formatCurrency(Math.abs(balance), this.locale, '$', 'ARS', '1.0-0');
+
+    return balance > 0
+      ? `Este cliente tiene un saldo pendiente de ${amount} que seguirá contando en «Por cobrar».`
+      : `Este cliente tiene un saldo a favor de ${amount} que seguirá contando en «Por cobrar». `;
   });
 
   deleteClient(clientId: number) {

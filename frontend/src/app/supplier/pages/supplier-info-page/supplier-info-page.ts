@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, LOCALE_ID, OnDestroy, signal } from '@angular/core';
 import { SupplierService } from '../../services/supplier.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -15,6 +15,7 @@ import {
   MovementType,
 } from '../../../movements/interfaces/movement.interface';
 import { DateRange } from '../../../shared/interfaces/date-range.interface';
+import { formatCurrency } from '@angular/common';
 
 @Component({
   selector: 'supplier-info-page',
@@ -33,6 +34,7 @@ export default class SupplierInfoPage implements OnDestroy {
   private supplierService = inject(SupplierService);
   private sidebarService = inject(SidebarService);
   private router = inject(Router);
+  private locale = inject(LOCALE_ID);
 
   // Contraemos el sidebar
   constructor() {
@@ -63,6 +65,20 @@ export default class SupplierInfoPage implements OnDestroy {
   deleting = signal<boolean>(false); // Estado de la request de borrado
   movementType = signal<MovementType | null>(null); // Tipo de movimiento elegido (null = todos)
   dateRange = signal<DateRange>({ from: null, to: null }); // Rango de fechas elegido
+
+  // Aviso del modal de eliminar: un saldo pendiente sigue contando en "Por pagar"
+  deleteWarning = computed(() => {
+    const supplier = this.supplierResource.hasValue() ? this.supplierResource.value() : null;
+    const balance = supplier?.currentBalance ?? 0;
+
+    if (Math.abs(balance) < 0.005) return null;
+
+    const amount = formatCurrency(Math.abs(balance), this.locale, '$', 'ARS', '1.0-0');
+
+    return balance > 0
+      ? `Le debés ${amount} a este proveedor. Ese saldo seguirá contando en «Por pagar».`
+      : `Este proveedor tiene un saldo a tu favor de ${amount} que seguirá restando en «Por pagar». `;
+  });
 
   deleteSupplier(supplierId: number) {
     this.deleting.set(true);

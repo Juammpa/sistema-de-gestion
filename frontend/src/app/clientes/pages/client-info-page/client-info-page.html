@@ -56,6 +56,8 @@
     description="Eliminar Cliente"
     entityType="El cliente"
     [entityName]="`${client.lastName} ${client.name}`"
+    [permanent]="false"
+    [warning]="deleteWarning()"
     [loading]="deleting()"
     (cancel)="showRemoveModal.set(false)"
     (confirm)="deleteClient(client.id)"
