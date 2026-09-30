@@ -71,7 +71,7 @@ export class EditPurchaseModal implements OnInit {
         this.saved.emit();
         this.close();
       },
-      error: (err) => console.error('Error al actualizar la compra', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 
@@ -83,10 +83,7 @@ export class EditPurchaseModal implements OnInit {
         this.deleted.emit();
         this.close();
       },
-      error: (err) => {
-        console.error('Error al eliminar la compra', err);
-        this.deleting.set(false);
-      },
+      error: (err) => this.deleting.set(false), // El aviso lo muestra el interceptor
     });
   }
 }

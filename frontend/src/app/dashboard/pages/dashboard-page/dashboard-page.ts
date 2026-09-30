@@ -1,6 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { FlowChartCard } from '../../components/flow-chart-card/flow-chart-card';
 import { KpiCard } from '../../components/kpi-card/kpi-card';
@@ -10,11 +9,11 @@ import { RankingCard } from '../../components/ranking-card/ranking-card';
 import { RecentMovementsCard } from '../../components/recent-movements-card/recent-movements-card';
 import { DashboardService } from '../../services/dashboard.service';
 import { monthShort, pctChange } from '../../utils/dashboard.utils';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-dashboard-page',
   imports: [
-    EmptyState,
     LoadingSpinner,
     KpiCard,
     FlowChartCard,
@@ -22,6 +21,7 @@ import { monthShort, pctChange } from '../../utils/dashboard.utils';
     RankingCard,
     RecentMovementsCard,
     MonthlyComparisonCard,
+    ErrorState,
   ],
   templateUrl: './dashboard-page.html',
   host: { class: 'block h-full min-h-0 flex-1 overflow-y-auto scrollbar-none' },

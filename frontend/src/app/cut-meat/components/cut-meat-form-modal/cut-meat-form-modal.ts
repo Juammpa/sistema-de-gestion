@@ -46,7 +46,7 @@ export class CutMeatFormModal {
         this.cutMeatForm.reset();
         this.close();
       },
-      error: (err) => console.error('Error al crear corte de carne', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 }

@@ -57,7 +57,7 @@ export class PurchaseFormModal {
         this.saved.emit();
         this.purchaseForm.reset();
       },
-      error: (err) => console.error('Error al crear la compra', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 }

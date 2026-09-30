@@ -14,10 +14,11 @@ import {
   defaultFilterValues,
   matchesSearch,
 } from '../../../shared/utils/search-filter.utils';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-supplier-page',
-  imports: [SearchInput, SearchList, EmptyState, LoadingSpinner, SupplierFormModal],
+  imports: [SearchInput, SearchList, EmptyState, LoadingSpinner, SupplierFormModal, ErrorState],
   templateUrl: './supplier-page.html',
 })
 export default class SupplierPage {
@@ -26,6 +27,10 @@ export default class SupplierPage {
 
   // Obtiene todos los proveedores
   supplierResource = rxResource({ stream: () => this.supplierService.getAllSuppliers() });
+
+  suppliers = computed(() =>
+    this.supplierResource.hasValue() ? this.supplierResource.value() : [],
+  );
 
   // Filtros de esta pagina
   filters: SearchFilter[] = [
@@ -54,7 +59,7 @@ export default class SupplierPage {
 
   // Proveedores que se muestran: primero se busca (devuelve un arreglo nuevo) y despues se ordena
   private visibleSuppliers = computed(() => {
-    const suppliers = (this.supplierResource.value() ?? []).filter((supplier) =>
+    const suppliers = this.suppliers().filter((supplier) =>
       matchesSearch(this.searchText(), supplier.companyName, supplier.phoneNumber),
     );
 

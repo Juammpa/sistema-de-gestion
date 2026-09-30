@@ -4,7 +4,7 @@
 >
   <search-input
     placeholder="Buscar proveedores..."
-    [numberFound]="supplierResource.value()?.length || 0"
+    [numberFound]="suppliers().length"
     searchName="proveedores"
     [filters]="filters"
     (add)="showModal.set(true)"
@@ -19,28 +19,21 @@
 >
   <!-- Mostrar estado de carga -->
   @if (supplierResource.isLoading()) {
+    <!-- Cargando (tambien al tocar "Reintentar") -->
     <div class="m-auto">
       <loading-spinner />
     </div>
-  }
-
-  <!-- TODO: implementar funcionalidad -->
-  <!-- Mostrar estado de error -->
-  @if (supplierResource.error()) {
-    <empty-state infoMessage="No se pudo conectar al servidor" />
-  }
-
-  <!-- Mostrar estado sin resultados -->
-  @if (
-    supplierResource.value()?.length === 0 &&
-    !supplierResource.isLoading() &&
-    !supplierResource.error()
-  ) {
+  } @else if (supplierResource.error()) {
+    <!-- Error: solo se ve cuando termino de cargar -->
+    <error-state
+      title="No se pudieron cargar los proveedores"
+      [error]="supplierResource.error()"
+      (retry)="supplierResource.reload()"
+    />
+  } @else if (suppliers().length === 0) {
     <empty-state infoMessage="No hay proveedores registrados" />
-  }
-
-  <!-- Mostrar estado sin resultados de la busqueda -->
-  @if (supplierResource.value()?.length && supplierList().length === 0) {
+  } @else if (supplierList().length === 0) {
+    <!-- Hay proveedores, pero ninguno coincide con la busqueda -->
     <empty-state
       infoMessage="No se encontraron proveedores con esa búsqueda"
       icon="fa-solid fa-magnifying-glass"

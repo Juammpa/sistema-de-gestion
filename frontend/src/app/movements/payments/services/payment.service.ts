@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Payment, PaymentRequest } from '../interfaces/payment.interface';
+import { notifyAlways } from '../../../core/errors/error-context';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -14,7 +15,9 @@ export class PaymentService {
 
   // Obtiene un pago por Id
   getPaymentById(id: number) {
-    return this.http.get<Payment>(`${environment.apiUrl}/payment/${id}`);
+    return this.http.get<Payment>(`${environment.apiUrl}/payment/${id}`, {
+      context: notifyAlways(),
+    });
   }
 
   // Actualiza los datos de un pago

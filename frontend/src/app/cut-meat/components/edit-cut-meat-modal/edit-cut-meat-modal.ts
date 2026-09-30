@@ -63,7 +63,7 @@ export class EditCutMeatModal implements OnInit {
         this.saved.emit();
         this.close();
       },
-      error: (err) => console.error('Error al actualizar el corte de carne', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 
@@ -75,10 +75,7 @@ export class EditCutMeatModal implements OnInit {
         this.deleted.emit();
         this.close();
       },
-      error: (err) => {
-        console.error('Error al eliminar el corte de carne', err);
-        this.deleting.set(false);
-      },
+      error: () => this.deleting.set(false), // El aviso lo muestra el interceptor
     });
   }
 
@@ -90,10 +87,7 @@ export class EditCutMeatModal implements OnInit {
         this.saved.emit();
         this.close();
       },
-      error: (err) => {
-        console.error('Error al activar el corte de carne', err);
-        this.activating.set(false);
-      },
+      error: () => this.activating.set(false), // El aviso lo muestra el interceptor
     });
   }
 }

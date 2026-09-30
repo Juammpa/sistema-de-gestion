@@ -1,5 +1,5 @@
 <!-- Encabezado con saldo actual -->
-<cash-header [balance]="balanceResource.value()" />
+<cash-header [balance]="balanceResource.hasValue() ? balanceResource.value() : undefined" />
 
 <!-- Filtro de fechas -->
 <cash-date-filter [(from)]="from" [(to)]="to" />
@@ -13,7 +13,11 @@
     <div class="m-auto py-12"><loading-spinner /></div>
     <!---->
   } @else if (cashResource.error()) {
-    <empty-state infoMessage="No se pudo cargar la caja" icon="fa-solid fa-box-archive" />
+    <error-state
+      title="No se pudo cargar la caja"
+      [error]="cashResource.error()"
+      (retry)="cashResource.reload()"
+    />
     <!---->
   } @else {
     @for (day of cashResource.value(); track day.date) {

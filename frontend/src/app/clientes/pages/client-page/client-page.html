@@ -4,7 +4,7 @@
 >
   <search-input
     placeholder="Buscar clientes..."
-    [numberFound]="clientResource.value()?.length || 0"
+    [numberFound]="clients().length"
     searchName="clientes"
     [filters]="filters"
     (add)="showModal.set(true)"
@@ -19,26 +19,21 @@
 >
   <!-- Mostrar estado de carga -->
   @if (clientResource.isLoading()) {
+    <!-- Cargando (tambien al tocar "Reintentar") -->
     <div class="m-auto">
       <loading-spinner />
     </div>
-  }
-
-  <!-- TODO: implementar funcionalidad -->
-  <!-- Mostrar estado de error -->
-  @if (clientResource.error()) {
-    <empty-state infoMessage="No se pudo conectar al servidor" />
-  }
-
-  <!-- Mostrar estado sin resultados -->
-  @if (
-    clientResource.value()?.length === 0 && !clientResource.isLoading() && !clientResource.error()
-  ) {
+  } @else if (clientResource.error()) {
+    <!-- Error: solo se ve cuando termino de cargar -->
+    <error-state
+      title="No se pudieron cargar los clientes"
+      [error]="clientResource.error()"
+      (retry)="clientResource.reload()"
+    />
+  } @else if (clients().length === 0) {
     <empty-state infoMessage="No hay clientes registrados" />
-  }
-
-  <!-- Mostrar estado sin resultados de la busqueda -->
-  @if (clientResource.value()?.length && clientList().length === 0) {
+  } @else if (clientList().length === 0) {
+    <!-- Hay clientes, pero ninguno coincide con la busqueda -->
     <empty-state
       infoMessage="No se encontraron clientes con esa búsqueda"
       icon="fa-solid fa-magnifying-glass"

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Client, ClientCreateRequest, ClientRequest } from '../interfaces/client.interface';
-import { catchError, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
@@ -11,7 +11,7 @@ export class ClientService {
 
   // Obtener todos los clientes
   getAllClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(`${environment.apiUrl}/clients`).pipe(catchError(() => of([])));
+    return this.http.get<Client[]>(`${environment.apiUrl}/clients`);
   }
 
   // Obtiene un cliente por Id

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Sale, SaleRequest } from '../interfaces/sales.interface';
 import { environment } from '../../../../environments/environment';
+import { notifyAlways } from '../../../core/errors/error-context';
 
 @Injectable({ providedIn: 'root' })
 export class SaleService {
@@ -15,7 +16,9 @@ export class SaleService {
 
   // Obtener venta por Id
   getSaleById(id: number) {
-    return this.http.get<Sale>(`${environment.apiUrl}/sales/${id}`);
+    return this.http.get<Sale>(`${environment.apiUrl}/sales/${id}`, {
+      context: notifyAlways(),
+    });
   }
 
   // Editar venta existente

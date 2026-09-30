@@ -44,6 +44,12 @@
         icon="fa-solid fa-filter-circle-xmark"
       />
     }
+  } @else if (cutMeatResource.error()) {
+    <error-state
+      title="No se pudieron cargar los cortes"
+      [error]="cutMeatResource.error()"
+      (retry)="cutMeatResource.reload()"
+    />
   }
 </div>
 

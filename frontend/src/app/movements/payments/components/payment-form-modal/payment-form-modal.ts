@@ -99,7 +99,7 @@ export class PaymentFormModal {
         this.saved.emit();
         this.paymentForm.reset();
       },
-      error: (err) => console.error('Error al guardar el pago', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 }

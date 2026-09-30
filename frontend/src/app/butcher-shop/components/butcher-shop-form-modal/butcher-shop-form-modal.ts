@@ -47,7 +47,7 @@ export class ButcherShopFormModal {
         this.butcherShopForm.reset();
         this.close();
       },
-      error: (err) => console.error('Error al crear la sucursal', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 }

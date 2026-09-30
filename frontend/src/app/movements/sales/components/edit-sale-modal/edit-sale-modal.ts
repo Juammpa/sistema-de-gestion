@@ -35,7 +35,9 @@ export class EditSaleModal implements OnInit {
 
   // Cortes de carnes activos
   activeCutMeats = computed(() =>
-    (this.cutMeatOptions.value() ?? []).filter((cutMeat) => cutMeat.isActive),
+    (this.cutMeatOptions.hasValue() ? this.cutMeatOptions.value() : []).filter(
+      (cutMeat) => cutMeat.isActive,
+    ),
   );
 
   saleForm: FormGroup = this.fb.group({
@@ -81,7 +83,7 @@ export class EditSaleModal implements OnInit {
         this.saved.emit();
         this.close();
       },
-      error: (err) => console.error('Error al actualizar la venta', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 
@@ -93,10 +95,7 @@ export class EditSaleModal implements OnInit {
         this.deleted.emit();
         this.close();
       },
-      error: (err) => {
-        console.error('Error al eliminar la venta', err);
-        this.deleting.set(false);
-      },
+      error: () => this.deleting.set(false), // El aviso lo muestra el interceptor
     });
   }
 }

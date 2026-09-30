@@ -7,7 +7,7 @@
   </header>
 
   @if (dashboard.error()) {
-    <empty-state infoMessage="No se pudo cargar el panel de inicio" icon="fa-solid fa-chart-line" />
+    <error-state [error]="dashboard.error()" (retry)="dashboard.reload()" />
   } @else if (view(); as v) {
     <!-- Indicadores -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

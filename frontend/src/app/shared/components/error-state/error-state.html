@@ -1,0 +1,25 @@
+<div role="alert" class="flex flex-col items-center justify-center gap-3 px-4 py-16 text-center">
+  <span
+    aria-hidden="true"
+    class="flex size-12 items-center justify-center rounded-2xl border border-red-500/25 bg-red-500/10 text-xl text-red-300"
+  >
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </span>
+
+  <p class="text-sm font-semibold text-slate-200">{{ title() }}</p>
+
+  @if (detail(); as text) {
+    <p class="max-w-xs text-balance text-sm text-slate-400">{{ text }}</p>
+  }
+
+  @if (canRetry()) {
+    <button
+      type="button"
+      (click)="retry.emit()"
+      class="mt-1 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-all duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-[0.98]"
+    >
+      <i class="fa-solid fa-rotate-right text-xs" aria-hidden="true"></i>
+      Reintentar
+    </button>
+  }
+</div>

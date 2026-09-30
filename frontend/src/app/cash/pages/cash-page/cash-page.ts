@@ -8,10 +8,19 @@ import { CashDateFilter } from '../../components/cash-date-filter/cash-date-filt
 import { CashHeader } from '../../components/cash-header/cash-header';
 import { CashDayModal } from '../../components/cash-day-modal/cash-day-modal';
 import { CashDay } from '../../interfaces/cash.interface';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-cash-page',
-  imports: [LoadingSpinner, EmptyState, CashItem, CashDateFilter, CashHeader, CashDayModal],
+  imports: [
+    LoadingSpinner,
+    EmptyState,
+    CashItem,
+    CashDateFilter,
+    CashHeader,
+    CashDayModal,
+    ErrorState,
+  ],
   templateUrl: './cash-page.html',
 })
 export default class CashPage {

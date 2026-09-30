@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Purchase, PurchaseRequest } from '../interfaces/purchase.interface';
 import { environment } from '../../../../environments/environment';
+import { notifyAlways } from '../../../core/errors/error-context';
 
 @Injectable({ providedIn: 'root' })
 export class PurchaseService {
@@ -14,7 +15,9 @@ export class PurchaseService {
 
   // Obtener una compra por Id
   getPurchaseById(id: number) {
-    return this.http.get<Purchase>(`${environment.apiUrl}/purchase/${id}`);
+    return this.http.get<Purchase>(`${environment.apiUrl}/purchase/${id}`, {
+      context: notifyAlways(),
+    });
   }
 
   // Actualizar una compra existente

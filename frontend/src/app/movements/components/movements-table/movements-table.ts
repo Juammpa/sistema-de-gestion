@@ -172,16 +172,19 @@ export class MovementsTable {
   openSaleDetail(sale: SaleMovement) {
     this.selectedSale.set(sale);
     this.showSaleDetail.set(true);
+    if (this.saleDetail.error()) this.saleDetail.reload();
   }
 
   openPaymentDetail(payment: PaymentMovement) {
     this.selectedPayment.set(payment);
     this.showPaymentDetail.set(true);
+    if (this.paymentDetail.error()) this.paymentDetail.reload();
   }
 
   openPurchaseDetail(purchase: PurchaseMovement) {
     this.selectedPurchase.set(purchase);
     this.showPurchaseDetail.set(true);
+    if (this.purchaseDetail.error()) this.purchaseDetail.reload();
   }
 
   // Solo pide el detalle completo (con cutMeatId) cuando hay una venta seleccionada

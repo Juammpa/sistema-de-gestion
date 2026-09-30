@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-6xl px-3 pb-6 sm:px-4">
-  @if (clientResource.value(); as client) {
+  @if (clientResource.hasValue() && clientResource.value(); as client) {
     <!-- Contenedor de Info del Cliente -->
     <client-header
       [client]="client"
@@ -38,7 +38,11 @@
     </div>
     <!-- Estado de error -->
   } @else if (clientResource.error()) {
-    <empty-state infoMessage="No se pudo cargar al cliente" />
+    <error-state
+      title="No se pudo cargar el cliente"
+      [error]="clientResource.error()"
+      (retry)="clientResource.reload()"
+    />
   }
 </div>
 

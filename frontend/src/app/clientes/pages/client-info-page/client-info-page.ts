@@ -8,7 +8,6 @@ import { MovementsFilters } from '../../../movements/components/movements-filter
 import { MovementsTable } from '../../../movements/components/movements-table/movements-table';
 import { ClientFormModal } from '../../components/client-form-modal/client-form-modal';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
-import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { DeleteModal } from '../../../shared/components/delete-modal/delete-modal';
 import {
   MovementFilterOption,
@@ -16,6 +15,7 @@ import {
 } from '../../../movements/interfaces/movement.interface';
 import { DateRange } from '../../../shared/interfaces/date-range.interface';
 import { formatCurrency } from '@angular/common';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'client-info-page',
@@ -24,9 +24,9 @@ import { formatCurrency } from '@angular/common';
     MovementsFilters,
     MovementsTable,
     ClientFormModal,
-    EmptyState,
     LoadingSpinner,
     DeleteModal,
+    ErrorState,
   ],
   templateUrl: './client-info-page.html',
 })
@@ -71,10 +71,8 @@ export default class ClientInfoPage implements OnDestroy {
 
   selectedCurrentAccountId = computed(() => {
     const shopId = this.selectedButcherShopId();
-    return (
-      this.clientResource.value()?.butcherShops.find((bs) => bs.id === shopId)?.currentAccountId ??
-      null
-    );
+    const client = this.clientResource.hasValue() ? this.clientResource.value() : null;
+    return client?.butcherShops.find((bs) => bs.id === shopId)?.currentAccountId ?? null;
   });
 
   // Aviso del modal de eliminar: un saldo pendiente sigue contando en "Por cobrar"
@@ -99,10 +97,7 @@ export default class ClientInfoPage implements OnDestroy {
         // Volvemos al listado
         this.router.navigate(['/home/clientes']);
       },
-      error: (err) => {
-        console.error('Error al eliminar el cliente', err);
-        this.deleting.set(false);
-      },
+      error: () => this.deleting.set(false),
     });
   }
 }

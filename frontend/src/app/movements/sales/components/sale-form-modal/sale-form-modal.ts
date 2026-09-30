@@ -35,7 +35,9 @@ export class SaleFormModal {
 
   // Cortes de carnes activos
   activeCutMeats = computed(() =>
-    (this.cutMeatOptions.value() ?? []).filter((cutMeat) => cutMeat.isActive),
+    (this.cutMeatOptions.hasValue() ? this.cutMeatOptions.value() : []).filter(
+      (cutMeat) => cutMeat.isActive,
+    ),
   );
 
   saleForm: FormGroup = this.fb.group({
@@ -68,7 +70,7 @@ export class SaleFormModal {
         this.saleForm.reset();
         this.close();
       },
-      error: (err) => console.error('Error al guardar la venta', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 }

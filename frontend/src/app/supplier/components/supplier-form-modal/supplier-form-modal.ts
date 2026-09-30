@@ -63,7 +63,7 @@ export class SupplierFormModal implements OnInit {
         this.supplierForm.reset();
         this.close();
       },
-      error: (err) => console.error('Error al guardar el proveedor', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 }

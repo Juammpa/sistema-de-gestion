@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-6xl px-3 pb-6 sm:px-4">
-  @if (supplierResource.value(); as supplier) {
+  @if (supplierResource.hasValue() && supplierResource.value(); as supplier) {
     <!-- Contenedor de Info del Proveedor -->
     <supplier-header
       [supplier]="supplier"
@@ -21,7 +21,7 @@
       <div class="max-h-100 overflow-auto scrollbar-none">
         <movements-table
           #movementsTable
-          [currentCurrentId]="supplierResource.value()?.currentAccountId ?? null"
+          [currentCurrentId]="supplier.currentAccountId"
           (movementChanged)="supplierResource.reload()"
           [dateRange]="dateRange()"
           [movementType]="movementType()"
@@ -35,7 +35,11 @@
     </div>
     <!-- Estado de error -->
   } @else if (supplierResource.error()) {
-    <empty-state infoMessage="No se pudo cargar al proveedor" />
+    <error-state
+      title="No se pudo cargar el proveedor"
+      [error]="supplierResource.error()"
+      (retry)="supplierResource.reload()"
+    />
   }
 </div>
 

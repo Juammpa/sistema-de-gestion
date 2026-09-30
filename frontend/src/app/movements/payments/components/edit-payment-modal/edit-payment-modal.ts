@@ -118,7 +118,7 @@ export class EditPaymentModal implements OnInit {
         this.saved.emit();
         this.close();
       },
-      error: (err) => console.error('Error al guardar el pago', err),
+      error: () => {}, // El aviso lo muestra el interceptor
     });
   }
 
@@ -130,10 +130,7 @@ export class EditPaymentModal implements OnInit {
         this.deleted.emit();
         this.close();
       },
-      error: (err) => {
-        console.error('Error al eliminar el pago', err);
-        this.deleting.set(false);
-      },
+      error: () => this.deleting.set(false), // El aviso lo muestra el interceptor
     });
   }
 }

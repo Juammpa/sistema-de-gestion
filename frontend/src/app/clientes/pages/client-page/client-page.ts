@@ -15,6 +15,7 @@ import {
   defaultFilterValues,
   matchesSearch,
 } from '../../../shared/utils/search-filter.utils';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 // Nombre tal como se muestra en la lista
 const fullName = (client: Client) => `${client.lastName} ${client.name}`;
@@ -25,7 +26,7 @@ const totalDebt = (client: Client) =>
 
 @Component({
   selector: 'app-client-page',
-  imports: [LoadingSpinner, SearchInput, EmptyState, SearchList, ClientFormModal],
+  imports: [LoadingSpinner, SearchInput, EmptyState, SearchList, ClientFormModal, ErrorState],
   templateUrl: './client-page.html',
 })
 export default class ClientPage {
@@ -36,6 +37,8 @@ export default class ClientPage {
   clientResource = rxResource({
     stream: () => this.clientService.getAllClients(),
   });
+
+  clients = computed(() => (this.clientResource.hasValue() ? this.clientResource.value() : []));
 
   // Filtros de esta pagina
   filters: SearchFilter[] = [
@@ -64,7 +67,7 @@ export default class ClientPage {
 
   // Clientes que se muestran: primero se busca (devuelve un arreglo nuevo) y despues ordena
   private visibleClients = computed(() => {
-    const clients = (this.clientResource.value() ?? []).filter((client) =>
+    const clients = this.clients().filter((client) =>
       matchesSearch(
         this.searchText(),
         client.lastName,

@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Supplier, SupplierRequest } from '../interfaces/supplier.interface';
 import { environment } from '../../../environments/environment';
-import { catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +11,7 @@ export class SupplierService {
 
   // Obtener todos los proveedores
   getAllSuppliers() {
-    return this.http
-      .get<Supplier[]>(`${environment.apiUrl}/suppliers`)
-      .pipe(catchError(() => of([])));
+    return this.http.get<Supplier[]>(`${environment.apiUrl}/suppliers`);
   }
 
   // Obtener proveedor por Id

@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CashDay } from '../interfaces/cash.interface';
 import { environment } from '../../../environments/environment';
-import { catchError, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CashService {
@@ -17,8 +16,6 @@ export class CashService {
 
   // Saldo actual de la caja
   getBalance() {
-    return this.http
-      .get<number>(`${environment.apiUrl}/cash/balance`)
-      .pipe(catchError(() => of(0)));
+    return this.http.get<number>(`${environment.apiUrl}/cash/balance`);
   }
 }

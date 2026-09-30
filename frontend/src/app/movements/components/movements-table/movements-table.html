@@ -148,7 +148,7 @@
   </div>
 }
 
-@if (showSaleDetail() && saleDetail.value(); as sale) {
+@if (showSaleDetail() && saleDetail.hasValue() && saleDetail.value(); as sale) {
   <edit-sale-modal
     [sale]="sale"
     [butcherShopId]="butcherShopId()!"
@@ -158,7 +158,7 @@
   />
 }
 
-@if (showPaymentDetail() && paymentDetail.value(); as payment) {
+@if (showPaymentDetail() && paymentDetail.hasValue() && paymentDetail.value(); as payment) {
   <edit-payment-modal
     [payment]="payment"
     (cancel)="showPaymentDetail.set(false)"
@@ -169,7 +169,7 @@
   />
 }
 
-@if (showPurchaseDetail() && purchaseDetail.value(); as purchase) {
+@if (showPurchaseDetail() && purchaseDetail.hasValue() && purchaseDetail.value(); as purchase) {
   <edit-purchase-modal
     [purchase]="purchase"
     (cancel)="showPurchaseDetail.set(false)"

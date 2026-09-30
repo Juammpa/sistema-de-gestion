@@ -16,6 +16,7 @@ import {
   defaultFilterValues,
   matchesSearch,
 } from '../../../shared/utils/search-filter.utils';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'cut-meat-page',
@@ -26,6 +27,7 @@ import {
     EmptyState,
     CutMeatFormModal,
     EditCutMeatModal,
+    ErrorState,
   ],
   templateUrl: './cut-meat-page.html',
 })
@@ -78,7 +80,7 @@ export default class CutMeatPage {
   visibleCutMeats = computed(() => {
     const { sort, specie, status } = this.filterValues();
 
-    const cutMeats = (this.cutMeatResource.value() ?? [])
+    const cutMeats = (this.cutMeatResource.hasValue() ? this.cutMeatResource.value() : [])
       .filter((cutMeat) =>
         matchesSearch(this.searchText(), cutMeat.cutMeatName, translateSpecie(cutMeat.specie)),
       )
@@ -112,6 +114,8 @@ export default class CutMeatPage {
   openCutMeatDetail(cutMeat: CutMeat) {
     this.selectedCutMeat.set(cutMeat);
     this.showCutMeatDetail.set(true);
+
+    if (this.cutMeatDetail.error()) this.cutMeatDetail.reload();
   }
 
   cutMeatDetail = rxResource({
