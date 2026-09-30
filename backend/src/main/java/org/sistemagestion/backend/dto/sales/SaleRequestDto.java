@@ -13,21 +13,21 @@ import java.time.LocalDate;
 @Data
 public class SaleRequestDto {
 
-    @NotNull(message = "The clientId is mandatory")
+    @NotNull(message = "El ID del cliente es obligatorio.")
     private Long clientId;
 
-    @NotNull(message = "The butcherShopId is mandatory")
+    @NotNull(message = "El ID de la sucursal es obligatorio.")
     private Long butcherShopId;
 
-    @NotNull(message = "The cutMeatId is mandatory")
+    @NotNull(message = "El ID del corte de carne es obligatorio.")
     private Long cutMeatId;
 
-    @NotNull(message = "The kilograms are mandatory")
-    @Positive(message = "The kilograms must be positive")
+    @NotNull(message = "Los kilogramos son obligatorios.")
+    @Positive(message = "Los kilogramos deben ser positivos.")
     private Double kilograms;
 
-    @NotNull(message = "The unit is mandatory")
-    @Positive(message = "The unit must be positive")
+    @NotNull(message = "Las unidades son obligatorias.")
+    @Positive(message = "Las unidades deben ser positivas.")
     private Integer unit;
 
     private LocalDate date;

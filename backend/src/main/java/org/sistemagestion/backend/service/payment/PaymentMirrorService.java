@@ -29,7 +29,7 @@ public class PaymentMirrorService {
     public void assertEditable(Payment payment) {
         if (payment.getOriginPayment() != null) {
             throw new BusinessRuleException(
-                    "This payment was generated automatically from a client payment and cannot be modified directly"
+                    "Este pago se generó automáticamente a partir de un pago de cliente y no se puede modificar directamente."
             );
         }
     }
@@ -42,11 +42,11 @@ public class PaymentMirrorService {
         }
 
         if(!butcherShopRepository.existsByCurrentAccountId(account.getId())) {
-            throw new BusinessRuleException("SUPPLIER_TRANSFER payments can only be registered on client accounts");
+            throw new BusinessRuleException("Los pagos a proveedor solo se pueden registrar desde la cuenta de un cliente.");
         }
 
         if(supplierId == null) {
-            throw new BusinessRuleException("The supplierId is mandatory for SUPPLIER_TRANSFER payments");
+            throw new BusinessRuleException("Indicá el proveedor al que se le realiza el pago.");
         }
 
         return supplierRepository.findByIdAndIsActiveTrue(supplierId)

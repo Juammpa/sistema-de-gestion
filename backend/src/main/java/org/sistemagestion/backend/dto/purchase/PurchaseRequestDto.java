@@ -17,22 +17,22 @@ import java.time.LocalDate;
 @Builder
 public class PurchaseRequestDto {
 
-    @NotNull(message = "The purchaseType is mandatory")
+    @NotNull(message = "El tipo de compra es obligatorio.")
     private PurchaseType purchaseType;
 
-    @NotNull(message = "The unit is mandatory")
-    @Positive(message = "The unit must be positive")
+    @NotNull(message = "Las unidades son obligatorias.")
+    @Positive(message = "Las unidades deben ser positivas.")
     private Integer unit;
 
-    @NotNull(message = "The kilograms are mandatory")
-    @Positive(message = "The kilograms must be positive")
+    @NotNull(message = "Los kilogramos son obligatorios.")
+    @Positive(message = "Los kilogramos deben ser positivos.")
     private Double kilograms;
 
-    @NotNull(message = "The price is mandatory")
-    @Positive(message = "The price must be positive")
+    @NotNull(message = "El precio es obligatorio.")
+    @Positive(message = "El precio debe ser positivo.")
     private Double pricePerKilo;
 
-    @NotNull(message = "The currentAccountId is mandatory")
+    @NotNull(message = "El ID de la cuenta corriente asociada es obligatorio.")
     private Long currentAccountId;
 
     private LocalDate date;

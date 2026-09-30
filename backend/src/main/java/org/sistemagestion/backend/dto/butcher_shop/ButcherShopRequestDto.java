@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @Data
 public class ButcherShopRequestDto {
 
-    @NotBlank(message = "The name is mandatory")
+    @NotBlank(message = "El nombre es obligatorio.")
     private String name;
 
-    @NotBlank(message = "The address is mandatory")
+    @NotBlank(message = "La dirección es obligatoria.")
     private String address;
 
-    @NotNull(message = "The client ID is mandatory")
-    @Positive(message = "The client ID must be positive")
+    @NotNull(message = "El ID del cliente es obligatorio.")
+    @Positive(message = "El ID del cliente debe ser positivo.")
     private Long clientId;
 }

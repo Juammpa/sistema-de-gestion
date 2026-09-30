@@ -36,7 +36,7 @@ public class CashService implements ICashService{
 
         // 'Desde' no puede ser mayor que 'Hasta'
         if (start.isAfter(end)) {
-            throw new BusinessRuleException("The 'from' date cannot be after the 'to' date");
+            throw new BusinessRuleException("La fecha «desde» no puede ser posterior a la fecha «hasta»");
         }
 
         // (Fecha, Lista de pagos de clientes)
@@ -111,7 +111,8 @@ public class CashService implements ICashService{
 
         if (newAmount > available) {
             throw new BusinessRuleException(String.format(
-                    "Insufficient cash balance: available $%.2f, requested $%.2f", available, newAmount));
+                    Locale.forLanguageTag("es-AR"),
+                    "Saldo de caja insuficiente: disponible $%.2f, solicitado $%.2f", available, newAmount));
         }
 
     }

@@ -16,14 +16,14 @@ import java.time.LocalDate;
 @Builder
 public class PaymentRequestDto {
 
-    @NotNull(message = "The paymentType is mandatory")
+    @NotNull(message = "El tipo de pago es obligatorio.")
     private PaymentType paymentType;
 
-    @NotNull(message = "The amount is mandatory")
-    @Positive(message = "The amount must be positive")
+    @NotNull(message = "El monto es obligatorio.")
+    @Positive(message = "El monto debe ser positivo.")
     private Double amount;
 
-    @NotNull(message = "The currentAccountId is mandatory")
+    @NotNull(message = "El ID de la cuenta corriente asociada es obligatorio.")
     private Long currentAccountId;
 
     private LocalDate date;

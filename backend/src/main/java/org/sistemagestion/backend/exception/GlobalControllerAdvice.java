@@ -1,87 +1,120 @@
 package org.sistemagestion.backend.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalControllerAdvice {
+public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    private static final String BASE_TYPE = "https://api.sistema_gestion/errors/";
 
-        log.warn("Recurso no encontrado - Path: {}, Message: {}",
-                request.getDescription(false), ex.getMessage());
+    @ExceptionHandler(ResourceNotFoundException.class) // 404
+    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        // El mensaje técnico (en inglés) queda solo en el log
+        log.warn("Recurso no encontrado - {} - {}", request.getDescription(false), ex.getMessage());
 
-        problemDetail.setTitle("Recurso no encontrado");
-        problemDetail.setType(URI.create("https://api.sistema_gestion/errors/not-found"));
-        problemDetail.setProperty("Timestamp", Instant.now());
-        problemDetail.setProperty("Resource", ex.getResourceName());
-        problemDetail.setProperty("Field", ex.getFieldName());
-        problemDetail.setProperty("Value", ex.getFieldValue());
-
-        return problemDetail;
+        return problem(HttpStatus.NOT_FOUND, "Recurso no encontrado", "not-found",
+                "No se encontró el registro solicitado. Es posible que haya sido eliminado.");
     }
 
-    @ExceptionHandler(BusinessRuleException.class) // Conflict 409
-    public ProblemDetail handleBusinessRuleException(BusinessRuleException ex) {
+    @ExceptionHandler(BusinessRuleException.class) // 409
+    public ProblemDetail handleBusinessRule(BusinessRuleException ex) {
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
-
-        problemDetail.setTitle("Regla de negocio incumplida");
-        problemDetail.setType(URI.create("https://api.sistema_gestion/errors/business-rule"));
-        problemDetail.setProperty("Timestamp", Instant.now());
-
-        return problemDetail;
+        // Estos mensajes los escribimos para el usuario: se envían tal cual
+        return problem(HttpStatus.CONFLICT, "Regla de negocio incumplida", "business-rule", ex.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class) // Bad Request 400
-    public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    @ExceptionHandler(DataIntegrityViolationException.class) // 409
+    public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex, WebRequest request) {
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
-                "La validación falló en uno o más campos");
+        log.warn("Violación de integridad - {} - {}", request.getDescription(false), ex.getMostSpecificCause().getMessage());
 
-        problemDetail.setTitle("Error de validación");
-        problemDetail.setType(URI.create("https://api.sistema_gestion/errors/error-validation"));
-        problemDetail.setProperty("Timestamp", Instant.now());
-
-        Map<String, String> errorMap = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errorMap.put(error.getField(), error.getDefaultMessage());
-            }
-        );
-
-        problemDetail.setProperty("errors", errorMap);
-
-        return problemDetail;
+        return problem(HttpStatus.CONFLICT, "Conflicto de datos", "data-integrity",
+                "No se pudo completar la operación porque el registro está relacionado con otros datos.");
     }
 
-    @ExceptionHandler(Exception.class) // Error 500
-    public ProblemDetail handleException(Exception ex, WebRequest request) {
+    @ExceptionHandler(Exception.class) // 500
+    public ProblemDetail handleUnexpected(Exception ex, WebRequest request) {
 
-        log.error("A ocurrido un error inesperado {}: {}",
-                request.getDescription(false), ex.getMessage(), ex);
+        log.error("Error inesperado - {}: {}", request.getDescription(false), ex.getMessage(), ex);
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
-                "A ocurrido un error inesperado. Por favor, contactar con el administrador");
-
-        problemDetail.setTitle("Internal Server Error");
-        problemDetail.setType(URI.create("https://api.sistema_gestion/errors/internal"));
-        problemDetail.setProperty("Timestamp", Instant.now());
-
-        return problemDetail;
+        // Nunca se envía ex.getMessage(): puede filtrar SQL, rutas o clases internas
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno", "internal",
+                "Ocurrió un error inesperado. Si se repite, contactá al administrador.");
     }
 
+    // ===== Errores 400 que Spring resuelve por su cuenta: solo cambiamos el formato y el idioma =====
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        Map<String, String> errors = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.putIfAbsent(error.getField(), error.getDefaultMessage()));
+
+        ProblemDetail problem = problem(HttpStatus.BAD_REQUEST, "Error de validación", "error-validation",
+                "Los datos enviados no son válidos. Revisá los campos del formulario.");
+        problem.setProperty("errors", errors);
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        return badRequest(ex, headers, status, request, "El formato de los datos enviados no es válido.");
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(
+            TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        return badRequest(ex, headers, status, request, "Uno de los parámetros enviados no es válido.");
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        return badRequest(ex, headers, status, request, "Falta un parámetro obligatorio en la solicitud.");
+    }
+
+    private ResponseEntity<Object> badRequest(Exception ex, HttpHeaders headers, HttpStatusCode status,
+                                              WebRequest request, String detail) {
+        log.warn("Solicitud inválida - {} - {}", request.getDescription(false), ex.getMessage());
+
+        return handleExceptionInternal(ex,
+                problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", "bad-request", detail),
+                headers, status, request);
+    }
+
+    private ProblemDetail problem(HttpStatus status, String title, String type, String detail) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
+        problem.setTitle(title);
+        problem.setType(URI.create(BASE_TYPE + type));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
 }

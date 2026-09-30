@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class SupplierRequestDto {
 
-    @NotBlank(message = "The company name is mandatory")
+    @NotBlank(message = "El nombre es obligatorio.")
     private String companyName;
 
-    @NotBlank(message = "The phone number is mandatory")
-    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Invalid phone number format")
+    @NotBlank(message = "El número de télefono es obligatorio.")
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "El formato es inválido.")
     private String phoneNumber;
 }

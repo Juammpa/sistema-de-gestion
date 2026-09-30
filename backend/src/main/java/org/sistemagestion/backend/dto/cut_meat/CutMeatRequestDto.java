@@ -14,14 +14,14 @@ import org.sistemagestion.backend.model.enums.Specie;
 @Builder
 public class CutMeatRequestDto {
 
-    @NotNull(message = "The cutMeatName is mandatory")
+    @NotNull(message = "El nombre es obligatorio.")
     private String cutMeatName;
 
-    @NotNull(message = "The price is mandatory")
-    @PositiveOrZero(message = "The price must be positive")
+    @NotNull(message = "El precio es obligatorio.")
+    @PositiveOrZero(message = "El precio debe ser positivo.")
     private Double pricePerKilo;
 
-    @NotNull(message = "The specie is mandatory")
+    @NotNull(message = "La especie es obligatoria.")
     private Specie specie;
 
 }

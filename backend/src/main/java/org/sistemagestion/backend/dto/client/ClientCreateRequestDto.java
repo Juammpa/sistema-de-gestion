@@ -11,19 +11,19 @@ import lombok.NoArgsConstructor;
 @Data
 public class ClientCreateRequestDto {
 
-    @NotBlank(message = "The name is mandatory")
+    @NotBlank(message = "El nombre es obligatorio.")
     private String name;
 
-    @NotBlank(message = "The lastName is mandatory")
+    @NotBlank(message = "El apellido es obligatorio.")
     private String lastName;
 
-    @NotBlank(message = "The phoneNumber is mandatory")
-    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Invalid phone number format")
+    @NotBlank(message = "El número de télefono es obligatorio.")
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "El formato es inválido.")
     private String phoneNumber;
 
-    @NotBlank(message = "The butcherShopName is mandatory")
+    @NotBlank(message = "El nombre de la sucursal es obligatorio.")
     private String butcherShopName;
 
-    @NotBlank(message = "The butcherShopAddress is mandatory")
+    @NotBlank(message = "La dirección de la sucursal es obligatorio.")
     private String butcherShopAddress;
 }
