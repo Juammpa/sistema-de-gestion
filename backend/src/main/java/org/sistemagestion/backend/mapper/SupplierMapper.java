@@ -12,6 +12,7 @@ public class SupplierMapper {
         return Supplier.builder()
                 .companyName(requestDto.getCompanyName())
                 .phoneNumber(requestDto.getPhoneNumber())
+                .supplierType(requestDto.getSupplierType())
                 .build();
     }
 
@@ -20,6 +21,7 @@ public class SupplierMapper {
                 .id(supplier.getId())
                 .companyName(supplier.getCompanyName())
                 .phoneNumber(supplier.getPhoneNumber())
+                .supplierType(supplier.getSupplierType())
                 .currentAccountId(supplier.getCurrentAccount().getId())
                 .currentBalance(supplier.getCurrentAccount().getCurrentBalance())
                 .build();

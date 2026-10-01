@@ -3,10 +3,14 @@ package org.sistemagestion.backend.service.supplier;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.supplier.SupplierRequestDto;
 import org.sistemagestion.backend.dto.supplier.SupplierResponseDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.SupplierMapper;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Supplier;
+import org.sistemagestion.backend.model.enums.PurchaseType;
+import org.sistemagestion.backend.model.enums.SupplierType;
+import org.sistemagestion.backend.repository.PurchaseRepository;
 import org.sistemagestion.backend.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import java.util.List;
 public class SupplierService implements ISupplierService{
 
     private final SupplierRepository supplierRepository;
+    private final PurchaseRepository purchaseRepository;
     private final SupplierMapper mapper;
 
     @Override
@@ -53,8 +58,11 @@ public class SupplierService implements ISupplierService{
 
         Supplier supplier = findActive(id);
 
+        assertTypeChangeAllowed(supplier, request.getSupplierType());
+
         supplier.setCompanyName(request.getCompanyName());
         supplier.setPhoneNumber(request.getPhoneNumber());
+        supplier.setSupplierType(request.getSupplierType());
 
         return mapper.toDto(supplierRepository.save(supplier));
     }
@@ -74,5 +82,20 @@ public class SupplierService implements ISupplierService{
     private Supplier findActive(Long id) {
         return supplierRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier","id",id));
+    }
+
+    // No se puede pasar a un tipo que contradiga las compras que el proveedor ya tiene
+    private void assertTypeChangeAllowed(Supplier supplier, SupplierType newType) {
+
+        if (supplier.getSupplierType() == newType) return;
+
+        List<PurchaseType> incompatible = newType.incompatiblePurchaseTypes();
+
+        if (!incompatible.isEmpty() && purchaseRepository.existsByCurrentAccountIdAndPurchaseTypeIn(supplier.getCurrentAccount().getId(), incompatible)) {
+            throw new BusinessRuleException(String.format(
+                    "No se puede cambiar el tipo a %s: el proveedor ya tiene compras registradas de otro tipo.",
+                    newType.getLabel()
+            ));
+        }
     }
 }

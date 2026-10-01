@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.purchase.PurchaseRequestDto;
 import org.sistemagestion.backend.dto.purchase.PurchaseResponseDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PurchaseMapper;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Purchase;
+import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PurchaseRepository;
+import org.sistemagestion.backend.repository.SupplierRepository;
 import org.sistemagestion.backend.service.account.AccountGuard;
 import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ public class PurchaseService implements IPurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final CurrentAccountRepository currentAccountRepository;
+    private final SupplierRepository supplierRepository;
     private final BalanceRecalculationService balanceRecalculationService;
     private final AccountGuard accountGuard;
     private final PurchaseMapper mapper;
@@ -36,6 +40,7 @@ public class PurchaseService implements IPurchaseService {
                 .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
 
         accountGuard.assertOwnerActive(currentAccount);
+        assertSupplierCanSell(currentAccount, request.getPurchaseType());
 
         Purchase purchase = mapper.toPurchase(request, currentAccount);
         Purchase purchaseSaved = purchaseRepository.save(purchase);
@@ -60,6 +65,8 @@ public class PurchaseService implements IPurchaseService {
 
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", id));
+
+        assertSupplierCanSell(purchase.getCurrentAccount(), request.getPurchaseType());
 
         purchase.setDate(request.getDate());
         purchase.setPurchaseType(request.getPurchaseType());
@@ -93,4 +100,17 @@ public class PurchaseService implements IPurchaseService {
         log.info("Compra eliminada correctamente. ID: {}", purchase.getId());
 
     }
+
+    // El tipo de proveedor (bovinos / porcinos / ambos) limita qué tipos de compra puede vender
+    private void assertSupplierCanSell(CurrentAccount account, PurchaseType purchaseType) {
+        supplierRepository.findByCurrentAccountId(account.getId())
+                .filter(supplier -> !supplier.getSupplierType().canSell(purchaseType))
+                .ifPresent(supplier -> {
+                    throw new BusinessRuleException(String.format(
+                            "Este proveedor solo trabajo con $s: no se puede registrar ese tipo de compra.",
+                            supplier.getSupplierType().getLabel()
+                    ));
+                });
+    }
+
 }

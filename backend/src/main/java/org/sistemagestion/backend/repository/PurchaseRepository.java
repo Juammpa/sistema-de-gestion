@@ -1,12 +1,14 @@
 package org.sistemagestion.backend.repository;
 
 import org.sistemagestion.backend.model.Purchase;
+import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
@@ -14,5 +16,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // Compras de una cuenta corriente (paginado, de la mas reciente a la mas antigua, dentro de un rango)
     Slice<Purchase> findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(Long currentAccountId, LocalDate from, LocalDate to, Pageable pageable);
 
+    // Verifica si cuenta tiene compras de alguno de los tipos ingresados
+    boolean existsByCurrentAccountIdAndPurchaseTypeIn(Long currentAccountId, Collection<PurchaseType> purchaseTypes);
 
 }

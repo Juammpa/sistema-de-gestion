@@ -2,6 +2,7 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.sistemagestion.backend.model.enums.SupplierType;
 
 @Entity
 @Table(name = "suppliers")
@@ -18,6 +19,10 @@ public class Supplier {
 
     private String companyName;
     private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SupplierType supplierType;
 
     @Builder.Default
     private Boolean isActive = true;
