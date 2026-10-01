@@ -40,8 +40,18 @@
             Eliminar
           </button>
         </div>
-        <!-- Boton WhatsApp -->
-        <whatsapp-button class="self-start" [phoneNumber]="supplier().phoneNumber" />
+        <!-- Boton WhatsApp y Tipo de proveedor -->
+        <div class="flex flex-wrap items-center gap-2">
+          <whatsapp-button [phoneNumber]="supplier().phoneNumber" />
+          <!-- Tipo de proveedor -->
+          <span
+            [class]="typeInfo().badge"
+            class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
+          >
+            <i [class]="typeInfo().icon" aria-hidden="true"></i>
+            {{ typeInfo().label }}
+          </span>
+        </div>
       </div>
       <!-- Info Saldo Pendiente -->
       <div
@@ -95,5 +105,6 @@
     (cancel)="showPurchaseModal.set(false)"
     (saved)="showPurchaseModal.set(false); purchaseCreated.emit()"
     [currentAccountId]="supplier().currentAccountId"
+    [supplierType]="supplier().supplierType"
   />
 }

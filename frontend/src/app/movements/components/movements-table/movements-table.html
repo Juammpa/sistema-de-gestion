@@ -172,6 +172,7 @@
 @if (showPurchaseDetail() && purchaseDetail.hasValue() && purchaseDetail.value(); as purchase) {
   <edit-purchase-modal
     [purchase]="purchase"
+    [supplierType]="supplierType()"
     (cancel)="showPurchaseDetail.set(false)"
     (saved)="onPurchaseChanged()"
     (deleted)="onPurchaseChanged()"

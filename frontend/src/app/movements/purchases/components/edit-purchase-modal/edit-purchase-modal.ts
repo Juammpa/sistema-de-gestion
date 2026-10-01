@@ -1,11 +1,11 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PurchaseService } from '../../services/purchase.service';
 import { FormUtils } from '../../../../shared/utils/form-utils';
-import { PURCHASE_TYPE_OPTIONS } from '../../utils/purchase.utils';
-import translatePurchaseType from '../../utils/purchase.utils';
+import translatePurchaseType, { purchaseTypeOptionsFor } from '../../utils/purchase.utils';
 import { Purchase, PurchaseRequest } from '../../interfaces/purchase.interface';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
+import { SupplierType } from '../../../../supplier/interfaces/supplier.interface';
 
 @Component({
   selector: 'edit-purchase-modal',
@@ -16,12 +16,13 @@ export class EditPurchaseModal implements OnInit {
   private fb = inject(FormBuilder);
   private purchaseService = inject(PurchaseService);
   formUtils = FormUtils;
-
-  purchaseTypeOptions = PURCHASE_TYPE_OPTIONS;
   translatePurchaseType = translatePurchaseType;
 
   // Inputs
   purchase = input.required<Purchase>();
+  supplierType = input<SupplierType>('BOTH');
+
+  purchaseTypeOptions = computed(() => purchaseTypeOptionsFor(this.supplierType()));
 
   purchaseForm: FormGroup = this.fb.group({
     date: [null as string | null, [Validators.required]],

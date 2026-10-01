@@ -133,6 +133,32 @@
           }
         </div>
       </div>
+      <!-- Tipo de proveedor -->
+      <fieldset class="space-y-1.5">
+        <legend class="block text-sm font-medium text-slate-200">
+          Tipo de proveedor <span aria-hidden="true" class="text-blue-400">*</span>
+        </legend>
+        <div class="grid grid-cols-3 gap-2">
+          @for (option of supplierTypeOptions; track option.value) {
+            <label class="cursor-pointer">
+              <input
+                type="radio"
+                formControlName="supplierType"
+                [value]="option.value"
+                class="peer sr-only"
+              />
+              <span
+                class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3 py-3 text-sm font-medium text-slate-300 transition-colors duration-150 hover:border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-200 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-400/70"
+              >
+                <i [class]="option.icon" aria-hidden="true"></i>
+                {{ option.label }}
+              </span>
+            </label>
+          }
+        </div>
+        <p class="text-xs text-slate-400">Define qué tipos de compra se le pueden registrar.</p>
+      </fieldset>
+
       <!-- ====== FOOTER ====== -->
       <div
         class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:items-center sm:justify-end"

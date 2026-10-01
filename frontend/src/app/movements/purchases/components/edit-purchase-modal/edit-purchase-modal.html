@@ -33,9 +33,7 @@
           >
             Editar Compra
           </h2>
-          <p class="text-sm text-slate-400">
-            Modificá los detalles del registro de compra
-          </p>
+          <p class="text-sm text-slate-400">Modificá los detalles del registro de compra</p>
         </div>
       </div>
       <!-- Botón cerrar -->
@@ -86,7 +84,7 @@
               <option [ngValue]="null" disabled class="bg-[#0f1728] text-slate-500">
                 Seleccionar tipo...
               </option>
-              @for (option of purchaseTypeOptions; track option.value) {
+              @for (option of purchaseTypeOptions(); track option.value) {
                 <option [ngValue]="option.value" class="bg-[#0f1728] text-slate-200">
                   {{ translatePurchaseType(option.value) }}
                 </option>
@@ -251,7 +249,8 @@
             [disabled]="purchaseForm.invalid"
             class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1626] disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
           >
-            <i aria-hidden="true" class="fa-solid fa-check text-xs"></i> <span>Guardar cambios</span>
+            <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
+            <span>Guardar cambios</span>
           </button>
         </div>
       </div>

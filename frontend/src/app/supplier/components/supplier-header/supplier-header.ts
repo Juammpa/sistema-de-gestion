@@ -7,6 +7,7 @@ import { AddPaymentButton } from '../../../movements/payments/components/add-pay
 import { PaymentFormModal } from '../../../movements/payments/components/payment-form-modal/payment-form-modal';
 import { AddPurchaseButton } from '../../../movements/purchases/components/add-purchase-button/add-purchase-button';
 import { PurchaseFormModal } from '../../../movements/purchases/components/purchase-form-modal/purchase-form-modal';
+import { SUPPLIER_TYPE_INFO } from '../../utils/supplier-type.utils';
 
 @Component({
   selector: 'supplier-header',
@@ -37,4 +38,7 @@ export class SupplierHeader {
 
   // Saldo a mostrar
   displayedBalance = computed(() => this.supplier().currentBalance);
+
+  // Datos para mostrar el tipo de proveedor
+  typeInfo = computed(() => SUPPLIER_TYPE_INFO[this.supplier().supplierType]);
 }

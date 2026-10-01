@@ -22,6 +22,7 @@
         <movements-table
           #movementsTable
           [currentCurrentId]="supplier.currentAccountId"
+          [supplierType]="supplier.supplierType"
           (movementChanged)="supplierResource.reload()"
           [dateRange]="dateRange()"
           [movementType]="movementType()"

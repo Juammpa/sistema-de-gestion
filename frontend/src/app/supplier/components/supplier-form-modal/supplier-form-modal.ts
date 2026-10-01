@@ -2,7 +2,8 @@ import { Component, computed, inject, input, OnInit, output } from '@angular/cor
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
 import { FormUtils } from '../../../shared/utils/form-utils';
-import { Supplier, SupplierRequest } from '../../interfaces/supplier.interface';
+import { Supplier, SupplierRequest, SupplierType } from '../../interfaces/supplier.interface';
+import { SUPPLIER_TYPE_OPTIONS } from '../../utils/supplier-type.utils';
 
 @Component({
   selector: 'supplier-form-modal',
@@ -13,6 +14,7 @@ export class SupplierFormModal implements OnInit {
   private supplierService = inject(SupplierService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
+  supplierTypeOptions = SUPPLIER_TYPE_OPTIONS;
 
   // Inputs
   description = input.required<string>();
@@ -26,6 +28,7 @@ export class SupplierFormModal implements OnInit {
   supplierForm: FormGroup = this.fb.group({
     companyName: ['', [Validators.required, Validators.minLength(3)]],
     phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
+    supplierType: [null as SupplierType | null, [Validators.required]],
   });
 
   // true si estamos editando un proveedor existente

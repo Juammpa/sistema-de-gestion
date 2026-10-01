@@ -31,6 +31,7 @@ import { EditPaymentModal } from '../../payments/components/edit-payment-modal/e
 import { PurchaseService } from '../../purchases/services/purchase.service';
 import { EditPurchaseModal } from '../../purchases/components/edit-purchase-modal/edit-purchase-modal';
 import { DateRange } from '../../../shared/interfaces/date-range.interface';
+import { SupplierType } from '../../../supplier/interfaces/supplier.interface';
 
 // Cantidad de movimientos que se piden por pagina
 const PAGE_SIZE = 20;
@@ -65,6 +66,9 @@ export class MovementsTable {
 
   // Rango de fechas a mostrar (null en un lado = sin limite)
   dateRange = input<DateRange>({ from: null, to: null });
+
+  // Tipo de proveedor (solo aplica en la ficha de un proveedor)
+  supplierType = input<SupplierType>('BOTH');
 
   // Avisa al padre que un movimiento cambio (para refrescar el saldo)
   movementChanged = output();

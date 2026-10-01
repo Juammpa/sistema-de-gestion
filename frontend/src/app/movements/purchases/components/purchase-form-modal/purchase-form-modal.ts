@@ -1,16 +1,17 @@
-import { Component, inject, input, output } from '@angular/core';
-import translatePurchaseType, { PURCHASE_TYPE_OPTIONS } from '../../utils/purchase.utils';
+import { Component, computed, inject, input, OnInit, output } from '@angular/core';
+import translatePurchaseType, { purchaseTypeOptionsFor } from '../../utils/purchase.utils';
 import { PurchaseService } from '../../services/purchase.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PurchaseRequest } from '../../interfaces/purchase.interface';
+import { SupplierType } from '../../../../supplier/interfaces/supplier.interface';
 
 @Component({
   selector: 'purchase-form-modal',
   imports: [ReactiveFormsModule],
   templateUrl: './purchase-form-modal.html',
 })
-export class PurchaseFormModal {
+export class PurchaseFormModal implements OnInit {
   private purchaseService = inject(PurchaseService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
@@ -18,13 +19,14 @@ export class PurchaseFormModal {
 
   // Inputs
   currentAccountId = input.required<number>();
+  supplierType = input<SupplierType>('BOTH');
 
   // Outputs
   cancel = output();
   saved = output();
 
   // Arreglo de Tipos de Compra
-  purchaseTypesOptions = PURCHASE_TYPE_OPTIONS;
+  purchaseTypesOptions = computed(() => purchaseTypeOptionsFor(this.supplierType()));
 
   // Definimos nuestros formulario
   purchaseForm: FormGroup = this.fb.group({
@@ -33,6 +35,14 @@ export class PurchaseFormModal {
     kilograms: [1, [Validators.required, Validators.min(1)]],
     pricePerKilo: [1, [Validators.required, Validators.min(1)]],
   });
+
+  ngOnInit() {
+    const options = this.purchaseTypesOptions();
+    if (options.length === 1)
+      this.purchaseForm.patchValue({
+        purchaseType: options[0].value,
+      });
+  }
 
   close() {
     this.cancel.emit();
