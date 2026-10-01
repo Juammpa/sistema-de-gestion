@@ -31,6 +31,7 @@
         tone="amber"
         [subtitle]="v.net >= 0 ? 'Saldo a favor' : 'Saldo en contra'"
         [value]="v.net"
+        [change]="v.netChange"
       />
       <kpi-card
         [label]="'Ventas (' + v.monthLabel + ')'"

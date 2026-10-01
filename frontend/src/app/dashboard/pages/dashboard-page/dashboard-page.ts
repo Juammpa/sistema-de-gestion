@@ -46,6 +46,7 @@ export default class DashboardPage {
     const current = data.months[data.months.length - 1];
     const previous = data.months[data.months.length - 2];
     const net = data.receivable - data.payable;
+    const previousNet = data.previousReceivable - data.previousPayable;
 
     return {
       data,
@@ -55,6 +56,7 @@ export default class DashboardPage {
       salesChange: pctChange(current.sales, previous.sales),
       receivableChange: pctChange(data.receivable, data.previousReceivable),
       payableChange: pctChange(data.payable, data.previousPayable),
+      netChange: pctChange(net, previousNet),
     };
   });
 }
