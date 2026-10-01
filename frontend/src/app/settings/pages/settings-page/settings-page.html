@@ -1,0 +1,49 @@
+<div class="mx-auto flex max-w-6xl flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+  <!-- Encabezado -->
+  <header>
+    <h1 class="text-2xl font-bold tracking-tight text-slate-50">Ajustes</h1>
+    <p class="mt-1 text-sm text-slate-400">
+      Administrá tu perfil, apariencia y preferencias de la cuenta.
+    </p>
+  </header>
+
+  <div class="flex flex-col gap-6 md:flex-row md:items-start">
+    <!-- Navegación lateral (en celular pasa a ser una fila con scroll) -->
+    <nav
+      aria-label="Secciones de ajustes"
+      class="flex shrink-0 gap-1 overflow-x-auto rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#161d31] to-[#0f1524] p-2.5 scrollbar-none md:sticky md:top-6 md:w-58 md:flex-col md:gap-0.5 md:overflow-visible"
+    >
+      @for (section of sections; track section.id) {
+        <button
+          type="button"
+          (click)="selected.set(section.id)"
+          [attr.aria-current]="selected() === section.id ? 'page' : null"
+          class="flex shrink-0 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-400 transition-colors duration-150 hover:bg-slate-400/10 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 aria-[current=page]:bg-blue-500/15 aria-[current=page]:text-white md:w-full"
+        >
+          <i [class]="section.icon" class="w-5 text-center" aria-hidden="true"></i>
+          {{ section.label }}
+        </button>
+      }
+    </nav>
+
+    <!-- Panel de contenido -->
+    <section
+      class="min-w-0 flex-1 rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#161d31] to-[#0f1524] p-5 shadow-2xl shadow-black/40 sm:px-7 sm:py-6"
+    >
+      @switch (selected()) {
+        @case ('profile') {
+          <profile-settings />
+        }
+        @case ('appearance') {
+          <appearance-settings />
+        }
+        @case ('security') {
+          <security-settings />
+        }
+        @case ('account') {
+          <account-settings />
+        }
+      }
+    </section>
+  </div>
+</div>

@@ -32,6 +32,10 @@ export const Sharedroutes: Routes = [
         path: 'caja-ahorro',
         loadComponent: () => import('../cash/pages/cash-page/cash-page'),
       },
+      {
+        path: 'ajustes',
+        loadComponent: () => import('../settings/pages/settings-page/settings-page'),
+      },
     ],
   },
   {

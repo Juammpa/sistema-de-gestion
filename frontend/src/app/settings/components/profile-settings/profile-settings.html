@@ -1,0 +1,85 @@
+<h2 class="text-xl font-bold text-slate-50">Perfil</h2>
+<p class="mt-1 text-sm text-slate-400">Información pública de tu cuenta.</p>
+
+<!-- Foto -->
+<div class="mt-5 flex items-center gap-4 border-b border-slate-800/80 pb-5">
+  <div class="relative shrink-0">
+    <div
+      aria-hidden="true"
+      class="flex size-14 items-center justify-center rounded-full border border-blue-500/30 bg-linear-to-br from-blue-500/30 to-indigo-600/10 text-lg font-bold text-blue-300"
+    >
+      {{ initials }}
+    </div>
+    <button
+      type="button"
+      title="Cambiar foto de perfil"
+      aria-label="Cambiar foto de perfil"
+      class="absolute -bottom-1 -right-1 flex size-6 cursor-pointer items-center justify-center rounded-full border-2 border-[#161d31] bg-[#1a2235] text-slate-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+    >
+      <i class="fa-solid fa-camera text-[10px]" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="min-w-0">
+    <p class="truncate text-base font-bold text-slate-100">{{ user.name }} {{ user.lastName }}</p>
+    <p class="truncate text-sm text-slate-400">{{ user.email }}</p>
+    <p [class]="ui.help" class="mt-0.5!">JPG o PNG. Máximo 2MB.</p>
+  </div>
+</div>
+
+<!-- Formulario (visual: todavía no guarda nada) -->
+<form (submit)="$event.preventDefault()" class="mt-5 flex flex-col gap-4">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <label for="profile-name" [class]="ui.label">Nombre</label>
+      <input
+        id="profile-name"
+        type="text"
+        autocomplete="given-name"
+        [value]="user.name"
+        [class]="ui.field"
+      />
+    </div>
+    <div>
+      <label for="profile-last-name" [class]="ui.label">Apellido</label>
+      <input
+        id="profile-last-name"
+        type="text"
+        autocomplete="family-name"
+        [value]="user.lastName"
+        [class]="ui.field"
+      />
+    </div>
+    <div>
+      <label for="profile-email" [class]="ui.label">Email</label>
+      <input
+        id="profile-email"
+        type="email"
+        autocomplete="email"
+        disabled
+        [value]="user.email"
+        [class]="ui.field"
+      />
+      <p [class]="ui.help">Para cambiarlo, contactá a un administrador.</p>
+    </div>
+    <div>
+      <label for="profile-phone" [class]="ui.label">Teléfono</label>
+      <input
+        id="profile-phone"
+        type="tel"
+        autocomplete="tel"
+        [value]="user.phone"
+        [class]="ui.field"
+      />
+    </div>
+  </div>
+
+  <div
+    class="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-4 sm:flex-row sm:justify-end"
+  >
+    <button type="button" [class]="ui.outlineButton">Cancelar</button>
+    <button type="submit" [class]="ui.primaryButton">
+      <i class="fa-solid fa-check text-xs" aria-hidden="true"></i>
+      Guardar cambios
+    </button>
+  </div>
+</form>

@@ -1,0 +1,39 @@
+<h2 class="text-xl font-bold text-slate-50">Cuenta</h2>
+<p class="mt-1 text-sm text-slate-400">Exportación de datos y eliminación de la cuenta.</p>
+
+<!-- Exportar datos -->
+<div
+  class="mt-6 flex flex-col gap-4 border-b border-slate-800/80 pb-6 sm:flex-row sm:items-center sm:justify-between"
+>
+  <div class="min-w-0">
+    <p class="text-sm font-semibold text-slate-100">Exportar tus datos</p>
+    <p class="mt-0.5 text-sm text-slate-400">
+      Descargá un archivo con tus clientes, proveedores y movimientos.
+    </p>
+  </div>
+  <button type="button" [class]="ui.outlineButton" class="shrink-0">
+    <i class="fa-solid fa-download text-sm" aria-hidden="true"></i>
+    Solicitar exportación
+  </button>
+</div>
+
+<!-- Zona de peligro -->
+<div class="mt-6 rounded-2xl border border-red-500/30 bg-red-950/15 p-5">
+  <div class="flex items-start gap-3">
+    <i
+      class="fa-solid fa-triangle-exclamation mt-0.5 shrink-0 text-lg text-red-400"
+      aria-hidden="true"
+    ></i>
+    <div class="min-w-0 flex-1">
+      <p class="text-base font-bold text-red-200">Eliminar cuenta</p>
+      <p class="mb-4 mt-1.5 text-sm leading-relaxed text-red-300">
+        Esta acción es permanente. Se eliminarán tus clientes, proveedores y el historial completo
+        de movimientos. No se puede deshacer.
+      </p>
+      <button type="button" [class]="ui.dangerSolidButton">
+        <i class="fa-regular fa-trash-can text-xs" aria-hidden="true"></i>
+        Eliminar cuenta permanentemente
+      </button>
+    </div>
+  </div>
+</div>

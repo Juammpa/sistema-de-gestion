@@ -1,0 +1,93 @@
+<h2 class="text-xl font-bold text-slate-50">Apariencia</h2>
+<p class="mt-1 text-sm text-slate-400">Elegí cómo se ve la aplicación en este dispositivo.</p>
+
+<!-- Tema -->
+<div class="mt-6">
+  <p id="theme-label" class="mb-3 text-sm font-semibold text-slate-200">Tema</p>
+  <div role="group" aria-labelledby="theme-label" class="flex flex-wrap gap-3.5">
+    @for (theme of themes; track theme.id) {
+      <button
+        type="button"
+        (click)="selectedTheme.set(theme.id)"
+        [attr.aria-pressed]="selectedTheme() === theme.id"
+        class="relative flex flex-1 basis-36 cursor-pointer flex-col gap-2.5 rounded-2xl border-[1.5px] border-slate-700/70 bg-[#0a0f1d] p-3.5 text-left text-slate-200 transition-colors duration-150 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 aria-pressed:border-blue-500 aria-pressed:shadow-[0_0_0_3px_rgba(59,130,246,0.18)]"
+      >
+        @if (selectedTheme() === theme.id) {
+          <span
+            aria-hidden="true"
+            class="absolute right-2.5 top-2.5 flex size-5 items-center justify-center rounded-full bg-blue-500 text-white"
+          >
+            <i class="fa-solid fa-check text-[10px]"></i>
+          </span>
+        }
+
+        <!-- Vista previa -->
+        @switch (theme.id) {
+          @case ('light') {
+            <div class="h-16 overflow-hidden rounded-lg border border-slate-300/40 bg-slate-50">
+              <div class="h-3.5 bg-slate-200"></div>
+              <div class="flex flex-col gap-1.5 p-2">
+                <div class="h-1.5 w-[70%] rounded-sm bg-slate-300"></div>
+                <div class="h-1.5 w-[45%] rounded-sm bg-slate-300"></div>
+              </div>
+            </div>
+          }
+          @case ('dark') {
+            <div class="h-16 overflow-hidden rounded-lg border border-slate-700/60 bg-slate-900">
+              <div class="h-3.5 bg-slate-800"></div>
+              <div class="flex flex-col gap-1.5 p-2">
+                <div class="h-1.5 w-[70%] rounded-sm bg-slate-700"></div>
+                <div class="h-1.5 w-[45%] rounded-sm bg-slate-700"></div>
+              </div>
+            </div>
+          }
+          @case ('system') {
+            <div class="flex h-16 overflow-hidden rounded-lg border border-slate-700/50">
+              <div class="flex w-1/2 flex-col bg-slate-900">
+                <div class="h-3.5 bg-slate-800"></div>
+                <div class="p-2"><div class="h-1.5 w-[80%] rounded-sm bg-slate-700"></div></div>
+              </div>
+              <div class="flex w-1/2 flex-col bg-slate-50">
+                <div class="h-3.5 bg-slate-200"></div>
+                <div class="p-2"><div class="h-1.5 w-[80%] rounded-sm bg-slate-300"></div></div>
+              </div>
+            </div>
+          }
+        }
+
+        <span class="flex items-center gap-1.5 text-sm font-semibold">
+          <i [class]="theme.icon" class="w-4 text-center" aria-hidden="true"></i>
+          {{ theme.label }}
+        </span>
+      </button>
+    }
+  </div>
+</div>
+
+<!-- Color de acento -->
+<div class="mt-7 border-t border-slate-800/80 pt-6">
+  <p id="accent-label" class="text-sm font-semibold text-slate-200">Color de acento</p>
+  <p class="mb-3 mt-1 text-xs text-slate-500">Se usa en botones, enlaces y elementos destacados.</p>
+
+  <div role="group" aria-labelledby="accent-label" class="flex gap-3">
+    @for (accent of accents; track accent.id) {
+      <button
+        type="button"
+        (click)="selectedAccent.set(accent.id)"
+        [attr.aria-label]="accent.label"
+        [attr.aria-pressed]="selectedAccent() === accent.id"
+        [class]="accent.classes"
+        class="flex size-9 cursor-pointer items-center justify-center rounded-full ring-2 ring-transparent ring-offset-2 ring-offset-[#0f1524] transition-shadow duration-150 focus-visible:outline-none focus-visible:ring-white/70 aria-pressed:focus-visible:ring-current"
+      >
+        @if (selectedAccent() === accent.id) {
+          <i class="fa-solid fa-check text-sm" aria-hidden="true"></i>
+        }
+      </button>
+    }
+  </div>
+
+  <p class="mt-4 flex items-center gap-1.5 text-xs text-slate-500">
+    <span aria-hidden="true" class="size-1.5 rounded-full bg-emerald-400"></span>
+    Los cambios de apariencia se aplican al instante.
+  </p>
+</div>
