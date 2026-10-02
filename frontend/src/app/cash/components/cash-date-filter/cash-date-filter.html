@@ -1,6 +1,6 @@
 <!-- Filtro de fechas -->
 <div
-  class="mx-3 mb-4 max-w-3xl rounded-xl md:mx-auto border border-slate-800/90 bg-canvas px-3 py-3 shadow-md shadow-black/30 ring-1 ring-white/5 sm:px-4 sm:py-2.5"
+  class="mx-3 mb-4 max-w-3xl rounded-xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to px-3 py-3 shadow-md shadow-black/20 sm:px-4 sm:py-2.5 md:mx-auto"
 >
   <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
     <!-- Rango Desde / Hasta -->
@@ -44,14 +44,14 @@
       <button
         type="button"
         (click)="setToday()"
-        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:h-9 sm:flex-none"
+        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:h-9 sm:flex-none"
       >
         Hoy
       </button>
       <button
         type="button"
         (click)="setLastDays(7)"
-        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:h-9 sm:flex-none"
+        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:h-9 sm:flex-none"
       >
         Últimos 7 días
       </button>
