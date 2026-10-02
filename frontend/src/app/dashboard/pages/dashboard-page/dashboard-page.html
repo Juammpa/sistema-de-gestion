@@ -9,7 +9,7 @@
   @if (dashboard.error()) {
     <error-state [error]="dashboard.error()" (retry)="dashboard.reload()" />
   } @else if (view(); as v) {
-    <!-- Indicadores. El retardo escalonado (50 ms por bloque) arma la pantalla de arriba hacia abajo. -->
+    <!-- Indicadores. El retardo escalonado (30 ms por bloque) arma la pantalla de arriba hacia abajo. -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-[1.5fr_1fr_1fr_1fr]">
       <kpi-card
         class="animate-rise sm:col-span-2 xl:col-span-1"
@@ -21,7 +21,7 @@
         [change]="v.netChange"
       />
       <kpi-card
-        class="animate-rise [animation-delay:50ms]"
+        class="animate-rise [animation-delay:30ms]"
         label="Por cobrar"
         tone="emerald"
         subtitle="Saldo de clientes"
@@ -29,7 +29,7 @@
         [change]="v.receivableChange"
       />
       <kpi-card
-        class="animate-rise [animation-delay:100ms]"
+        class="animate-rise [animation-delay:60ms]"
         label="Por pagar"
         tone="rose"
         subtitle="Deuda con proveedores"
@@ -38,7 +38,7 @@
         [invertTrend]="true"
       />
       <kpi-card
-        class="animate-rise [animation-delay:150ms]"
+        class="animate-rise [animation-delay:90ms]"
         [label]="'Ventas (' + v.monthLabel + ')'"
         tone="amber"
         subtitle="Mes en curso"
@@ -50,11 +50,11 @@
     <!-- Evolución y resumen del mes -->
     <div class="grid gap-4 lg:grid-cols-3">
       <flow-chart-card
-        class="block animate-rise [animation-delay:200ms] lg:col-span-2"
+        class="block animate-rise [animation-delay:120ms] lg:col-span-2"
         [months]="v.data.months"
       />
       <monthly-summary-card
-        class="block animate-rise [animation-delay:250ms]"
+        class="block animate-rise [animation-delay:150ms]"
         [month]="v.current"
       />
     </div>
@@ -62,7 +62,7 @@
     <!-- Rankings y últimos movimientos -->
     <div class="grid gap-4 lg:grid-cols-3">
       <ranking-card
-        class="animate-rise [animation-delay:300ms]"
+        class="animate-rise [animation-delay:180ms]"
         title="Top Clientes"
         subtitle="Por saldo adeudado"
         tone="emerald"
@@ -73,7 +73,7 @@
         [total]="v.data.receivable"
       />
       <ranking-card
-        class="animate-rise [animation-delay:350ms]"
+        class="animate-rise [animation-delay:210ms]"
         title="Top Proveedores"
         subtitle="Por deuda pendiente"
         tone="rose"
@@ -84,14 +84,14 @@
         [total]="v.data.payable"
       />
       <recent-movements-card
-        class="block animate-rise [animation-delay:400ms]"
+        class="block animate-rise [animation-delay:240ms]"
         [movements]="v.data.recentMovements"
       />
     </div>
 
     <!-- Comparativa de 12 meses -->
     <monthly-comparison-card
-      class="block animate-rise [animation-delay:450ms]"
+      class="block animate-rise [animation-delay:270ms]"
       [months]="v.data.months"
     />
   } @else {

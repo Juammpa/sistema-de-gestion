@@ -1,12 +1,12 @@
 <a
   [routerLink]="pathRoute()"
   (click)="itemClick.emit(item())"
-  class="group mb-2 block cursor-pointer touch-manipulation rounded-2xl border border-line bg-panel-from px-4 py-3.5 text-slate-50 shadow-sm shadow-black/20 transition-ui duration-150 hover:-translate-y-px hover:border-blue-500/40 hover:bg-raised hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.99]"
+  class="group mb-2 block cursor-pointer touch-manipulation rounded-2xl border border-line bg-panel-from px-4 py-3.5 text-slate-50 shadow-sm shadow-black/20 transition-ui duration-150 hover:border-blue-500/40 hover:bg-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.99]"
 >
   <div class="flex items-center gap-4">
     <!-- Foto -->
     <div
-      class="flex size-12 shrink-0 items-center justify-center rounded-full border border-blue-500/25 bg-linear-to-br from-blue-600/25 to-indigo-600/10 shadow-sm shadow-blue-500/10 transition-colors duration-150 group-hover:border-blue-400/50 group-hover:from-blue-600/35 motion-reduce:transition-none"
+      class="flex size-12 shrink-0 items-center justify-center rounded-full border border-blue-500/25 bg-blue-500/15 transition-colors duration-150 group-hover:border-blue-400/50 group-hover:bg-blue-500/25 motion-reduce:transition-none"
     >
       <span
         aria-hidden="true"
@@ -28,7 +28,7 @@
     <!-- Chevron -->
     <i
       aria-hidden="true"
-      class="fa-solid fa-chevron-right shrink-0 text-xs text-slate-600 transition-ui duration-150 group-hover:text-blue-300 motion-reduce:transition-none motion-safe:group-hover:translate-x-0.5"
+      class="fa-solid fa-chevron-right shrink-0 text-xs text-slate-600 transition-ui duration-150 group-hover:text-blue-300 motion-reduce:transition-none"
     ></i>
   </div>
 </a>

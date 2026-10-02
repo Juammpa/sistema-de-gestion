@@ -1,6 +1,6 @@
 // Clases reutilizadas en las secciones de Ajustes (Tailwind las detecta igual desde un .ts)
 const BUTTON =
-  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-safe:active:scale-[0.98]';
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-ui duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-safe:active:scale-[0.98]';
 
 export const SETTINGS_UI = {
   label: 'mb-1.5 block text-sm font-semibold text-slate-200',

@@ -21,9 +21,9 @@
   /* Sacudida corta para campos inválidos */
   --animate-shake: shake 300ms var(--ease-out);
   /* Entrada de bloques grandes (tarjetas, filas): se escalona con `animation-delay` */
-  --animate-rise: rise 320ms var(--ease-out) backwards;
+  --animate-rise: rise 260ms var(--ease-out) backwards;
   /* Barras de progreso: crecen desde la izquierda al montarse (combinar con `origin-left`) */
-  --animate-bar: bar-grow 700ms var(--ease-out) backwards;
+  --animate-bar: bar-grow 450ms var(--ease-out) backwards;
 
   @keyframes rise {
     from {
@@ -167,4 +167,18 @@ html[data-theme='dark'] {
    En móvil se apila como tarjeta de tres columnas. */
 @utility movement-row {
   @apply cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none;
+}
+
+/* Feedback de presión para todo botón: ningún botón debe quedar sin respuesta al toque.
+   Está en la capa base, así que cualquier `active:scale-*` propio de un botón lo pisa. */
+@layer base {
+  button:not(:disabled):not([aria-disabled='true']):active {
+    scale: 0.97;
+  }
+  button:not(:disabled) {
+    transition-property:
+      color, background-color, border-color, box-shadow, opacity, scale;
+    transition-duration: 150ms;
+    transition-timing-function: var(--ease-out);
+  }
 }
