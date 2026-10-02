@@ -162,3 +162,9 @@ html[data-theme='dark'] {
     animation: none;
   }
 }
+
+/* Fila clicable de la tabla de movimientos (ventas, pagos y compras).
+   En móvil se apila como tarjeta de tres columnas. */
+@utility movement-row {
+  @apply cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none;
+}

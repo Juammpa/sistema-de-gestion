@@ -6,7 +6,7 @@ export type ResolvedTheme = 'light' | 'dark';
 const STORAGE_KEY = 'theme';
 
 // Color de la barra del navegador (movil) segun el tema
-const BROWSER_COLORS: Record<ResolvedTheme, string> = { dark: '#0a0f1d', light: '#f1f5f9' };
+const BROWSER_COLORS: Record<ResolvedTheme, string> = { dark: '#0a0f1d', light: '#f4f2ee' };
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -36,6 +36,7 @@ export class ThemeService {
       this.document
         .querySelector('meta[name="theme-color"]')
         ?.setAttribute('content', BROWSER_COLORS[theme]);
+      this.document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', theme);
     });
   }
 

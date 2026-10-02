@@ -1,10 +1,3 @@
-<div class="flex flex-col h-dvh w-full bg-gray-900">
-  <!-- Navbar arriba ocupando todo el ancho -->
-  <app-sidebar class="w-full" />
-
-  <!-- Contenido principal debajo, expandiéndose y con scroll si es necesario -->
-  <main class="flex-1 overflow-y-auto">
-    <router-outlet />
-  </main>
-  <toast-container />
-</div>
+<!-- El shell (menú lateral, barra móvil y el router-outlet del contenido) vive en app-sidebar -->
+<app-sidebar />
+<toast-container />

@@ -9,7 +9,7 @@
       <li class="flex items-center gap-3 rounded-lg px-2 py-2">
         <span
           [class]="
-            'inline-flex w-16 shrink-0 justify-center rounded-md border px-2 py-1 text-[11px] font-semibold leading-none ' +
+            'inline-flex w-16 shrink-0 justify-center rounded-md border px-2 py-1 text-xs font-semibold leading-none ' +
             row.badge
           "
         >
@@ -25,7 +25,7 @@
           <p [class]="'font-mono text-sm font-bold tabular-nums ' + row.amountClass">
             {{ row.amount }}
           </p>
-          <p class="font-mono text-[10px] text-slate-500">{{ row.code }}</p>
+          <p class="font-mono text-xs text-slate-400">{{ row.code }}</p>
         </div>
       </li>
     } @empty {

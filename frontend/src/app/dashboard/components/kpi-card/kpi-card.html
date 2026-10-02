@@ -1,18 +1,21 @@
 <article
   [class]="
-    'rounded-2xl border bg-linear-to-br p-5 shadow-lg shadow-black/30 ring-1 ring-white/5 ' +
+    'rounded-2xl border bg-linear-to-br p-5 shadow-md shadow-black/20 ' +
     toneClasses().card
   "
 >
   <div class="flex items-center justify-between gap-2">
-    <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{{ label() }}</h3>
+    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ label() }}</h3>
     <span
       aria-hidden="true"
-      [class]="'size-2 shrink-0 rounded-full shadow-[0_0_8px] ' + toneClasses().dot"
+      [class]="'size-2 shrink-0 rounded-full ' + toneClasses().dot"
     ></span>
   </div>
 
-  <p class="mt-3 font-mono text-2xl font-bold tabular-nums tracking-tight text-slate-50">
+  <p
+    class="mt-3 font-mono font-bold tabular-nums tracking-tight text-slate-50"
+    [class]="featured() ? 'text-3xl sm:text-4xl' : 'text-xl'"
+  >
     {{ value() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
   </p>
 
@@ -29,13 +32,13 @@
       >
         <i
           aria-hidden="true"
-          class="fa-solid text-[10px]"
+          class="fa-solid text-xs"
           [class.fa-caret-up]="t.up"
           [class.fa-caret-down]="!t.up"
         ></i>
         {{ t.text }}%
       </span>
-      <span class="text-slate-500">vs mes anterior</span>
+      <span class="text-slate-400">vs mes anterior</span>
     </p>
   }
 </article>

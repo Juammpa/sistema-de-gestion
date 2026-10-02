@@ -33,7 +33,7 @@
         @if (balance() != null) {
           {{ balance() | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
         } @else {
-          <span class="text-slate-500" role="img" aria-label="Saldo no disponible">—</span>
+          <span class="text-slate-400" role="img" aria-label="Saldo no disponible">—</span>
         }
       </p>
       <p class="mt-1 text-right text-xs font-medium text-slate-300">Saldo actual</p>

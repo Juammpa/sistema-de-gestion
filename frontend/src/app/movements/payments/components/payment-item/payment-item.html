@@ -31,17 +31,17 @@
     <span class="wrap-break-word">{{ translatePaymentType(payment().paymentType) }}</span>
   </div>
 </td>
-<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-500 max-md:hidden">—</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500 max-md:hidden">—</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500 max-md:hidden">—</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-400 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400 max-md:hidden">—</td>
 <td
   class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-emerald-400 max-md:col-start-3 max-md:row-start-1 max-md:row-span-2 max-md:p-0 max-md:text-base"
 >
   {{ payment().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>
 <td
-  class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right text-sm font-bold tabular-nums text-rose-400 max-md:col-span-3 max-md:mt-1 max-md:flex max-md:items-center max-md:justify-between max-md:border-t max-md:border-slate-800/60 max-md:p-0 max-md:pt-2.5 max-md:before:font-sans max-md:before:text-xs max-md:before:font-medium max-md:before:text-slate-500 max-md:before:content-['Saldo']"
+  class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right text-sm font-bold tabular-nums text-rose-400 max-md:col-span-3 max-md:mt-1 max-md:flex max-md:items-center max-md:justify-between max-md:border-t max-md:border-slate-800/60 max-md:p-0 max-md:pt-2.5 max-md:before:font-sans max-md:before:text-xs max-md:before:font-medium max-md:before:text-slate-400 max-md:before:content-['Saldo']"
 >
   {{ payment().balance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>

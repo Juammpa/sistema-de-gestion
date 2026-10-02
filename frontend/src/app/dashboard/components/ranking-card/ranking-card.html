@@ -20,7 +20,7 @@
         >
           <div class="flex items-center justify-between gap-3">
             <div class="flex min-w-0 items-center gap-2.5">
-              <span class="w-5 shrink-0 text-xs tabular-nums text-slate-500">#{{ i + 1 }}</span>
+              <span class="w-5 shrink-0 text-xs tabular-nums text-slate-400">#{{ i + 1 }}</span>
               <span class="truncate text-sm font-medium text-slate-100" [attr.title]="row.name">
                 {{ row.name }}
               </span>
@@ -50,6 +50,6 @@
     class="mt-4 inline-flex items-center gap-1.5 self-start rounded-md text-xs font-medium text-slate-400 transition-colors duration-150 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none"
   >
     {{ linkLabel() }}
-    <i aria-hidden="true" class="fa-solid fa-arrow-right text-[10px]"></i>
+    <i aria-hidden="true" class="fa-solid fa-arrow-right text-xs"></i>
   </a>
 </section>

@@ -64,7 +64,7 @@
               [class.animate-shake]="formUtils.isValidField(paymentForm, 'paymentType')"
               class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             >
-              <option [ngValue]="null" disabled class="bg-surface text-slate-500">
+              <option [ngValue]="null" disabled class="bg-surface text-slate-400">
                 Seleccionar método...
               </option>
               @for (option of paymentTypesOptions(); track option.value) {
@@ -111,7 +111,7 @@
           <div class="group relative">
             <span
               aria-hidden="true"
-              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500 transition-colors group-focus-within:text-blue-400"
+              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-blue-400"
             >
               $
             </span>

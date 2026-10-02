@@ -2,13 +2,14 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SidebarService } from './services/sidebar.service';
 import { MenuItem } from './interfaces/sidebar.interface';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [NgTemplateOutlet, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './sidebar.html',
 })
 export class Sidebar {

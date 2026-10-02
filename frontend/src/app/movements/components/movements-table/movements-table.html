@@ -88,7 +88,7 @@
             sale-item
             [sale]="movement"
             tabindex="0"
-            class="cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
+            class="movement-row"
             (click)="openSaleDetail(movement)"
             (keydown.enter)="openSaleDetail(movement)"
             (keydown.space)="openSaleDetail(movement); $event.preventDefault()"
@@ -101,7 +101,7 @@
             (click)="openPaymentDetail(movement)"
             (keydown.enter)="openPaymentDetail(movement)"
             (keydown.space)="openPaymentDetail(movement); $event.preventDefault()"
-            class="cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
+            class="movement-row"
           ></tr>
         } @else {
           <tr
@@ -111,7 +111,7 @@
             (click)="openPurchaseDetail(movement)"
             (keydown.enter)="openPurchaseDetail(movement)"
             (keydown.space)="openPurchaseDetail(movement); $event.preventDefault()"
-            class="cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
+            class="movement-row"
           ></tr>
         }
       }
@@ -138,7 +138,7 @@
     <button
       type="button"
       (click)="loadNextPage()"
-      class="cursor-pointer rounded-lg border border-line bg-raised px-3 py-1.5 text-sm font-medium text-slate-300 transition-colors duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+      class="cursor-pointer rounded-lg border border-line bg-raised px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
     >
       Reintentar
     </button>

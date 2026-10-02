@@ -7,15 +7,15 @@ type Tone = 'emerald' | 'rose' | 'amber';
 const TONES: Record<Tone, { card: string; dot: string }> = {
   emerald: {
     card: 'border-emerald-500/25 from-emerald-950/50 to-panel-to',
-    dot: 'bg-emerald-400 shadow-emerald-400/60',
+    dot: 'bg-emerald-400',
   },
   rose: {
     card: 'border-rose-500/25 from-rose-950/50 to-panel-to',
-    dot: 'bg-rose-400 shadow-rose-400/60',
+    dot: 'bg-rose-400',
   },
   amber: {
     card: 'border-amber-500/25 from-amber-950/40 to-panel-to',
-    dot: 'bg-amber-400 shadow-amber-400/60',
+    dot: 'bg-amber-400',
   },
 };
 
@@ -26,6 +26,7 @@ const TONES: Record<Tone, { card: string; dot: string }> = {
 })
 export class KpiCard {
   label = input.required<string>();
+  featured = input<boolean>(false); // la cifra principal del panel: más grande
   value = input.required<number>();
   subtitle = input<string>('');
   tone = input<Tone>('emerald');

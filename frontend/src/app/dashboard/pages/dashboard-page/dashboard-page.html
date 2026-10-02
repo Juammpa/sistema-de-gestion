@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-7xl space-y-4 px-3 py-6 sm:px-6">
   <header>
     <h1 class="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">Panel de Inicio</h1>
-    <p class="mt-1 text-xs text-blue-300/70 sm:text-sm">
+    <p class="mt-1 text-sm text-blue-300">
       Resumen financiero · Actualizado al {{ today }}
     </p>
   </header>
@@ -10,9 +10,18 @@
     <error-state [error]="dashboard.error()" (retry)="dashboard.reload()" />
   } @else if (view(); as v) {
     <!-- Indicadores. El retardo escalonado (50 ms por bloque) arma la pantalla de arriba hacia abajo. -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-[1.5fr_1fr_1fr_1fr]">
       <kpi-card
-        class="animate-rise"
+        class="animate-rise sm:col-span-2 xl:col-span-1"
+        [featured]="true"
+        label="Balance neto"
+        tone="amber"
+        [subtitle]="v.net >= 0 ? 'Saldo a favor' : 'Saldo en contra'"
+        [value]="v.net"
+        [change]="v.netChange"
+      />
+      <kpi-card
+        class="animate-rise [animation-delay:50ms]"
         label="Por cobrar"
         tone="emerald"
         subtitle="Saldo de clientes"
@@ -20,21 +29,13 @@
         [change]="v.receivableChange"
       />
       <kpi-card
-        class="animate-rise [animation-delay:50ms]"
+        class="animate-rise [animation-delay:100ms]"
         label="Por pagar"
         tone="rose"
         subtitle="Deuda con proveedores"
         [value]="v.data.payable"
         [change]="v.payableChange"
         [invertTrend]="true"
-      />
-      <kpi-card
-        class="animate-rise [animation-delay:100ms]"
-        label="Balance neto"
-        tone="amber"
-        [subtitle]="v.net >= 0 ? 'Saldo a favor' : 'Saldo en contra'"
-        [value]="v.net"
-        [change]="v.netChange"
       />
       <kpi-card
         class="animate-rise [animation-delay:150ms]"

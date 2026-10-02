@@ -24,6 +24,9 @@
                 : 'dark';
         } catch (e) {}
         document.documentElement.setAttribute('data-theme', theme);
+        var light = theme === 'light';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#f4f2ee' : '#0a0f1d');
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', light ? 'light' : 'dark');
       })();
     </script>
   </head>
