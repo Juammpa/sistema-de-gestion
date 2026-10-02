@@ -17,7 +17,7 @@
       <div class="flex min-w-0 items-center gap-3.5">
         <span
           aria-hidden="true"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-blue-500/15 text-blue-300"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
         >
           <i class="fa-solid fa-shop text-base"></i>
         </span>
@@ -34,7 +34,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-[0.97]"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
         title="Cerrar modal"
         aria-label="Cerrar modal"
       >
@@ -46,7 +46,7 @@
         <!-- Nombre -->
         <div class="space-y-1.5">
           <label for="shop-name" class="block text-sm font-medium text-slate-200">
-            Nombre <span aria-hidden="true" class="text-blue-400">*</span>
+            Nombre <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <input
             id="shop-name"
@@ -58,7 +58,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(butcherShopForm, 'name')"
             [class.!ring-red-500/20]="formUtils.isValidField(butcherShopForm, 'name')"
             [class.animate-shake]="formUtils.isValidField(butcherShopForm, 'name')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
           @if (formUtils.isValidField(butcherShopForm, 'name')) {
             <span
@@ -73,7 +73,7 @@
         <!-- Dirección -->
         <div class="space-y-1.5">
           <label for="shop-address" class="block text-sm font-medium text-slate-200">
-            Dirección <span aria-hidden="true" class="text-blue-400">*</span>
+            Dirección <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <input
             id="shop-address"
@@ -85,7 +85,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(butcherShopForm, 'address')"
             [class.!ring-red-500/20]="formUtils.isValidField(butcherShopForm, 'address')"
             [class.animate-shake]="formUtils.isValidField(butcherShopForm, 'address')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
           @if (formUtils.isValidField(butcherShopForm, 'address')) {
             <span
@@ -111,7 +111,7 @@
         <button
           type="submit"
           [disabled]="butcherShopForm.invalid"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-ui duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i> <span>Crear Sucursal</span>
         </button>

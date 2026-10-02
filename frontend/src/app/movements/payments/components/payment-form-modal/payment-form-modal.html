@@ -20,7 +20,7 @@
         <!-- Badge con ícono financiero/pago -->
         <span
           aria-hidden="true"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-blue-500/15 text-blue-300"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
         >
           <i class="fa-solid fa-receipt text-base"></i>
         </span>
@@ -38,7 +38,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-[0.97]"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
         title="Cerrar modal"
         aria-label="Cerrar modal"
       >
@@ -52,7 +52,7 @@
         <!-- Método de Pago -->
         <div class="space-y-1.5">
           <label for="payment-type" class="block text-sm font-medium text-slate-200">
-            Método de Pago <span aria-hidden="true" class="text-blue-400">*</span>
+            Método de Pago <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <div class="group relative">
             <select
@@ -62,7 +62,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'paymentType')"
               [class.!ring-red-500/20]="formUtils.isValidField(paymentForm, 'paymentType')"
               [class.animate-shake]="formUtils.isValidField(paymentForm, 'paymentType')"
-              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             >
               <option [ngValue]="null" disabled class="bg-surface text-slate-400">
                 Seleccionar método...
@@ -75,7 +75,7 @@
             </select>
             <!-- Flecha chevron decorativa para el select -->
             <div
-              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-blue-400"
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-accent-400"
             >
               <svg
                 aria-hidden="true"
@@ -106,12 +106,12 @@
         <!-- Monto -->
         <div class="space-y-1.5">
           <label for="payment-amount" class="block text-sm font-medium text-slate-200">
-            Monto <span aria-hidden="true" class="text-blue-400">*</span>
+            Monto <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <div class="group relative">
             <span
               aria-hidden="true"
-              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-blue-400"
+              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-accent-400"
             >
               $
             </span>
@@ -126,7 +126,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'amount')"
               [class.!ring-red-500/20]="formUtils.isValidField(paymentForm, 'amount')"
               [class.animate-shake]="formUtils.isValidField(paymentForm, 'amount')"
-              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             />
           </div>
           @if (
@@ -155,14 +155,14 @@
       @if (isSupplierTransfer) {
         <div class="space-y-1.5">
           <label for="payment-supplier" class="block text-sm font-medium text-slate-200">
-            Proveedor <span aria-hidden="true" class="text-blue-400">*</span>
+            Proveedor <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <select
             id="payment-supplier"
             formControlName="supplierId"
             [attr.aria-invalid]="formUtils.isValidField(paymentForm, 'supplierId')"
             [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'supplierId')"
-            class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           >
             <option [ngValue]="null" disabled>Seleccionar proveedor...</option>
             @for (supplier of suppliers.hasValue() ? suppliers.value() : []; track supplier.id) {
@@ -196,7 +196,7 @@
         <button
           type="submit"
           [disabled]="paymentForm.invalid"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-ui duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i> <span>Crear Pago</span>
         </button>

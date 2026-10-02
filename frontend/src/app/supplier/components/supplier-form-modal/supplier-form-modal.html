@@ -20,7 +20,7 @@
         <!-- Badge con ícono enriquecido -->
         <span
           aria-hidden="true"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-blue-500/15 text-blue-300"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
         >
           @if (!isEdit()) {
             <i class="fa-solid fa-user-plus text-base"></i>
@@ -48,7 +48,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-[0.97]"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
         title="Cerrar modal"
         aria-label="Cerrar modal"
       >
@@ -62,7 +62,7 @@
         <!-- Nombre / Empresa -->
         <div class="space-y-1.5">
           <label for="supplier-company" class="block text-sm font-medium text-slate-200">
-            Nombre / Empresa <span aria-hidden="true" class="text-blue-400">*</span>
+            Nombre / Empresa <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <input
             id="supplier-company"
@@ -75,7 +75,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(supplierForm, 'companyName')"
             [class.!ring-red-500/20]="formUtils.isValidField(supplierForm, 'companyName')"
             [class.animate-shake]="formUtils.isValidField(supplierForm, 'companyName')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
           <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(supplierForm, 'companyName')) {
@@ -91,13 +91,13 @@
         <!-- Teléfono -->
         <div class="space-y-1.5">
           <label for="supplier-phone" class="block text-sm font-medium text-slate-200">
-            Teléfono <span aria-hidden="true" class="text-blue-400">*</span>
+            Teléfono <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <div class="group relative">
             <!-- Ícono decorativo con reactividad en focus -->
             <svg
               aria-hidden="true"
-              class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-blue-400"
+              class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-accent-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -120,7 +120,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(supplierForm, 'phoneNumber')"
               [class.!ring-red-500/20]="formUtils.isValidField(supplierForm, 'phoneNumber')"
               [class.animate-shake]="formUtils.isValidField(supplierForm, 'phoneNumber')"
-              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-10 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-10 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             />
           </div>
           <!-- Mostrar error descriptivo -->
@@ -138,7 +138,7 @@
       <!-- Tipo de proveedor -->
       <fieldset class="space-y-1.5">
         <legend class="block text-sm font-medium text-slate-200">
-          Tipo de proveedor <span aria-hidden="true" class="text-blue-400">*</span>
+          Tipo de proveedor <span aria-hidden="true" class="text-accent-400">*</span>
         </legend>
         <div class="grid grid-cols-3 gap-2">
           @for (option of supplierTypeOptions; track option.value) {
@@ -150,7 +150,7 @@
                 class="peer sr-only"
               />
               <span
-                class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-sm font-medium text-slate-300 transition-colors duration-150 hover:border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-200 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-400/70"
+                class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-sm font-medium text-slate-300 transition-colors duration-150 hover:border-slate-600 peer-checked:border-accent-500 peer-checked:bg-accent-500/10 peer-checked:text-accent-200 peer-focus-visible:ring-2 peer-focus-visible:ring-accent-400/70"
               >
                 <i [class]="option.icon" aria-hidden="true"></i>
                 {{ option.label }}
@@ -177,7 +177,7 @@
         <button
           type="submit"
           [disabled]="supplierForm.invalid"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-ui duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
           <span>{{ isEdit() ? 'Guardar cambios' : 'Crear proveedor' }}</span>

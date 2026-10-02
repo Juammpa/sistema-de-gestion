@@ -25,7 +25,7 @@
           <button
             type="button"
             (click)="edit.emit()"
-            class="inline-flex min-h-11 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:min-h-9"
+            class="inline-flex min-h-11 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:min-h-9"
           >
             <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
             Editar
@@ -50,10 +50,10 @@
               (click)="selectButcherShop(butcherShop.id)"
               [attr.aria-pressed]="selectedButcherShopId() === butcherShop.id"
               [title]="butcherShop.name + ' - ' + butcherShop.address"
-              class="group inline-flex min-h-11 max-w-full cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-left text-sm leading-snug text-slate-300 transition-ui duration-150 hover:border-slate-500 hover:bg-raised-hover hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] aria-pressed:border-blue-500/60 aria-pressed:bg-blue-500/15 aria-pressed:text-blue-100 aria-pressed:shadow-sm aria-pressed:shadow-blue-500/10 sm:min-h-9"
+              class="group inline-flex min-h-11 max-w-full cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-left text-sm leading-snug text-slate-300 transition-ui duration-150 hover:border-slate-500 hover:bg-raised-hover hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] aria-pressed:border-accent-500/60 aria-pressed:bg-accent-500/15 aria-pressed:text-accent-100 aria-pressed:shadow-sm aria-pressed:shadow-accent-500/10 sm:min-h-9"
             >
               <i
-                class="fa-solid fa-shop shrink-0 text-slate-400 transition-colors duration-150 group-hover:text-slate-300 group-aria-pressed:text-blue-300 motion-reduce:transition-none"
+                class="fa-solid fa-shop shrink-0 text-slate-400 transition-colors duration-150 group-hover:text-slate-300 group-aria-pressed:text-accent-300 motion-reduce:transition-none"
                 aria-hidden="true"
               ></i>
               {{ butcherShop.name }} - {{ butcherShop.address }}
@@ -65,7 +65,7 @@
             (click)="showButcherShopModal.set(true)"
             title="Agregar sucursal"
             aria-label="Agregar sucursal"
-            class="inline-flex size-10 cursor-pointer touch-manipulation items-center justify-center rounded-lg border border-dashed border-slate-600/70 text-sm text-slate-400 transition-ui duration-150 hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:size-9"
+            class="inline-flex size-10 cursor-pointer touch-manipulation items-center justify-center rounded-lg border border-dashed border-slate-600/70 text-sm text-slate-400 transition-ui duration-150 hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:size-9"
           >
             <i class="fa-solid fa-plus" aria-hidden="true"></i>
           </button>

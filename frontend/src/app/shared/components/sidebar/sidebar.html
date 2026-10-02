@@ -24,7 +24,7 @@
         <div
           role="img"
           aria-label="Sistema de Gestión"
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-400/20 bg-blue-600 text-sm font-bold text-white"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent-400/20 bg-accent-600 text-sm font-bold text-white"
         >
           SG
         </div>
@@ -33,7 +33,7 @@
         <div class="flex items-center gap-3">
           <div
             aria-hidden="true"
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-400/20 bg-blue-600 text-sm font-bold text-white"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent-400/20 bg-accent-600 text-sm font-bold text-white"
           >
             SG
           </div>
@@ -41,7 +41,7 @@
             <span class="text-sm font-bold leading-tight tracking-tight text-slate-50">
               Sistema de Gestión
             </span>
-            <span class="text-xs font-medium tracking-wide text-blue-400"> Carnicerías </span>
+            <span class="text-xs font-medium tracking-wide text-accent-400"> Carnicerías </span>
           </div>
         </div>
       }
@@ -81,7 +81,7 @@
         aria-label="Abrir menú"
         aria-controls="app-sidebar"
         [attr.aria-expanded]="drawerOpen()"
-        class="flex size-11 cursor-pointer items-center justify-center rounded-xl text-slate-300 transition-ui hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.97]"
+        class="flex size-11 cursor-pointer items-center justify-center rounded-xl text-slate-300 transition-ui hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 active:scale-[0.97]"
       >
         <i aria-hidden="true" class="fa-solid fa-bars text-lg"></i>
       </button>
@@ -102,10 +102,10 @@
         @for (item of items; track $index) {
           <a
             routerLink="{{ item.route }}"
-            routerLinkActive="!bg-blue-500/15 !text-slate-50 ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
+            routerLinkActive="!bg-accent-500/15 !text-slate-50 ring-1 ring-inset ring-accent-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-accent-400"
             ariaCurrentWhenActive="page"
             (click)="mobileOpen.set(false)"
-            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.97] motion-reduce:transition-none"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 active:scale-[0.97] motion-reduce:transition-none"
             [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'"
           >
             <!-- Icono del item con tamaño constante -->

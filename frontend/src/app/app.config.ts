@@ -15,6 +15,7 @@ import { errorInterceptor } from './core/errors/error.interceptor';
 import { GlobalErrorHandler } from './core/errors/global-error-handler';
 import { registerLocaleData } from '@angular/common';
 import { ThemeService } from './core/theme/theme.service';
+import { AccentService } from './core/theme/accent.service';
 
 // Datos de formato (separadores, simbolo de moneda, fechas) para es-AR
 registerLocaleData(localeEsAr);
@@ -29,6 +30,7 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'es-AR' },
     provideAppInitializer(() => {
       inject(ThemeService);
+      inject(AccentService);
     }),
   ],
 };

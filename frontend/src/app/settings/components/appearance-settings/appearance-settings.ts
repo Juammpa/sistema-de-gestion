@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ThemePreference, ThemeService } from '../../../core/theme/theme.service';
-
-type AccentId = 'blue' | 'emerald' | 'purple' | 'amber';
+import { AccentId, AccentService } from '../../../core/theme/accent.service';
 
 @Component({
   selector: 'appearance-settings',
@@ -10,6 +9,7 @@ type AccentId = 'blue' | 'emerald' | 'purple' | 'amber';
 })
 export class AppearanceSettings {
   private themeService = inject(ThemeService);
+  private accentService = inject(AccentService);
 
   protected readonly themes: { id: ThemePreference; label: string; icon: string }[] = [
     { id: 'light', label: 'Claro', icon: 'fa-regular fa-sun' },
@@ -25,7 +25,7 @@ export class AppearanceSettings {
       classes: 'bg-emerald-500 text-white aria-pressed:ring-emerald-500',
     },
     {
-      id: 'purple',
+      id: 'violet',
       label: 'Violeta',
       classes: 'bg-violet-400 text-white aria-pressed:ring-violet-400',
     },
@@ -36,11 +36,15 @@ export class AppearanceSettings {
     },
   ];
 
-  // Seleccion actual (por ahora solo visual)
+  // Seleccion actual
   protected selectedTheme = this.themeService.preference;
-  protected selectedAccent = signal<AccentId>('blue');
+  protected selectedAccent = this.accentService.accent;
 
   protected selectTheme(theme: ThemePreference) {
     this.themeService.setPreference(theme);
+  }
+
+  protected selectAccent(accent: AccentId) {
+    this.accentService.setAccent(accent);
   }
 }

@@ -2,7 +2,7 @@
   class="flex h-full flex-col rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to p-5 shadow-md shadow-black/20 sm:p-6"
 >
   <h2 class="text-sm font-semibold text-slate-100">Resumen Mensual</h2>
-  <p class="text-xs text-blue-300">{{ title() }}</p>
+  <p class="text-xs text-accent-300">{{ title() }}</p>
 
   <ul class="mt-5 flex flex-1 flex-col justify-around gap-4">
     @for (row of rows(); track row.label; let i = $index) {
@@ -36,7 +36,7 @@
     </div>
     <div class="flex items-center justify-between">
       <dt class="text-slate-400">Índice de cobranza</dt>
-      <dd class="font-mono text-sm font-bold tabular-nums text-blue-400">
+      <dd class="font-mono text-sm font-bold tabular-nums text-accent-400">
         {{ collectionRate() === null ? '—' : collectionRate()!.toFixed(1) + '%' }}
       </dd>
     </div>

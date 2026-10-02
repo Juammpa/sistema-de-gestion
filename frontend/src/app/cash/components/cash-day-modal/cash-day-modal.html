@@ -36,7 +36,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.97]"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 active:scale-[0.97]"
         title="Cerrar"
         aria-label="Cerrar"
       >
@@ -55,7 +55,7 @@
             <div class="flex min-w-0 items-center gap-3">
               <span
                 aria-hidden="true"
-                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-xs text-blue-300"
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-accent-500/20 bg-accent-500/10 text-xs text-accent-300"
               >
                 <i class="fa-solid fa-user"></i>
               </span>
@@ -127,7 +127,7 @@
           <span class="block text-xs font-medium uppercase tracking-wider text-slate-400"
             >Ingreso</span
           >
-          <span class="font-mono text-sm font-semibold tabular-nums text-blue-300">
+          <span class="font-mono text-sm font-semibold tabular-nums text-accent-300">
             {{ day().cash | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
           </span>
         </div>

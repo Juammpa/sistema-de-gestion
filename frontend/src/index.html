@@ -22,11 +22,20 @@
                   ? 'dark'
                   : 'light'
                 : 'dark';
+          // Aplica el acento guardado antes de que se dibuje la página
+          var accent = localStorage.getItem('accent');
+          if (accent === 'emerald' || accent === 'violet' || accent === 'amber') {
+            document.documentElement.setAttribute('data-accent', accent);
+          }
         } catch (e) {}
         document.documentElement.setAttribute('data-theme', theme);
         var light = theme === 'light';
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#f4f2ee' : '#0a0f1d');
-        document.querySelector('meta[name="color-scheme"]').setAttribute('content', light ? 'light' : 'dark');
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', light ? '#f4f2ee' : '#0a0f1d');
+        document
+          .querySelector('meta[name="color-scheme"]')
+          .setAttribute('content', light ? 'light' : 'dark');
       })();
     </script>
   </head>

@@ -20,7 +20,7 @@
         <!-- Badge con ícono enriquecido -->
         <span
           aria-hidden="true"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-blue-500/15 text-blue-300"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
         >
           @if (!isEdit()) {
             <i class="fa-solid fa-user-plus text-base"></i>
@@ -42,7 +42,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-[0.97]"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
         title="Cerrar modal"
         aria-label="Cerrar modal"
       >
@@ -56,7 +56,7 @@
         <!-- Nombre -->
         <div class="space-y-1.5">
           <label for="client-name" class="block text-sm font-medium text-slate-200">
-            Nombre <span aria-hidden="true" class="text-blue-400">*</span>
+            Nombre <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <input
             id="client-name"
@@ -69,7 +69,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(clientForm, 'name')"
             [class.!ring-red-500/20]="formUtils.isValidField(clientForm, 'name')"
             [class.animate-shake]="formUtils.isValidField(clientForm, 'name')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
           <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(clientForm, 'name')) {
@@ -85,7 +85,7 @@
         <!-- Apellido -->
         <div class="space-y-1.5">
           <label for="client-lastName" class="block text-sm font-medium text-slate-200">
-            Apellido <span aria-hidden="true" class="text-blue-400">*</span>
+            Apellido <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <input
             id="client-lastName"
@@ -98,7 +98,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(clientForm, 'lastName')"
             [class.!ring-red-500/20]="formUtils.isValidField(clientForm, 'lastName')"
             [class.animate-shake]="formUtils.isValidField(clientForm, 'lastName')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
           <!-- Mostrar error descriptivo -->
           @if (formUtils.isValidField(clientForm, 'lastName')) {
@@ -116,13 +116,13 @@
       <div class="space-y-1.5">
         <label for="client-phone" class="block text-sm font-medium text-slate-200">
           Teléfono
-          <span aria-hidden="true" class="text-blue-400">*</span>
+          <span aria-hidden="true" class="text-accent-400">*</span>
         </label>
         <div class="group relative sm:w-[calc(50%-0.5rem)]">
           <!-- Ícono decorativo dentro del input con reactividad en focus -->
           <svg
             aria-hidden="true"
-            class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-blue-400"
+            class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-accent-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -145,7 +145,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(clientForm, 'phoneNumber')"
             [class.!ring-red-500/20]="formUtils.isValidField(clientForm, 'phoneNumber')"
             [class.animate-shake]="formUtils.isValidField(clientForm, 'phoneNumber')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-10 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-10 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
         </div>
         <!-- Mostrar error descriptivo -->
@@ -174,7 +174,7 @@
           <!-- Nombre de la sucursal -->
           <div class="space-y-1.5">
             <label for="client-shop-name" class="block text-sm font-medium text-slate-200">
-              Nombre de la sucursal <span aria-hidden="true" class="text-blue-400">*</span>
+              Nombre de la sucursal <span aria-hidden="true" class="text-accent-400">*</span>
             </label>
             <input
               id="client-shop-name"
@@ -186,7 +186,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(clientForm, 'butcherShopName')"
               [class.!ring-red-500/20]="formUtils.isValidField(clientForm, 'butcherShopName')"
               [class.animate-shake]="formUtils.isValidField(clientForm, 'butcherShopName')"
-              class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             />
             @if (formUtils.isValidField(clientForm, 'butcherShopName')) {
               <span
@@ -201,7 +201,7 @@
           <!-- Dirección -->
           <div class="space-y-1.5">
             <label for="client-shop-address" class="block text-sm font-medium text-slate-200">
-              Dirección <span aria-hidden="true" class="text-blue-400">*</span>
+              Dirección <span aria-hidden="true" class="text-accent-400">*</span>
             </label>
             <input
               id="client-shop-address"
@@ -213,7 +213,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(clientForm, 'butcherShopAddress')"
               [class.!ring-red-500/20]="formUtils.isValidField(clientForm, 'butcherShopAddress')"
               [class.animate-shake]="formUtils.isValidField(clientForm, 'butcherShopAddress')"
-              class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             />
             @if (formUtils.isValidField(clientForm, 'butcherShopAddress')) {
               <span
@@ -243,7 +243,7 @@
         <button
           type="submit"
           [disabled]="clientForm.invalid"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-ui duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
           <span>{{ isEdit() ? 'Guardar cambios' : 'Crear cliente' }}</span>

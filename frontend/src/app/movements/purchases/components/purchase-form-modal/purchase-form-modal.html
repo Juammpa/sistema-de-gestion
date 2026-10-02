@@ -20,7 +20,7 @@
         <!-- Badge con ícono -->
         <span
           aria-hidden="true"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-500/25 bg-blue-500/15 text-blue-300"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
         >
           <i class="fa-solid fa-cart-shopping text-base"></i>
         </span>
@@ -38,7 +38,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-safe:active:scale-[0.97]"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
         title="Cerrar modal"
         aria-label="Cerrar modal"
       >
@@ -52,7 +52,7 @@
         <!-- Tipo Compra -->
         <div class="space-y-1.5">
           <label for="purchase-type" class="block text-sm font-medium text-slate-200">
-            Tipo de Compra <span aria-hidden="true" class="text-blue-400">*</span>
+            Tipo de Compra <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <div class="group relative">
             <select
@@ -62,7 +62,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'purchaseType')"
               [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'purchaseType')"
               [class.animate-shake]="formUtils.isValidField(purchaseForm, 'purchaseType')"
-              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             >
               <option [ngValue]="null" disabled class="bg-surface text-slate-400">
                 Seleccionar corte...
@@ -75,7 +75,7 @@
             </select>
             <!-- Chevron decorativo -->
             <div
-              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-blue-400"
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-accent-400"
             >
               <svg
                 aria-hidden="true"
@@ -106,7 +106,7 @@
         <!-- Unidades -->
         <div class="space-y-1.5">
           <label for="purchase-unit" class="block text-sm font-medium text-slate-200">
-            Unidades <span aria-hidden="true" class="text-blue-400">*</span>
+            Unidades <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <input
             id="purchase-unit"
@@ -119,7 +119,7 @@
             [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'unit')"
             [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'unit')"
             [class.animate-shake]="formUtils.isValidField(purchaseForm, 'unit')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           />
           @if (formUtils.isValidField(purchaseForm, 'unit')) {
             <span
@@ -137,7 +137,7 @@
         <!-- Kilogramos -->
         <div class="space-y-1.5">
           <label for="purchase-kilograms" class="block text-sm font-medium text-slate-200">
-            Kilogramos <span aria-hidden="true" class="text-blue-400">*</span>
+            Kilogramos <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <div class="group relative">
             <input
@@ -151,11 +151,11 @@
               [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'kilograms')"
               [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'kilograms')"
               [class.animate-shake]="formUtils.isValidField(purchaseForm, 'kilograms')"
-              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             />
             <span
               aria-hidden="true"
-              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400 transition-colors group-focus-within:text-blue-400"
+              class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400 transition-colors group-focus-within:text-accent-400"
             >
               kg
             </span>
@@ -173,12 +173,12 @@
         <!-- Precio por Kilo -->
         <div class="space-y-1.5">
           <label for="purchase-price" class="block text-sm font-medium text-slate-200">
-            Precio Kilo <span aria-hidden="true" class="text-blue-400">*</span>
+            Precio Kilo <span aria-hidden="true" class="text-accent-400">*</span>
           </label>
           <div class="group relative">
             <span
               aria-hidden="true"
-              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-blue-400"
+              class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-accent-400"
             >
               $
             </span>
@@ -193,7 +193,7 @@
               [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
               [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
               [class.animate-shake]="formUtils.isValidField(purchaseForm, 'pricePerKilo')"
-              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             />
           </div>
           @if (formUtils.isValidField(purchaseForm, 'pricePerKilo')) {
@@ -221,7 +221,7 @@
         <button
           type="submit"
           [disabled]="purchaseForm.invalid"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-ui duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i> <span>Crear compra</span>
         </button>

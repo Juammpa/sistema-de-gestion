@@ -1,7 +1,7 @@
 <div class="flex gap-2">
   <!-- Input + botón buscar integrados -->
   <div
-    class="flex h-11 flex-1 overflow-hidden rounded-xl border border-slate-700/70 bg-canvas transition-ui duration-150 hover:border-slate-600 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/15 motion-reduce:transition-none"
+    class="flex h-11 flex-1 overflow-hidden rounded-xl border border-slate-700/70 bg-canvas transition-ui duration-150 hover:border-slate-600 focus-within:border-accent-500 focus-within:ring-4 focus-within:ring-accent-500/15 motion-reduce:transition-none"
   >
     <input
       #searchBox
@@ -19,7 +19,7 @@
       (click)="searchBox.focus()"
       title="Buscar"
       aria-label="Buscar"
-      class="flex w-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center border-l border-slate-700/70 text-slate-400 transition-colors duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:bg-slate-700 motion-reduce:transition-none"
+      class="flex w-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center border-l border-slate-700/70 text-slate-400 transition-colors duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 active:bg-slate-700 motion-reduce:transition-none"
     >
       <svg
         aria-hidden="true"
@@ -42,7 +42,7 @@
   <button
     type="button"
     (click)="add.emit()"
-    class="inline-flex h-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-ui duration-150 hover:bg-blue-500 hover:shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:px-5"
+    class="inline-flex h-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-accent-600 px-4 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 hover:bg-accent-500 hover:shadow-accent-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:px-5"
   >
     <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
     Agregar
@@ -59,7 +59,7 @@
   >
     <span
       aria-hidden="true"
-      class="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500 shadow-[0_0_8px] shadow-blue-500/60"
+      class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500 shadow-[0_0_8px] shadow-accent-500/60"
     ></span>
     <span
       ><strong class="font-semibold tabular-nums text-slate-100">{{ numberFound() ?? 0 }}</strong>
@@ -74,7 +74,7 @@
         <select
           [attr.aria-label]="filter.label"
           (change)="onFilterChange(filter.key, $event)"
-          class="h-11 min-w-40 flex-1 cursor-pointer truncate rounded-xl border border-slate-700/70 bg-slate-800/60 pr-8 pl-3 text-sm text-slate-300 outline-none transition-ui duration-150 hover:border-slate-600 hover:text-slate-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-10 sm:flex-none"
+          class="h-11 min-w-40 flex-1 cursor-pointer truncate rounded-xl border border-slate-700/70 bg-slate-800/60 pr-8 pl-3 text-sm text-slate-300 outline-none transition-ui duration-150 hover:border-slate-600 hover:text-slate-100 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 motion-reduce:transition-none sm:h-10 sm:flex-none"
         >
           @for (option of filter.options; track option.value) {
             <option [value]="option.value">{{ option.label }}</option>
