@@ -15,14 +15,12 @@
 
 <!-- Lista de clientes -->
 <div
-  class="mx-3 flex max-h-107 max-w-3xl flex-col gap-3 overflow-y-auto pb-4 scrollbar-none md:mx-auto"
+  class="mx-3 flex max-h-[calc(100dvh-11.5rem)] max-w-3xl flex-col gap-3 overflow-y-auto pb-4 scrollbar-none md:mx-auto"
 >
   <!-- Mostrar estado de carga -->
   @if (clientResource.isLoading()) {
     <!-- Cargando (tambien al tocar "Reintentar") -->
-    <div class="m-auto">
-      <loading-spinner />
-    </div>
+    <list-skeleton />
   } @else if (clientResource.error()) {
     <!-- Error: solo se ve cuando termino de cargar -->
     <error-state
@@ -47,6 +45,7 @@
 <!-- Modal para Agregar Cliente -->
 @if (showModal()) {
   <client-form-modal
+    animate.leave="modal-host-leave"
     description="Crear Cliente"
     (cancel)="showModal.set(false)"
     (saved)="showModal.set(false); clientResource.reload()"

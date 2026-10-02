@@ -3,7 +3,7 @@ import { SearchInput } from '../../../shared/components/search-input/search-inpu
 import { CutMeatService } from '../../services/cut-meat.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CutMeatListItem } from '../../components/cut-meat-list-item/cut-meat-list-item';
-import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { ListSkeleton } from '../../../shared/components/list-skeleton/list-skeleton';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { CutMeatFormModal } from '../../components/cut-meat-form-modal/cut-meat-form-modal';
 import { EditCutMeatModal } from '../../components/edit-cut-meat-modal/edit-cut-meat-modal';
@@ -23,7 +23,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
   imports: [
     SearchInput,
     CutMeatListItem,
-    LoadingSpinner,
+    ListSkeleton,
     EmptyState,
     CutMeatFormModal,
     EditCutMeatModal,

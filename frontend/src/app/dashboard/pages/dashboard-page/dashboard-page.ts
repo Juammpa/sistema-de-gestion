@@ -1,6 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { FlowChartCard } from '../../components/flow-chart-card/flow-chart-card';
 import { KpiCard } from '../../components/kpi-card/kpi-card';
 import { MonthlyComparisonCard } from '../../components/monthly-comparison-card/monthly-comparison-card';
@@ -14,7 +13,6 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
 @Component({
   selector: 'app-dashboard-page',
   imports: [
-    LoadingSpinner,
     KpiCard,
     FlowChartCard,
     MonthlySummaryCard,

@@ -4,7 +4,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { SearchInput } from '../../../shared/components/search-input/search-input';
 import { SearchList } from '../../../shared/components/search-list/search-list';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
-import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { ListSkeleton } from '../../../shared/components/list-skeleton/list-skeleton';
 import { ListItem } from '../../../shared/interfaces/list-item.interface';
 import { SupplierMapper } from '../../mappers/supplier.mapper';
 import { SupplierFormModal } from '../../components/supplier-form-modal/supplier-form-modal';
@@ -18,7 +18,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-supplier-page',
-  imports: [SearchInput, SearchList, EmptyState, LoadingSpinner, SupplierFormModal, ErrorState],
+  imports: [SearchInput, SearchList, EmptyState, ListSkeleton, SupplierFormModal, ErrorState],
   templateUrl: './supplier-page.html',
 })
 export default class SupplierPage {

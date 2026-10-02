@@ -1,3 +1,8 @@
-@for (item of searchList(); track item.id) {
-  <list-item-card [item]="item" [pathRoute]="[pathRoute(), item.id.toString()]" />
+@for (item of searchList(); track item.id; let i = $index) {
+  <list-item-card
+    class="block animate-rise"
+    [style.animation-delay.ms]="i < 8 ? i * 30 : 0"
+    [item]="item"
+    [pathRoute]="[pathRoute(), item.id.toString()]"
+  />
 }

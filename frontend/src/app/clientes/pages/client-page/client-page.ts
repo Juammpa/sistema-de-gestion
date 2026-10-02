@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ClientService } from '../../services/cliente.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { ListSkeleton } from '../../../shared/components/list-skeleton/list-skeleton';
 import { SearchInput } from '../../../shared/components/search-input/search-input';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { SearchList } from '../../../shared/components/search-list/search-list';
@@ -26,7 +26,7 @@ const totalDebt = (client: Client) =>
 
 @Component({
   selector: 'app-client-page',
-  imports: [LoadingSpinner, SearchInput, EmptyState, SearchList, ClientFormModal, ErrorState],
+  imports: [ListSkeleton, SearchInput, EmptyState, SearchList, ClientFormModal, ErrorState],
   templateUrl: './client-page.html',
 })
 export default class ClientPage {

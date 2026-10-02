@@ -20,9 +20,7 @@
   <!-- Mostrar estado de carga -->
   @if (supplierResource.isLoading()) {
     <!-- Cargando (tambien al tocar "Reintentar") -->
-    <div class="m-auto">
-      <loading-spinner />
-    </div>
+    <list-skeleton />
   } @else if (supplierResource.error()) {
     <!-- Error: solo se ve cuando termino de cargar -->
     <error-state
@@ -47,6 +45,7 @@
 <!-- Modal para Agregar Proveedor -->
 @if (showModal()) {
   <supplier-form-modal
+    animate.leave="modal-host-leave"
     description="Crear Proveedor"
     (cancel)="showModal.set(false)"
     (saved)="showModal.set(false); supplierResource.reload()"

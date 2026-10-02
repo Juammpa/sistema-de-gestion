@@ -5,7 +5,7 @@
   <p class="text-xs text-blue-300/70">{{ title() }}</p>
 
   <ul class="mt-5 flex flex-1 flex-col justify-around gap-4">
-    @for (row of rows(); track row.label) {
+    @for (row of rows(); track row.label; let i = $index) {
       <li>
         <div class="flex items-baseline justify-between gap-2 text-xs">
           <span class="text-slate-400">{{ row.label }}</span>
@@ -16,10 +16,11 @@
         <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800/80">
           <div
             [class]="
-              'h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none ' +
+              'h-full origin-left animate-bar rounded-full transition-[width] duration-500 motion-reduce:transition-none ' +
               row.bar
             "
             [style.width.%]="row.pct"
+            [style.animation-delay.ms]="250 + i * 60"
           ></div>
         </div>
       </li>

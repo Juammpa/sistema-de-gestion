@@ -20,9 +20,7 @@
   <!--  -->
   @if (cutMeatResource.isLoading()) {
     <!-- Mostrar estado de carga -->
-    <div class="m-auto">
-      <loading-spinner />
-    </div>
+    <list-skeleton />
   } @else if (cutMeatResource.hasValue()) {
     <!-- Iterar lista de cortes (segun los filtros elegidos) -->
     @for (item of visibleCutMeats(); track item.id) {
@@ -55,6 +53,7 @@
 
 @if (showModal()) {
   <cut-meat-form-modal
+    animate.leave="modal-host-leave"
     (cancel)="showModal.set(false)"
     (created)="showModal.set(false); cutMeatResource.reload()"
   />
@@ -62,6 +61,7 @@
 
 @if (showCutMeatDetail() && cutMeatDetail.value(); as cutMeat) {
   <edit-cut-meat-modal
+    animate.leave="modal-host-leave"
     (cancel)="showCutMeatDetail.set(false)"
     [cutMeat]="cutMeat"
     (saved)="onCutMeatChanged()"
