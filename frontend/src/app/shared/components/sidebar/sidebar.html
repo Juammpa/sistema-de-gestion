@@ -1,15 +1,25 @@
 <div class="flex h-dvh overflow-hidden bg-canvas font-sans text-slate-100 antialiased">
   <!-- ASIDE SIDEBAR -->
+  <!-- Fondo del drawer (solo móvil) -->
+  @if (drawerOpen()) {
+    <div
+      aria-hidden="true"
+      (click)="mobileOpen.set(false)"
+      animate.leave="scrim-leave"
+      class="scrim fixed inset-0 z-30 bg-slate-950/60 backdrop-blur-sm md:hidden"
+    ></div>
+  }
   <aside
-    class="z-20 flex shrink-0 select-none flex-col gap-4 border-r border-slate-800/80 bg-sidebar px-2.5 py-4 shadow-xl shadow-black/20 transition-all duration-300 ease-in-out motion-reduce:transition-none"
-    [class]="sidebarService.isCollapsed() ? 'w-16 items-center' : 'w-64 overflow-hidden'"
+    id="app-sidebar"
+    (document:keydown.escape)="mobileOpen.set(false)"
+    [attr.inert]="isMobile() && !drawerOpen() ? '' : null"
+    [class.max-md:-translate-x-full]="!drawerOpen()"
+    class="z-20 flex shrink-0 select-none flex-col gap-4 border-r border-slate-800/80 bg-sidebar px-2.5 py-4 shadow-xl shadow-black/20 transition-[width,translate] duration-200 ease-in-out [view-transition-name:sidebar] max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-40 max-md:w-64 max-md:ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none"
+    [class]="collapsed() ? 'w-16 items-center' : 'w-64 overflow-hidden'"
   >
     <!-- LOGO / BRANDING -->
-    <div
-      class="flex h-11 w-full items-center"
-      [class]="sidebarService.isCollapsed() ? 'justify-center' : 'px-2.5'"
-    >
-      @if (sidebarService.isCollapsed()) {
+    <div class="flex h-11 w-full items-center" [class]="collapsed() ? 'justify-center' : 'px-2.5'">
+      @if (collapsed()) {
         <!-- Logo Colapsado: Cuadrado con gradiente azul e iniciales -->
         <div
           role="img"
@@ -42,13 +52,11 @@
     <nav
       aria-label="Navegación principal"
       class="flex w-full flex-1 flex-col gap-4 [scrollbar-color:var(--color-slate-800)_transparent] scrollbar-thin"
-      [class]="
-        sidebarService.isCollapsed() ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'
-      "
+      [class]="collapsed() ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'"
     >
       <!-- SECCIÓN 1: PRINCIPAL -->
       <div class="flex w-full flex-col gap-1">
-        @if (!sidebarService.isCollapsed()) {
+        @if (!collapsed()) {
           <h3 class="px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-400">
             Principal
           </h3>
@@ -59,10 +67,9 @@
             routerLink="{{ item.route }}"
             routerLinkActive="!bg-blue-500/15 !text-slate-50 ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
             ariaCurrentWhenActive="page"
-            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
-            [class]="
-              sidebarService.isCollapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'
-            "
+            (click)="mobileOpen.set(false)"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.97] motion-reduce:transition-none"
+            [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'"
           >
             <!-- Icono del item con tamaño constante -->
             <i
@@ -73,18 +80,16 @@
             ></i>
             <!-- Etiqueta de texto (solo modo expandido) -->
             <span
-              class="overflow-hidden whitespace-nowrap text-sm transition-all duration-150 motion-reduce:transition-none"
-              [class]="
-                sidebarService.isCollapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'
-              "
+              class="overflow-hidden whitespace-nowrap text-sm transition-[margin,opacity] duration-150 motion-reduce:transition-none"
+              [class]="collapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'"
             >
               {{ item.name }}
             </span>
             <!-- Tooltip flotante (solo modo colapsado) -->
-            @if (sidebarService.isCollapsed()) {
+            @if (collapsed()) {
               <div
                 aria-hidden="true"
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-ui duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
               >
                 {{ item.name }}
                 <!-- Flechita decorativa hacia la izquierda -->
@@ -102,7 +107,7 @@
       ></div>
       <!-- SECCIÓN 2: MANAGEMENT -->
       <div class="flex w-full flex-col gap-1">
-        @if (!sidebarService.isCollapsed()) {
+        @if (!collapsed()) {
           <h3 class="px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-400">
             Management
           </h3>
@@ -113,10 +118,9 @@
             routerLink="{{ item.route }}"
             routerLinkActive="!bg-blue-500/15 !text-slate-50 ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
             ariaCurrentWhenActive="page"
-            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
-            [class]="
-              sidebarService.isCollapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'
-            "
+            (click)="mobileOpen.set(false)"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.97] motion-reduce:transition-none"
+            [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'"
           >
             <!-- Icono del item con tamaño constante -->
             <i
@@ -127,18 +131,16 @@
             ></i>
             <!-- Etiqueta de texto (solo modo expandido) -->
             <span
-              class="overflow-hidden whitespace-nowrap text-sm transition-all duration-150 motion-reduce:transition-none"
-              [class]="
-                sidebarService.isCollapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'
-              "
+              class="overflow-hidden whitespace-nowrap text-sm transition-[margin,opacity] duration-150 motion-reduce:transition-none"
+              [class]="collapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'"
             >
               {{ item.name }}
             </span>
             <!-- Tooltip flotante (solo modo colapsado) -->
-            @if (sidebarService.isCollapsed()) {
+            @if (collapsed()) {
               <div
                 aria-hidden="true"
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-ui duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
               >
                 {{ item.name }}
                 <!-- Flechita decorativa hacia la izquierda -->
@@ -153,5 +155,23 @@
     </nav>
   </aside>
   <!-- MAIN CONTENT CONTAINER -->
-  <div class="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas"><router-outlet /></div>
+  <div class="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas">
+    <!-- Barra superior (solo móvil) -->
+    <header
+      class="flex h-14 shrink-0 items-center gap-2 border-b border-slate-800/80 bg-sidebar px-2 md:hidden"
+    >
+      <button
+        type="button"
+        (click)="mobileOpen.set(true)"
+        aria-label="Abrir menú"
+        aria-controls="app-sidebar"
+        [attr.aria-expanded]="drawerOpen()"
+        class="flex size-11 cursor-pointer items-center justify-center rounded-xl text-slate-300 transition-ui hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.97]"
+      >
+        <i aria-hidden="true" class="fa-solid fa-bars text-lg"></i>
+      </button>
+      <span class="text-sm font-bold tracking-tight text-slate-50">Sistema de Gestión</span>
+    </header>
+    <router-outlet />
+  </div>
 </div>

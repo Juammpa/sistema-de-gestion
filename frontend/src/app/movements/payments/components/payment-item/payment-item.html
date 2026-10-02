@@ -1,14 +1,18 @@
-<td class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300">
+<td
+  class="whitespace-nowrap py-3.5 pl-6 pr-4 font-sans text-slate-300 max-md:col-start-2 max-md:row-start-1 max-md:p-0 max-md:text-xs max-md:text-slate-400"
+>
   {{ payment().date | date: 'dd/MM/yy' }}
 </td>
-<td class="whitespace-nowrap px-4 py-3.5 font-sans">
+<td
+  class="whitespace-nowrap px-4 py-3.5 font-sans max-md:col-start-1 max-md:row-start-1 max-md:p-0"
+>
   <span
     class="inline-flex shrink-0 items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium leading-none text-emerald-400"
   >
     Pago
   </span>
 </td>
-<td class="px-4 py-3.5 font-sans">
+<td class="px-4 py-3.5 font-sans max-md:col-span-2 max-md:row-start-2 max-md:p-0">
   <div class="flex items-center gap-1.5 font-medium text-emerald-300">
     <svg
       aria-hidden="true"
@@ -27,17 +31,17 @@
     <span class="wrap-break-word">{{ translatePaymentType(payment().paymentType) }}</span>
   </div>
 </td>
-<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-500">—</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
-<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-center font-sans text-slate-500 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500 max-md:hidden">—</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-500 max-md:hidden">—</td>
 <td
-  class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-emerald-400"
+  class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-emerald-400 max-md:col-start-3 max-md:row-start-1 max-md:row-span-2 max-md:p-0 max-md:text-base"
 >
   {{ payment().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>
 <td
-  class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right text-sm font-bold tabular-nums text-rose-400"
+  class="whitespace-nowrap py-3.5 pl-4 pr-6 text-right text-sm font-bold tabular-nums text-rose-400 max-md:col-span-3 max-md:mt-1 max-md:flex max-md:items-center max-md:justify-between max-md:border-t max-md:border-slate-800/60 max-md:p-0 max-md:pt-2.5 max-md:before:font-sans max-md:before:text-xs max-md:before:font-medium max-md:before:text-slate-500 max-md:before:content-['Saldo']"
 >
   {{ payment().balance | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>

@@ -1,7 +1,10 @@
-<table aria-label="Movimientos de cuenta corriente" class="w-full text-left text-sm text-slate-300">
+<table
+  aria-label="Movimientos de cuenta corriente"
+  class="w-full text-left text-sm text-slate-300 max-md:block"
+>
   <!-- Encabezado de la Tabla -->
   <thead
-    class="border-b border-slate-800 bg-surface/70 text-xs font-semibold uppercase tracking-wider text-slate-400"
+    class="max-md:hidden border-b border-slate-800 bg-surface/70 text-xs font-semibold uppercase tracking-wider text-slate-400"
   >
     <tr>
       <th scope="col" class="sticky top-0 z-10 whitespace-nowrap bg-surface py-3.5 pl-6 pr-4">
@@ -48,29 +51,29 @@
   <tbody
     aria-live="polite"
     [attr.aria-busy]="isLoading()"
-    class="divide-y divide-slate-800/60 font-mono text-xs"
+    class="divide-y divide-slate-800/60 font-mono text-xs max-md:block"
   >
     @if (currentCurrentId() === null) {
-      <tr>
-        <td colspan="9" class="py-10 text-center text-sm text-slate-400">
+      <tr class="max-md:block">
+        <td colspan="9" class="max-md:block py-10 text-center text-sm text-slate-400">
           Seleccioná una sucursal para ver sus movimientos
         </td>
       </tr>
     } @else if (isLoading()) {
-      <tr>
-        <td colspan="9" class="py-10 text-center">
+      <tr class="max-md:block">
+        <td colspan="9" class="max-md:block py-10 text-center">
           <loading-spinner />
         </td>
       </tr>
     } @else if (hasError() && movements().length === 0) {
-      <tr>
-        <td colspan="9" class="py-10 text-center text-sm text-red-400">
+      <tr class="max-md:block">
+        <td colspan="9" class="max-md:block py-10 text-center text-sm text-red-400">
           No se pudieron cargar los movimientos
         </td>
       </tr>
     } @else if (movements().length === 0) {
-      <tr>
-        <td colspan="9" class="py-10 text-center text-sm text-slate-400">
+      <tr class="max-md:block">
+        <td colspan="9" class="max-md:block py-10 text-center text-sm text-slate-400">
           @if (movementType() || dateRange().from || dateRange().to) {
             No hay movimientos con los filtros elegidos
           } @else {
@@ -85,7 +88,7 @@
             sale-item
             [sale]="movement"
             tabindex="0"
-            class="cursor-pointer transition-colors hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
+            class="cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
             (click)="openSaleDetail(movement)"
             (keydown.enter)="openSaleDetail(movement)"
             (keydown.space)="openSaleDetail(movement); $event.preventDefault()"
@@ -98,7 +101,7 @@
             (click)="openPaymentDetail(movement)"
             (keydown.enter)="openPaymentDetail(movement)"
             (keydown.space)="openPaymentDetail(movement); $event.preventDefault()"
-            class="cursor-pointer transition-colors hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
+            class="cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
           ></tr>
         } @else {
           <tr
@@ -108,7 +111,7 @@
             (click)="openPurchaseDetail(movement)"
             (keydown.enter)="openPurchaseDetail(movement)"
             (keydown.space)="openPurchaseDetail(movement); $event.preventDefault()"
-            class="cursor-pointer transition-colors hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
+            class="cursor-pointer transition-colors max-md:grid max-md:grid-cols-[auto_1fr_auto] max-md:items-center max-md:gap-x-3 max-md:gap-y-1.5 max-md:px-4 max-md:py-3.5 hover:bg-slate-800/30 focus-visible:bg-slate-800/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400/70 active:bg-slate-800/50 motion-reduce:transition-none"
           ></tr>
         }
       }
@@ -144,6 +147,7 @@
 
 @if (showSaleDetail() && saleDetail.hasValue() && saleDetail.value(); as sale) {
   <edit-sale-modal
+    animate.leave="modal-host-leave"
     [sale]="sale"
     [butcherShopId]="butcherShopId()!"
     (cancel)="showSaleDetail.set(false)"
@@ -154,6 +158,7 @@
 
 @if (showPaymentDetail() && paymentDetail.hasValue() && paymentDetail.value(); as payment) {
   <edit-payment-modal
+    animate.leave="modal-host-leave"
     [payment]="payment"
     (cancel)="showPaymentDetail.set(false)"
     (saved)="onPaymentChanged()"
@@ -165,6 +170,7 @@
 
 @if (showPurchaseDetail() && purchaseDetail.hasValue() && purchaseDetail.value(); as purchase) {
   <edit-purchase-modal
+    animate.leave="modal-host-leave"
     [purchase]="purchase"
     [supplierType]="supplierType()"
     (cancel)="showPurchaseDetail.set(false)"
