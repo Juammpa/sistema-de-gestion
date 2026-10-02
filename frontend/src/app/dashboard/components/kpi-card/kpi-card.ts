@@ -6,15 +6,15 @@ type Tone = 'emerald' | 'rose' | 'amber';
 // Clases completas (Tailwind no detecta nombres armados con texto)
 const TONES: Record<Tone, { card: string; dot: string }> = {
   emerald: {
-    card: 'border-emerald-500/25 from-emerald-950/50 to-[#0e1626]',
+    card: 'border-emerald-500/25 from-emerald-950/50 to-panel-to',
     dot: 'bg-emerald-400 shadow-emerald-400/60',
   },
   rose: {
-    card: 'border-rose-500/25 from-rose-950/50 to-[#0e1626]',
+    card: 'border-rose-500/25 from-rose-950/50 to-panel-to',
     dot: 'bg-rose-400 shadow-rose-400/60',
   },
   amber: {
-    card: 'border-amber-500/25 from-amber-950/40 to-[#0e1626]',
+    card: 'border-amber-500/25 from-amber-950/40 to-panel-to',
     dot: 'bg-amber-400 shadow-amber-400/60',
   },
 };

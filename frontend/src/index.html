@@ -1,15 +1,33 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>Sistema de Gestión</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#0a0f1d">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body class="bg-[#0a0f1d]">
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Sistema de Gestión</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0f1d" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      // Aplica el tema guardado antes de que se dibuje la página (evita el destello)
+      (function () {
+        var theme = 'dark';
+        try {
+          var saved = localStorage.getItem('theme') || 'dark';
+          theme =
+            saved === 'light'
+              ? 'light'
+              : saved === 'system'
+                ? matchMedia('(prefers-color-scheme: dark)').matches
+                  ? 'dark'
+                  : 'light'
+                : 'dark';
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body class="bg-canvas">
+    <app-root></app-root>
+  </body>
 </html>

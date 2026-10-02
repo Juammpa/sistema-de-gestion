@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { ThemePreference, ThemeService } from '../../../core/theme/theme.service';
 
-type ThemeId = 'light' | 'dark' | 'system';
 type AccentId = 'blue' | 'emerald' | 'purple' | 'amber';
 
 @Component({
@@ -9,7 +9,9 @@ type AccentId = 'blue' | 'emerald' | 'purple' | 'amber';
   host: { class: 'block' },
 })
 export class AppearanceSettings {
-  protected readonly themes: { id: ThemeId; label: string; icon: string }[] = [
+  private themeService = inject(ThemeService);
+
+  protected readonly themes: { id: ThemePreference; label: string; icon: string }[] = [
     { id: 'light', label: 'Claro', icon: 'fa-regular fa-sun' },
     { id: 'dark', label: 'Oscuro', icon: 'fa-regular fa-moon' },
     { id: 'system', label: 'Sistema', icon: 'fa-solid fa-desktop' },
@@ -35,6 +37,10 @@ export class AppearanceSettings {
   ];
 
   // Seleccion actual (por ahora solo visual)
-  protected selectedTheme = signal<ThemeId>('dark');
+  protected selectedTheme = this.themeService.preference;
   protected selectedAccent = signal<AccentId>('blue');
+
+  protected selectTheme(theme: ThemePreference) {
+    this.themeService.setPreference(theme);
+  }
 }

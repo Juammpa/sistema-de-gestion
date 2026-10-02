@@ -1,5 +1,5 @@
 <div
-  class="relative z-20 mt-3 mb-3 flex flex-col gap-3 rounded-xl border border-slate-800/80 bg-[#0c121e]/90 p-3 shadow-lg backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between"
+  class="relative z-20 mt-3 mb-3 flex flex-col gap-3 rounded-xl border border-slate-800/80 bg-canvas/90 p-3 shadow-lg backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between"
 >
   <!-- Grupo Izquierdo: Buscador y Pestañas de Tipo de Movimiento -->
   <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
@@ -28,7 +28,7 @@
         aria-label="Buscar movimientos"
         autocomplete="off"
         placeholder="Buscar por corte, remito o comprobante..."
-        class="h-11 w-full rounded-lg border border-slate-800 bg-[#0F172A]/70 pl-10 pr-4 text-base text-slate-200 transition-colors scheme-dark placeholder:text-slate-400 hover:border-slate-700 focus:border-blue-500 focus:bg-[#0F172A] focus:outline-none focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
+        class="h-11 w-full rounded-lg border border-slate-800 bg-surface/70 pl-10 pr-4 text-base text-slate-200 transition-colors placeholder:text-slate-400 hover:border-slate-700 focus:border-blue-500 focus:bg-surface focus:outline-none focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
       />
     </div>
 
@@ -36,7 +36,7 @@
     <div
       role="group"
       aria-label="Tipo de movimiento"
-      class="inline-flex w-full items-center gap-0.5 rounded-lg border border-slate-800 bg-[#0F172A]/60 p-1 sm:w-auto"
+      class="inline-flex w-full items-center gap-0.5 rounded-lg border border-slate-800 bg-surface/60 p-1 sm:w-auto"
     >
       @for (option of options(); track option.label) {
         <button
@@ -62,7 +62,7 @@
         [attr.aria-expanded]="panelOpen()"
         [class.!border-blue-500/50]="hasRange()"
         title="Cambiar rango de fechas"
-        class="inline-flex min-h-10 w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-lg border border-slate-800 bg-[#0F172A]/70 px-3 text-xs font-medium text-slate-300 transition-all duration-150 hover:border-slate-700 hover:bg-[#0F172A] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c121e] motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9 sm:w-auto"
+        class="inline-flex min-h-10 w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-lg border border-slate-800 bg-surface/70 px-3 text-xs font-medium text-slate-300 transition-all duration-150 hover:border-slate-700 hover:bg-surface hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9 sm:w-auto"
       >
         <svg
           aria-hidden="true"
@@ -86,7 +86,7 @@
         <div
           role="dialog"
           aria-label="Filtrar por fecha"
-          class="absolute inset-x-0 top-full z-30 mt-2 space-y-4 rounded-xl border border-slate-700/70 bg-[#0e1626] p-4 shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:inset-x-auto sm:right-0 sm:w-80"
+          class="absolute inset-x-0 top-full z-30 mt-2 space-y-4 rounded-xl border border-slate-700/70 bg-panel-to p-4 shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:inset-x-auto sm:right-0 sm:w-80"
         >
           <!-- Atajos -->
           <div role="group" aria-label="Atajos de fecha" class="flex flex-wrap gap-2">
@@ -94,7 +94,7 @@
               <button
                 type="button"
                 (click)="applyLastDays(preset.days)"
-                class="cursor-pointer rounded-lg border border-[#2a3247] bg-[#1a2235] px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none"
+                class="cursor-pointer rounded-lg border border-line bg-raised px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 motion-reduce:transition-none"
               >
                 {{ preset.label }}
               </button>
@@ -112,7 +112,7 @@
                 type="date"
                 [value]="draftFrom()"
                 (change)="onDraftFromChange($event)"
-                class="h-10 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-[#0a0f1d] px-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+                class="h-10 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
               />
             </div>
             <div class="min-w-0 space-y-1.5">
@@ -124,7 +124,7 @@
                 type="date"
                 [value]="draftTo()"
                 (change)="onDraftToChange($event)"
-                class="h-10 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-[#0a0f1d] px-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+                class="h-10 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-2.5 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
               />
             </div>
           </div>
@@ -144,7 +144,7 @@
             <button
               type="button"
               (click)="clear()"
-              class="h-9 cursor-pointer rounded-lg border border-slate-700/70 bg-slate-800/50 px-3.5 text-xs font-semibold text-slate-300 transition-colors duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-reduce:transition-none"
+              class="h-9 cursor-pointer rounded-lg border border-slate-700/70 bg-slate-800/50 px-3.5 text-xs font-semibold text-slate-300 transition-colors duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-reduce:transition-none"
             >
               Limpiar
             </button>

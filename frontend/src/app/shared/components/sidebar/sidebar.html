@@ -1,7 +1,7 @@
-<div class="flex h-dvh overflow-hidden bg-[#0a0f1d] font-sans text-slate-100 antialiased">
+<div class="flex h-dvh overflow-hidden bg-canvas font-sans text-slate-100 antialiased">
   <!-- ASIDE SIDEBAR -->
   <aside
-    class="z-20 flex shrink-0 select-none flex-col gap-4 border-r border-slate-800/80 bg-[#0d1424] px-2.5 py-4 shadow-xl shadow-black/20 transition-all duration-300 ease-in-out motion-reduce:transition-none"
+    class="z-20 flex shrink-0 select-none flex-col gap-4 border-r border-slate-800/80 bg-sidebar px-2.5 py-4 shadow-xl shadow-black/20 transition-all duration-300 ease-in-out motion-reduce:transition-none"
     [class]="sidebarService.isCollapsed() ? 'w-16 items-center' : 'w-64 overflow-hidden'"
   >
     <!-- LOGO / BRANDING -->
@@ -28,7 +28,7 @@
             SG
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-bold leading-tight tracking-tight text-white">
+            <span class="text-sm font-bold leading-tight tracking-tight text-slate-50">
               Sistema de Gestión
             </span>
             <span class="text-xs font-medium tracking-wide text-blue-400"> Workspace CRM </span>
@@ -41,7 +41,7 @@
     <!-- NAVEGACIÓN -->
     <nav
       aria-label="Navegación principal"
-      class="flex w-full flex-1 flex-col gap-4 [scrollbar-color:#1e293b_transparent] scrollbar-thin"
+      class="flex w-full flex-1 flex-col gap-4 [scrollbar-color:var(--color-slate-800)_transparent] scrollbar-thin"
       [class]="
         sidebarService.isCollapsed() ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'
       "
@@ -57,9 +57,9 @@
         @for (item of principalItems; track $index) {
           <a
             routerLink="{{ item.route }}"
-            routerLinkActive="!bg-blue-500/15 !text-white ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
+            routerLinkActive="!bg-blue-500/15 !text-slate-50 ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
             ariaCurrentWhenActive="page"
-            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
             [class]="
               sidebarService.isCollapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'
             "
@@ -84,7 +84,7 @@
             @if (sidebarService.isCollapsed()) {
               <div
                 aria-hidden="true"
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-[#131b2e] px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
               >
                 {{ item.name }}
                 <!-- Flechita decorativa hacia la izquierda -->
@@ -111,9 +111,9 @@
         @for (item of managementItems; track $index) {
           <a
             routerLink="{{ item.route }}"
-            routerLinkActive="!bg-blue-500/15 !text-white ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
+            routerLinkActive="!bg-blue-500/15 !text-slate-50 ring-1 ring-inset ring-blue-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-400"
             ariaCurrentWhenActive="page"
-            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
+            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-all duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400/70 active:scale-[0.98] motion-reduce:transition-none"
             [class]="
               sidebarService.isCollapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'
             "
@@ -138,7 +138,7 @@
             @if (sidebarService.isCollapsed()) {
               <div
                 aria-hidden="true"
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-[#131b2e] px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
               >
                 {{ item.name }}
                 <!-- Flechita decorativa hacia la izquierda -->
@@ -153,5 +153,5 @@
     </nav>
   </aside>
   <!-- MAIN CONTENT CONTAINER -->
-  <div class="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#0a0f1d]"><router-outlet /></div>
+  <div class="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas"><router-outlet /></div>
 </div>

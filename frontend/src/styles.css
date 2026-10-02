@@ -1,2 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+@import './theme-light.css';
+
+/* Colores de superficie con nombre. Estos son los valores del tema oscuro (el de siempre). */
+@theme {
+  --color-canvas: #0a0f1d; /* fondo de la app y de los inputs */
+  --color-panel-from: #161d31; /* paneles y modales: parte de arriba del degradé */
+  --color-panel-to: #0f1524; /* paneles y modales: parte de abajo del degradé */
+  --color-surface: #0f172a; /* listas desplegables y buscadores */
+  --color-raised: #1a2235; /* botones secundarios */
+  --color-raised-hover: #1f2942;
+  --color-line: #2a3247; /* bordes */
+  --color-sidebar: #0d1424;
+}
+
+/* Hace que los controles nativos (calendario, scrollbars, select) sigan el tema */
+html[data-theme='dark'] {
+  color-scheme: dark;
+}

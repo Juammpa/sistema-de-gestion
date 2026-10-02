@@ -9,7 +9,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="cash-day-title"
-    class="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10"
+    class="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/80 ring-1 ring-white/10"
   >
     <!-- ====== HEADER (fijo) ====== -->
     <div
@@ -25,7 +25,7 @@
         <div class="min-w-0 space-y-0.5">
           <h2
             id="cash-day-title"
-            class="text-balance text-lg font-bold tracking-tight text-white sm:text-xl"
+            class="text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
           >
             Caja {{ title() }}
           </h2>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- ====== LISTADO (con scroll propio) ====== -->
-    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain scheme-dark">
+    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
       <ul class="divide-y divide-slate-800/40 text-sm">
         <!-- Pagos de clientes -->
         @for (payment of day().payments; track payment.id) {
@@ -114,7 +114,7 @@
     <div class="shrink-0 space-y-3 border-t border-slate-800/70 bg-slate-950/40 p-4 sm:px-7">
       <div class="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
         <!-- Total -->
-        <div class="rounded-xl border border-slate-800/80 bg-[#0a0f1d]/70 px-3 py-2.5">
+        <div class="rounded-xl border border-slate-800/80 bg-canvas/70 px-3 py-2.5">
           <span class="block text-[11px] font-medium uppercase tracking-wider text-slate-400"
             >Total</span
           >
@@ -123,7 +123,7 @@
           </span>
         </div>
         <!-- Ingreso en efectivo -->
-        <div class="rounded-xl border border-slate-800/80 bg-[#0a0f1d]/70 px-3 py-2.5">
+        <div class="rounded-xl border border-slate-800/80 bg-canvas/70 px-3 py-2.5">
           <span class="block text-[11px] font-medium uppercase tracking-wider text-slate-400"
             >Ingreso</span
           >

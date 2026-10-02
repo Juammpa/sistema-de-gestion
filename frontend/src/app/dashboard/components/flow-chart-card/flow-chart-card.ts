@@ -1,9 +1,10 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { ChartCanvas } from '../../../shared/components/chart-canvas/chart-canvas';
 import { MonthlyFlow } from '../../interfaces/dashboard.interface';
 import { baseChartOptions, crosshairPlugin } from '../../utils/chart-theme';
 import { monthShort } from '../../utils/dashboard.utils';
+import { ThemeService } from '../../../core/theme/theme.service';
 
 type FlowMode = 'cash' | 'trade';
 
@@ -14,6 +15,8 @@ type FlowMode = 'cash' | 'trade';
   host: { class: 'block h-full' },
 })
 export class FlowChartCard {
+  private theme = inject(ThemeService);
+
   months = input.required<MonthlyFlow[]>();
 
   modes: { value: FlowMode; label: string }[] = [
@@ -55,8 +58,8 @@ export class FlowChartCard {
         pointBorderColor: serie.color,
       })),
     },
-    options: baseChartOptions<'line'>(),
-    plugins: [crosshairPlugin],
+    options: baseChartOptions<'line'>(this.theme.resolved()),
+    plugins: [crosshairPlugin(this.theme.resolved())],
   }));
 
   chartLabel = computed(

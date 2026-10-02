@@ -1,9 +1,10 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { ChartCanvas } from '../../../shared/components/chart-canvas/chart-canvas';
 import { MonthlyFlow } from '../../interfaces/dashboard.interface';
 import { baseChartOptions } from '../../utils/chart-theme';
 import { monthShort } from '../../utils/dashboard.utils';
+import { ThemeService } from '../../../core/theme/theme.service';
 
 @Component({
   selector: 'monthly-comparison-card',
@@ -12,6 +13,8 @@ import { monthShort } from '../../utils/dashboard.utils';
   host: { class: 'block h-full' },
 })
 export class MonthlyComparisonCard {
+  private theme = inject(ThemeService);
+
   months = input.required<MonthlyFlow[]>();
 
   config = computed<ChartConfiguration<'bar'>>(() => ({
@@ -35,6 +38,6 @@ export class MonthlyComparisonCard {
         },
       ],
     },
-    options: baseChartOptions<'bar'>(),
+    options: baseChartOptions<'bar'>(this.theme.resolved()),
   }));
 }

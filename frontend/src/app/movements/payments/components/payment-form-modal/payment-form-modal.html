@@ -10,7 +10,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="payment-modal-title"
-    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-[#131b2e] to-[#0e1626] shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/80 ring-1 ring-white/10 transition-all duration-200"
   >
     <!-- ====== HEADER ====== -->
     <div
@@ -27,7 +27,7 @@
         <div class="min-w-0 space-y-0.5">
           <h2
             id="payment-modal-title"
-            class="text-balance text-lg font-bold tracking-tight text-white sm:text-xl"
+            class="text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
           >
             Crear Pago
           </h2>
@@ -61,13 +61,13 @@
               [attr.aria-invalid]="formUtils.isValidField(paymentForm, 'paymentType')"
               [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'paymentType')"
               [class.!ring-red-500/20]="formUtils.isValidField(paymentForm, 'paymentType')"
-              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-[#0a0f1d] py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             >
-              <option [ngValue]="null" disabled class="bg-[#0f1728] text-slate-500">
+              <option [ngValue]="null" disabled class="bg-surface text-slate-500">
                 Seleccionar método...
               </option>
               @for (option of paymentTypesOptions(); track option.value) {
-                <option [ngValue]="option.value" class="bg-[#0f1728] text-slate-200">
+                <option [ngValue]="option.value" class="bg-surface text-slate-200">
                   {{ option.label }}
                 </option>
               }
@@ -124,7 +124,7 @@
               [attr.aria-invalid]="formUtils.isValidField(paymentForm, 'amount')"
               [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'amount')"
               [class.!ring-red-500/20]="formUtils.isValidField(paymentForm, 'amount')"
-              class="w-full rounded-xl border border-slate-700/70 bg-[#0a0f1d] py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+              class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
             />
           </div>
           @if (
@@ -160,7 +160,7 @@
             formControlName="supplierId"
             [attr.aria-invalid]="formUtils.isValidField(paymentForm, 'supplierId')"
             [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'supplierId')"
-            class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-[#0a0f1d] px-3 py-3 text-base text-slate-100 outline-none transition-colors duration-150 scheme-dark hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
+            class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-base text-slate-100 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 sm:text-sm"
           >
             <option [ngValue]="null" disabled>Seleccionar proveedor...</option>
             @for (supplier of suppliers.hasValue() ? suppliers.value() : []; track supplier.id) {
@@ -187,14 +187,14 @@
         <button
           type="button"
           (click)="close()"
-          class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-all duration-150 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.98] sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-all duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.98] sm:w-auto"
         >
           Cancelar
         </button>
         <button
           type="submit"
           [disabled]="paymentForm.invalid"
-          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1626] disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-150 enabled:hover:bg-blue-500 enabled:hover:shadow-blue-600/30 motion-safe:enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i> <span>Crear Pago</span>
         </button>
