@@ -1,7 +1,7 @@
 <!-- Backdrop: cierra al hacer click fuera del panel -->
 <div
   (click)="close()"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md modal-backdrop"
 >
   <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
   <div
@@ -36,7 +36,7 @@
       <button
         type="button"
         (click)="close()"
-        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-95"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 active:scale-[0.97]"
         title="Cerrar"
         aria-label="Cerrar"
       >

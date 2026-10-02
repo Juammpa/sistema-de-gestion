@@ -30,5 +30,5 @@
 </div>
 
 @if (selectedDay(); as day) {
-  <cash-day-modal [day]="day" (cancel)="selectedDay.set(null)" />
+  <cash-day-modal animate.leave="modal-host-leave" [day]="day" (cancel)="selectedDay.set(null)" />
 }

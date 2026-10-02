@@ -25,7 +25,7 @@
           <button
             type="button"
             (click)="edit.emit()"
-            class="inline-flex min-h-10 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9"
+            class="inline-flex min-h-11 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:min-h-9"
           >
             <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
             Editar
@@ -34,7 +34,7 @@
           <button
             type="button"
             (click)="remove.emit()"
-            class="inline-flex min-h-10 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-300 transition-all duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:min-h-9"
+            class="inline-flex min-h-11 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-300 transition-ui duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:min-h-9"
           >
             <i class="fa-solid fa-trash-can text-xs" aria-hidden="true"></i>
             Eliminar
@@ -50,7 +50,7 @@
               (click)="selectButcherShop(butcherShop.id)"
               [attr.aria-pressed]="selectedButcherShopId() === butcherShop.id"
               [title]="butcherShop.name + ' - ' + butcherShop.address"
-              class="group inline-flex min-h-10 max-w-full cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-left text-sm leading-snug text-slate-300 transition-all duration-150 hover:border-slate-500 hover:bg-raised-hover hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.98] aria-pressed:border-blue-500/60 aria-pressed:bg-blue-500/15 aria-pressed:text-blue-100 aria-pressed:shadow-sm aria-pressed:shadow-blue-500/10 sm:min-h-9"
+              class="group inline-flex min-h-11 max-w-full cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-line bg-raised px-3 py-1.5 text-left text-sm leading-snug text-slate-300 transition-ui duration-150 hover:border-slate-500 hover:bg-raised-hover hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] aria-pressed:border-blue-500/60 aria-pressed:bg-blue-500/15 aria-pressed:text-blue-100 aria-pressed:shadow-sm aria-pressed:shadow-blue-500/10 sm:min-h-9"
             >
               <i
                 class="fa-solid fa-shop shrink-0 text-slate-500 transition-colors duration-150 group-hover:text-slate-300 group-aria-pressed:text-blue-300 motion-reduce:transition-none"
@@ -65,7 +65,7 @@
             (click)="showButcherShopModal.set(true)"
             title="Agregar sucursal"
             aria-label="Agregar sucursal"
-            class="inline-flex size-10 cursor-pointer touch-manipulation items-center justify-center rounded-lg border border-dashed border-slate-600/70 text-sm text-slate-400 transition-all duration-150 hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-95 sm:size-9"
+            class="inline-flex size-10 cursor-pointer touch-manipulation items-center justify-center rounded-lg border border-dashed border-slate-600/70 text-sm text-slate-400 transition-ui duration-150 hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:size-9"
           >
             <i class="fa-solid fa-plus" aria-hidden="true"></i>
           </button>
@@ -124,6 +124,7 @@
 
 @if (showSaleModal()) {
   <sale-form-modal
+    animate.leave="modal-host-leave"
     (cancel)="showSaleModal.set(false)"
     (saved)="showSaleModal.set(false); saleCreated.emit()"
     [butcherShop]="selectedButcherShop()!"
@@ -133,6 +134,7 @@
 
 @if (showPaymentModal()) {
   <payment-form-modal
+    animate.leave="modal-host-leave"
     (cancel)="showPaymentModal.set(false)"
     (saved)="showPaymentModal.set(false); paymentCreated.emit()"
     [currentAccountId]="selectedButcherShop()!.currentAccountId"
@@ -142,6 +144,7 @@
 
 @if (showButcherShopModal()) {
   <butcher-shop-form-modal
+    animate.leave="modal-host-leave"
     [clientId]="client().id"
     (cancel)="showButcherShopModal.set(false)"
     (saved)="showButcherShopModal.set(false); butcherShopCreated.emit()"

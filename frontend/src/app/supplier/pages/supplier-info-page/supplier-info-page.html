@@ -18,7 +18,7 @@
 
     <!-- Tabla Movimientos -->
     <div class="w-full overflow-hidden rounded-xl border border-slate-800 bg-canvas shadow-2xl">
-      <div class="max-h-100 overflow-auto scrollbar-none">
+      <div class="max-h-[max(20rem,min(36rem,60dvh))] overflow-auto scrollbar-none">
         <movements-table
           #movementsTable
           [currentCurrentId]="supplier.currentAccountId"
@@ -46,6 +46,7 @@
 
 @if (showModal() && supplierResource.value(); as supplier) {
   <supplier-form-modal
+    animate.leave="modal-host-leave"
     description="Editar Proveedor"
     [supplier]="supplier"
     (cancel)="showModal.set(false)"
@@ -55,6 +56,7 @@
 
 @if (showRemoveModal() && supplierResource.value(); as supplier) {
   <delete-modal
+    animate.leave="modal-host-leave"
     description="Eliminar Proveedor"
     entityType="El proveedor"
     [entityName]="supplier.companyName"

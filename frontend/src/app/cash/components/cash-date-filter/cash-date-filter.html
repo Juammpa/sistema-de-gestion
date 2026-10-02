@@ -20,7 +20,7 @@
           type="date"
           [value]="from()"
           (change)="onFromChange($event)"
-          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-3 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
+          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-3 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
         />
       </div>
       <div
@@ -34,7 +34,7 @@
           type="date"
           [value]="to()"
           (change)="onToChange($event)"
-          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-3 text-base tabular-nums text-slate-100 outline-none transition-colors duration-150 hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
+          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-3 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
         />
       </div>
     </div>
@@ -44,14 +44,14 @@
       <button
         type="button"
         (click)="setToday()"
-        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:h-9 sm:flex-none"
+        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:h-9 sm:flex-none"
       >
         Hoy
       </button>
       <button
         type="button"
         (click)="setLastDays(7)"
-        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-all duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.98] sm:h-9 sm:flex-none"
+        class="h-11 flex-1 cursor-pointer touch-manipulation rounded-lg border border-line bg-raised px-3.5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97] sm:h-9 sm:flex-none"
       >
         Últimos 7 días
       </button>

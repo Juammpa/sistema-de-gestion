@@ -11,9 +11,154 @@
   --color-raised-hover: #1f2942;
   --color-line: #2a3247; /* bordes */
   --color-sidebar: #0d1424;
+
+  /* Curvas de movimiento: las nativas de CSS son muy flojas. Pisan a `ease-out` y `ease-in-out`. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* Aparición suave (mensajes de error, bloques que se montan) */
+  --animate-fadeIn: fade-in 200ms var(--ease-out) backwards;
+  /* Sacudida corta para campos inválidos */
+  --animate-shake: shake 300ms var(--ease-out);
+  /* Entrada de bloques grandes (tarjetas, filas): se escalona con `animation-delay` */
+  --animate-rise: rise 320ms var(--ease-out) backwards;
+  /* Barras de progreso: crecen desde la izquierda al montarse (combinar con `origin-left`) */
+  --animate-bar: bar-grow 700ms var(--ease-out) backwards;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(var(--motion-shift-lg, 10px));
+    }
+  }
+
+  @keyframes bar-grow {
+    from {
+      transform: scaleX(var(--motion-bar, 0));
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--motion-shift, 4px));
+    }
+  }
+
+  @keyframes shake {
+    20%,
+    60% {
+      transform: translateX(-3px);
+    }
+    40%,
+    80% {
+      transform: translateX(3px);
+    }
+  }
 }
 
 /* Hace que los controles nativos (calendario, scrollbars, select) sigan el tema */
 html[data-theme='dark'] {
   color-scheme: dark;
+}
+
+/* Reemplaza a `transition-all`: anima solo lo que cambia en hover/focus/active.
+   La duración y la curva se pueden pisar con `duration-*` y `ease-*`. */
+@utility transition-ui {
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, transform, translate, scale;
+  transition-timing-function: var(--tw-ease, var(--ease-out));
+  transition-duration: var(--tw-duration, 150ms);
+}
+
+/* Modales: el fondo se desvanece y el panel (su hijo directo) sube y escala desde 0.96.
+   La salida es más corta que la entrada. */
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-shift, 8px)) scale(var(--motion-scale, 0.96));
+  }
+}
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale, 0.98));
+  }
+}
+
+.modal-backdrop {
+  animation: backdrop-in 200ms var(--ease-out) backwards;
+}
+.modal-backdrop > * {
+  animation: panel-in 220ms var(--ease-out) backwards;
+}
+/* El host del modal lleva `animate.leave="modal-host-leave"` en la plantilla del padre.
+   Angular espera a que termine `hold` (no cambia nada) antes de quitar el nodo, y mientras
+   tanto el fondo y el panel hacen su propia salida. */
+@keyframes hold {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+.modal-host-leave {
+  animation: hold 140ms linear;
+}
+.modal-host-leave .modal-backdrop {
+  animation: backdrop-out 140ms var(--ease-out) forwards;
+}
+.modal-host-leave .modal-backdrop > * {
+  animation: panel-out 140ms var(--ease-out) forwards;
+}
+
+/* Fondo del drawer del menú (móvil) */
+.scrim {
+  animation: backdrop-in 200ms var(--ease-out) backwards;
+}
+.scrim-leave {
+  animation: backdrop-out 160ms var(--ease-out) forwards;
+}
+
+/* Toasts: salen hacia abajo, por donde entraron */
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(var(--motion-shift, 8px));
+  }
+}
+.toast-leave {
+  animation: toast-out 160ms var(--ease-out) forwards;
+}
+
+/* Cambio de ruta: el contenido hace un crossfade corto y la barra lateral queda quieta */
+::view-transition-group(root) {
+  animation-duration: 180ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-group(sidebar) {
+  animation: none;
+}
+
+/* Movimiento reducido: se mantienen los fundidos (ayudan a entender el cambio),
+   se quitan los desplazamientos, escalados y sacudidas. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-shift: 0px;
+    --motion-shift-lg: 0px;
+    --motion-scale: 1;
+    --motion-bar: 1;
+  }
+  .animate-shake {
+    animation: none;
+  }
 }

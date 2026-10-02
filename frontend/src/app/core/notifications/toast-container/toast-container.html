@@ -6,7 +6,8 @@
     <div
       [attr.role]="toast.kind === 'error' ? 'alert' : 'status'"
       [class]="styles[toast.kind].box"
-      class="pointer-events-auto flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-xl shadow-black/40 backdrop-blur-md transition duration-200 starting:translate-y-2 starting:opacity-0 sm:w-96"
+      animate.leave="toast-leave"
+      class="pointer-events-auto flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-xl shadow-black/40 backdrop-blur-md transition duration-200 ease-out starting:translate-y-2 starting:opacity-0 motion-reduce:starting:translate-y-0 sm:w-96"
     >
       <i [class]="styles[toast.kind].icon" class="mt-0.5 shrink-0" aria-hidden="true"></i>
       <p class="flex-1 leading-snug">{{ toast.message }}</p>
