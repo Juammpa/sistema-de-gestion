@@ -17,4 +17,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     Optional<Supplier> findByIdAndIsActiveTrue(Long id);
     boolean existsByCurrentAccountIdAndIsActiveFalse(Long currentAccountId);
 
+    // Para exportar: proveedores activos ordenados por nombre
+    List<Supplier> findByIsActiveTrueOrderByCompanyNameAsc();
+
 }
