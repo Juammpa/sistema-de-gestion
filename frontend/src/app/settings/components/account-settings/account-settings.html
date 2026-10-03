@@ -11,9 +11,23 @@
       Descargá un archivo con tus clientes, proveedores y movimientos.
     </p>
   </div>
-  <button type="button" [class]="ui.outlineButton" class="shrink-0">
-    <i class="fa-solid fa-download text-sm" aria-hidden="true"></i>
-    Solicitar exportación
+  <button
+    type="button"
+    (click)="requestExport()"
+    [disabled]="exporting()"
+    [attr.aria-busy]="exporting()"
+    [class]="ui.outlineButton"
+    class="shrink-0 disabled:cursor-not-allowed disabled:opacity-60"
+  >
+    <i
+      aria-hidden="true"
+      class="fa-solid text-sm"
+      [class.fa-download]="!exporting()"
+      [class.fa-hourglass-half]="exporting()"
+      [class.animate-spin]="exporting()"
+      [class.motion-reduce:animate-none]="exporting()"
+    ></i>
+    {{ exporting() ? 'Generando archivo...' : 'Solicitar exportación' }}
   </button>
 </div>
 
