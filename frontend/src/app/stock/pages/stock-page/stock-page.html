@@ -1,0 +1,118 @@
+<!-- Encabezado y fechas: quedan fijos arriba -->
+<div class="shrink-0">
+  <stock-header
+    [kilograms]="stock()?.summary?.totalKilograms"
+    [units]="stock()?.summary?.totalUnits"
+  />
+  <cash-date-filter [(from)]="from" [(to)]="to" />
+</div>
+
+@if (stockResource.status() === 'loading') {
+  <div class="flex justify-center py-12"><loading-spinner /></div>
+} @else if (stockResource.error()) {
+  <div class="mx-3 max-w-3xl md:mx-auto">
+    <error-state
+      title="No se pudo cargar el stock"
+      [error]="stockResource.error()"
+      (retry)="stockResource.reload()"
+    />
+  </div>
+} @else if (stock(); as s) {
+  @if (s.items.length === 0) {
+    <empty-state
+      icon="fa-solid fa-boxes-stacked"
+      infoMessage="No hay compras en el rango seleccionado"
+    />
+  } @else {
+    <!-- Filtros: quedan fijos -->
+    <div class="shrink-0">
+      <div class="mx-3 max-w-3xl space-y-3 pb-3 md:mx-auto">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div
+            role="group"
+            aria-label="Especie"
+            class="inline-flex items-center gap-0.5 rounded-lg border border-slate-800 bg-surface/60 p-1"
+          >
+            @for (option of specieOptions; track option.value) {
+              <button
+                type="button"
+                [attr.aria-pressed]="specie() === option.value"
+                (click)="specie.set(option.value)"
+                class="min-h-9 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:bg-accent-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-accent-500"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+
+          <p class="flex items-center gap-2" aria-live="polite">
+            <span
+              [class]="
+                'inline-flex shrink-0 items-center gap-1.5 rounded-md border p-2 text-xs font-medium leading-none transition-colors duration-150 before:size-1.5 before:shrink-0 before:rounded-full before:bg-current motion-reduce:transition-none ' +
+                countBadge()
+              "
+            >
+              {{ visibleItems().length }} {{ visibleItems().length === 1 ? 'pieza' : 'piezas' }}
+            </span>
+            <span
+              [class]="
+                'inline-flex shrink-0 items-center rounded-md border p-2 text-xs font-semibold leading-none tabular-nums transition-colors duration-150 motion-reduce:transition-none ' +
+                countBadge()
+              "
+            >
+              {{ visibleKilograms() | number: '1.0-2' }} kg
+            </span>
+          </p>
+        </div>
+
+        <!-- Tipos de compra (solo si hay más de uno para elegir) -->
+        @if (availableTypes().length > 1) {
+          <div role="group" aria-label="Tipo de compra" class="flex flex-wrap gap-2">
+            @for (totals of availableTypes(); track totals.purchaseType) {
+              <button
+                type="button"
+                [attr.aria-pressed]="activeType() === totals.purchaseType"
+                (click)="selectType(totals.purchaseType)"
+                class="inline-flex min-h-9 cursor-pointer touch-manipulation items-center gap-1.5 rounded-full border border-slate-700/70 bg-raised px-3 text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-accent-500/50 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:border-accent-500 aria-pressed:bg-accent-500/15 aria-pressed:text-accent-200"
+              >
+                {{ typeLabel(totals.purchaseType) }}
+                <span
+                  class="rounded-full bg-slate-800/80 px-1.5 text-[11px] tabular-nums text-slate-400"
+                >
+                  {{ totals.units }}
+                </span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Lista de piezas: es lo único que se desplaza -->
+    <div class="min-h-0 flex-1 overflow-y-auto scrollbar-none">
+      <div class="mx-3 max-w-3xl pb-4 md:mx-auto">
+        <ul class="space-y-2">
+          @for (item of visibleItems(); track item.purchaseId + '-' + item.unitNumber) {
+            <li><stock-item [item]="item" (edit)="editingPurchaseId.set($event.purchaseId)" /></li>
+          } @empty {
+            <li>
+              <empty-state
+                icon="fa-solid fa-boxes-stacked"
+                infoMessage="No hay piezas con los filtros elegidos"
+              />
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+}
+
+@if (editingPieces().length > 0) {
+  <stock-weights-modal
+    animate.leave="modal-host-leave"
+    [items]="editingPieces()"
+    (cancel)="editingPurchaseId.set(null)"
+    (saved)="onWeightsSaved()"
+  />
+}

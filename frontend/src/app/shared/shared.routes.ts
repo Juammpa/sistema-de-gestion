@@ -33,6 +33,10 @@ export const Sharedroutes: Routes = [
         loadComponent: () => import('../cash/pages/cash-page/cash-page'),
       },
       {
+        path: 'stock',
+        loadComponent: () => import('../stock/pages/stock-page/stock-page'),
+      },
+      {
         path: 'ajustes',
         loadComponent: () => import('../settings/pages/settings-page/settings-page'),
       },

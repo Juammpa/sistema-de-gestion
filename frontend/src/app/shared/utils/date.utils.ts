@@ -10,3 +10,10 @@ export function formatIsoDate(iso: string): string {
   const [year, month, day] = iso.split('-');
   return `${day}/${month}/${year}`;
 }
+
+// Fecha de hace 'days' dias
+export function daysAgo(days: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date;
+}

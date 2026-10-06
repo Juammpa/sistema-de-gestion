@@ -28,7 +28,7 @@ export default function translatePurchaseType(purchaseType: string): string {
 }
 
 // Especie de cada tipo de compra (igual que PurchaseType en el backend)
-const PURCHASE_TYPE_SPECIE: Record<PurchaseTypeValue, SpecieValue> = {
+export const PURCHASE_TYPE_SPECIE: Record<PurchaseTypeValue, SpecieValue> = {
   HALF_PIG: 'PORCINE',
   VEAL_UP_TO_110KG: 'BOVINE',
   NT_111_120KG: 'BOVINE',
