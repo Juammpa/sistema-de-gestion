@@ -13,4 +13,11 @@ export class StockService {
       params: { from, to },
     });
   }
+
+  // Reparte los kilos de una compra entre sus piezas (en orden).
+  updatePieceWeights(purchaseId: number, kilograms: number[]) {
+    return this.http.put<void>(`${environment.apiUrl}/stock/purchase/${purchaseId}/weights`, {
+      kilograms,
+    });
+  }
 }

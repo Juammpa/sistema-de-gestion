@@ -15,6 +15,7 @@ import { StockHeader } from '../../components/stock-header/stock-header';
 import { StockService } from '../../services/stock.service';
 import { StockItemCard } from '../../components/stock-item/stock-item';
 import { SUPPLIER_TYPE_INFO } from '../../../supplier/utils/supplier-type.utils';
+import { StockWeightsModal } from '../../components/stock-weights-modal/stock-weights-modal';
 
 type SpecieFilter = 'ALL' | SpecieValue;
 
@@ -28,6 +29,7 @@ type SpecieFilter = 'ALL' | SpecieValue;
     LoadingSpinner,
     StockHeader,
     StockItemCard,
+    StockWeightsModal,
   ],
   templateUrl: './stock-page.html',
   host: { class: 'flex min-h-0 flex-1 flex-col' },
@@ -91,6 +93,20 @@ export default class StockPage {
   visibleKilograms = computed(() =>
     this.visibleItems().reduce((sum, item) => sum + item.kilograms, 0),
   );
+
+  // Compra cuyas piezas se estan ajustando (null = modal cerrado)
+  protected editingPurchaseId = signal<number | null>(null);
+
+  // Todas las piezas de esa compra (sin filtros de pantalla: el repartoes de la compra completa)
+  protected editingPieces = computed(() => {
+    const purchaseId = this.editingPurchaseId();
+    return this.stock()?.items.filter((item) => item.purchaseId === purchaseId) ?? [];
+  });
+
+  protected onWeightsSaved() {
+    this.editingPurchaseId.set(null);
+    this.stockResource.reload();
+  }
 
   // Color de las insignas segun la especie elegida (el acento de la app si son todas)
   protected countBadge = computed(() => {

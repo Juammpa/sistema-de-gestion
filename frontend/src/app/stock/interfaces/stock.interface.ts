@@ -12,6 +12,8 @@ export interface StockItem {
   date: string; // yyyy-MM-dd
   supplierId: number;
   supplierName: string;
+  editable: boolean; // la compra tiene mas de una unidad: se puede repartir el peso
+  adjusted: boolean; // el peso fue ajustado a mano
 }
 
 export interface SpecieTotals {

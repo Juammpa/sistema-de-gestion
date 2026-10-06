@@ -7,7 +7,7 @@
   <cash-date-filter [(from)]="from" [(to)]="to" />
 </div>
 
-@if (stockResource.isLoading()) {
+@if (stockResource.status() === 'loading') {
   <div class="flex justify-center py-12"><loading-spinner /></div>
 } @else if (stockResource.error()) {
   <div class="mx-3 max-w-3xl md:mx-auto">
@@ -93,7 +93,7 @@
       <div class="mx-3 max-w-3xl pb-4 md:mx-auto">
         <ul class="space-y-2">
           @for (item of visibleItems(); track item.purchaseId + '-' + item.unitNumber) {
-            <li><stock-item [item]="item" /></li>
+            <li><stock-item [item]="item" (edit)="editingPurchaseId.set($event.purchaseId)" /></li>
           } @empty {
             <li>
               <empty-state
@@ -106,4 +106,13 @@
       </div>
     </div>
   }
+}
+
+@if (editingPieces().length > 0) {
+  <stock-weights-modal
+    animate.leave="modal-host-leave"
+    [items]="editingPieces()"
+    (cancel)="editingPurchaseId.set(null)"
+    (saved)="onWeightsSaved()"
+  />
 }

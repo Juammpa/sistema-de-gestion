@@ -1,0 +1,155 @@
+<!-- Backdrop: cierra al hacer click fuera del panel -->
+<div
+  (click)="close()"
+  (document:keydown.escape)="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md modal-backdrop"
+>
+  <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
+  <div
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="stock-weights-title"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/80 ring-1 ring-white/10"
+  >
+    <!-- ====== HEADER ====== -->
+    <div
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-5 py-5 sm:px-7"
+    >
+      <div class="flex min-w-0 items-center gap-3.5">
+        <span
+          aria-hidden="true"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
+        >
+          <i class="fa-solid fa-weight-hanging text-base"></i>
+        </span>
+        <div class="min-w-0 space-y-0.5">
+          <h2
+            id="stock-weights-title"
+            class="text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
+          >
+            Ajustar pesos
+          </h2>
+          <p class="truncate text-sm text-slate-400">{{ typeLabel() }} · {{ supplierName() }}</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
+        title="Cerrar modal"
+        aria-label="Cerrar modal"
+      >
+        <i aria-hidden="true" class="fa-solid fa-xmark block text-base"></i>
+      </button>
+    </div>
+
+    <!-- ====== BODY ====== -->
+    <form (submit)="$event.preventDefault(); onSave()" class="space-y-5 px-5 py-6 sm:px-7">
+      <p class="text-sm text-slate-400">
+        Repartí los
+        <span class="font-semibold text-slate-200"
+          >{{ totalCents() / 100 | number: '1.2-2' }} kg</span
+        >
+        de la compra entre sus {{ weights().length }} piezas. La suma tiene que coincidir con la
+        compra.
+      </p>
+
+      <!-- Un campo por pieza (track $index: así el campo no pierde el foco al escribir) -->
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        @for (weight of weights(); track $index) {
+          <div class="space-y-1.5">
+            <label
+              [attr.for]="'stock-weight-' + $index"
+              class="block text-sm font-medium text-slate-200"
+            >
+              Pieza {{ $index + 1 }} de {{ weights().length }}
+            </label>
+            <div class="group relative">
+              <input
+                [id]="'stock-weight-' + $index"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                [value]="weight"
+                (input)="setWeight($index, $event)"
+                class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+              />
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-accent-400"
+              >
+                kg
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Suma en vivo -->
+      <div
+        role="status"
+        aria-live="polite"
+        [class]="
+          'flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-xl border px-4 py-3 text-sm transition-colors duration-150 motion-reduce:transition-none ' +
+          summaryClass()
+        "
+      >
+        <p class="flex items-center gap-2 font-medium">
+          <i
+            aria-hidden="true"
+            [class]="
+              isBalanced()
+                ? 'fa-solid fa-circle-check text-xs'
+                : 'fa-solid fa-triangle-exclamation text-xs'
+            "
+          ></i>
+          @if (hasInvalid()) {
+            Ingresá un peso mayor a 0 en cada pieza
+          } @else if (diffCents() > 0) {
+            Faltan {{ diffCents() / 100 | number: '1.2-2' }} kg
+          } @else if (diffCents() < 0) {
+            Sobran {{ -diffCents() / 100 | number: '1.2-2' }} kg
+          } @else {
+            La suma coincide con la compra
+          }
+        </p>
+        <p class="font-mono font-semibold tabular-nums">
+          {{ sumCents() / 100 | number: '1.2-2' }} / {{ totalCents() / 100 | number: '1.2-2' }} kg
+        </p>
+      </div>
+
+      <!-- ====== FOOTER ====== -->
+      <div
+        class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <button
+          type="button"
+          (click)="splitEvenly()"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-700/70 bg-transparent px-5 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97] sm:w-auto"
+        >
+          <i aria-hidden="true" class="fa-solid fa-equals text-xs"></i>
+          <span>Partes iguales</span>
+        </button>
+
+        <div class="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <button
+            type="button"
+            (click)="close()"
+            class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.97] sm:w-auto"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="!canSave()"
+            class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          >
+            <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
+            <span>{{ saving() ? 'Guardando…' : 'Guardar cambios' }}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,5 +1,11 @@
 <article
-  class="flex items-center gap-3 rounded-2xl border border-line bg-panel-from px-4 py-3 shadow-sm shadow-black/20 hover:opacity-80 hover:cursor-pointer"
+  [class]="cardClass()"
+  [attr.role]="item().editable ? 'button' : null"
+  [attr.tabindex]="item().editable ? 0 : null"
+  [attr.title]="item().editable ? 'Ajustar pesos de la compra' : null"
+  (click)="onActivate()"
+  (keydown.enter)="onActivate()"
+  (keydown.space)="$event.preventDefault(); onActivate()"
 >
   <!-- Especie -->
   <span
@@ -14,9 +20,18 @@
 
   <!-- Tipo, número de pieza y proveedor -->
   <div class="min-w-0 flex-1">
-    <h3 class="truncate text-sm font-semibold text-slate-100 sm:text-base" [title]="typeLabel()">
-      {{ typeLabel() }}
-    </h3>
+    <div class="flex min-w-0 items-center gap-2">
+      <h3 class="truncate text-sm font-semibold text-slate-100 sm:text-base" [title]="typeLabel()">
+        {{ typeLabel() }}
+      </h3>
+      @if (item().adjusted) {
+        <span
+          class="shrink-0 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 text-[11px] font-medium leading-none text-accent-300"
+        >
+          Ajustado
+        </span>
+      }
+    </div>
     <p class="truncate text-xs text-slate-400 sm:text-sm" [title]="item().supplierName">
       @if (item().totalUnits > 1) {
         Pieza {{ item().unitNumber }} de {{ item().totalUnits }} ·
@@ -33,4 +48,9 @@
     </p>
     <p class="text-xs text-slate-400">{{ date() }}</p>
   </div>
+
+  <!-- Indicio de que se puede editar -->
+  @if (item().editable) {
+    <i aria-hidden="true" class="fa-solid fa-pen shrink-0 text-xs text-slate-500"></i>
+  }
 </article>
