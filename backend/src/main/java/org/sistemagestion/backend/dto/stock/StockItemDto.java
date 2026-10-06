@@ -15,5 +15,7 @@ public record StockItemDto(
         double kilograms,   // kilos de la compra / unidades
         LocalDate date,
         Long supplierId,
-        String supplierName
+        String supplierName,
+        boolean editable,   // la compra tiene mas de una unidad, se puede repartir el peso
+        boolean adjusted    // el peso fue ajustado a mano
 ) {}

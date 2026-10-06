@@ -11,6 +11,7 @@ import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
+import org.sistemagestion.backend.repository.PurchasePieceWeightRepository;
 import org.sistemagestion.backend.repository.PurchaseRepository;
 import org.sistemagestion.backend.repository.SupplierRepository;
 import org.sistemagestion.backend.service.account.AccountGuard;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ import java.util.List;
 public class PurchaseService implements IPurchaseService {
 
     private final PurchaseRepository purchaseRepository;
+    private final PurchasePieceWeightRepository pieceWeightRepository;
     private final CurrentAccountRepository currentAccountRepository;
     private final SupplierRepository supplierRepository;
     private final BalanceRecalculationService balanceRecalculationService;
@@ -68,12 +71,19 @@ public class PurchaseService implements IPurchaseService {
 
         assertSupplierCanSell(purchase.getCurrentAccount(), request.getPurchaseType());
 
+        boolean distributionChanged = !Objects.equals(purchase.getKilograms(), request.getKilograms()) ||
+                !Objects.equals(purchase.getUnit(), request.getUnit());
+
         purchase.setDate(request.getDate());
         purchase.setPurchaseType(request.getPurchaseType());
         purchase.setKilograms(request.getKilograms());
         purchase.setPricePerKilo(request.getPricePerKilo());
         purchase.setUnit(request.getUnit());
         purchase.setAmount(request.getKilograms() * request.getPricePerKilo());
+
+        if (distributionChanged) {
+            pieceWeightRepository.deleteByPurchaseId(id);
+        }
 
         Purchase purchaseSaved = purchaseRepository.saveAndFlush(purchase);
 
@@ -92,6 +102,7 @@ public class PurchaseService implements IPurchaseService {
 
         // Actualizamos el balance de la cuenta
         CurrentAccount currentAccount = purchase.getCurrentAccount();
+        pieceWeightRepository.deleteByPurchaseId(id);
         purchaseRepository.delete(purchase);
         purchaseRepository.flush();
 
@@ -107,7 +118,7 @@ public class PurchaseService implements IPurchaseService {
                 .filter(supplier -> !supplier.getSupplierType().canSell(purchaseType))
                 .ifPresent(supplier -> {
                     throw new BusinessRuleException(String.format(
-                            "Este proveedor solo trabajo con $s: no se puede registrar ese tipo de compra.",
+                            "Este proveedor solo trabaja con %s: no se puede registrar ese tipo de compra.",
                             supplier.getSupplierType().getLabel()
                     ));
                 });
