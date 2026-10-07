@@ -3,6 +3,7 @@ package org.sistemagestion.backend.service.butcher_shop;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
+import org.sistemagestion.backend.dto.butcher_shop.ButcherShopUpdateRequestDto;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.ButcherShopMapper;
 import org.sistemagestion.backend.model.ButcherShop;
@@ -52,17 +53,19 @@ public class ButcherShopService implements IButcherShopService{
 
     @Override
     @Transactional
-    public ButcherShopResponseDto updateButcherShop(Long id, ButcherShopRequestDto requestDto) {
-
-        Client client = clientRepository.findByIdAndIsActiveTrue(requestDto.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client","id", requestDto.getClientId()));
+    public ButcherShopResponseDto updateButcherShop(Long id, ButcherShopUpdateRequestDto requestDto) {
 
         ButcherShop butcherShop = butcherShopRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Butcher Shop", "id", id));
 
+        // La sucursal de un cliente eliminado se trata como inexistente
+        Client client = butcherShop.getClient();
+        if (!Boolean.TRUE.equals(client.getIsActive())) {
+            throw new ResourceNotFoundException("Client","id", client.getId());
+        }
+
         butcherShop.setName(requestDto.getName());
         butcherShop.setAddress(requestDto.getAddress());
-        butcherShop.setClient(client);
 
         return mapper.toDto(butcherShopRepository.save(butcherShop));
     }

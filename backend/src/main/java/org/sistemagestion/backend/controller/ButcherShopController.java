@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
+import org.sistemagestion.backend.dto.butcher_shop.ButcherShopUpdateRequestDto;
 import org.sistemagestion.backend.service.butcher_shop.IButcherShopService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class ButcherShopController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ButcherShopResponseDto> updateButcherShop(@PathVariable Long id, @Valid @RequestBody ButcherShopRequestDto request) {
+    public ResponseEntity<ButcherShopResponseDto> updateButcherShop(@PathVariable Long id, @Valid @RequestBody ButcherShopUpdateRequestDto request) {
 
         return ResponseEntity.ok(butcherShopService.updateButcherShop(id, request));
     }
