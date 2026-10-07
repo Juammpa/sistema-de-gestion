@@ -35,10 +35,12 @@ export class ClientHeader {
   paymentCreated = output();
   shopSelected = output<number | null>();
   butcherShopCreated = output();
+  butcherShopUpdated = output();
 
   showSaleModal = signal<boolean>(false); // Modal de Venta
   showPaymentModal = signal<boolean>(false); // Modal de Pago
   showButcherShopModal = signal<boolean>(false); // Modal de Sucursal
+  showEditShopModal = signal<boolean>(false); // Modal para editar sucursal
 
   // Aviso cuando se intenta crear una venta/pago sin elegir sucursal
   showShopWarning = signal<boolean>(false);

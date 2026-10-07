@@ -12,3 +12,8 @@ export interface ButcherShopRequest {
   address: string;
   clientId: number;
 }
+
+export interface ButcherShopUpdateRequest {
+  name: string;
+  address: string;
+}
