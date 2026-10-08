@@ -20,10 +20,14 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
     // Para recalcular
     List<Movement> findByCurrentAccountIdOrderByDateAscIdAsc(Long currentAccountId);
 
-    // Ultimos movimientos de todas las cuentas (sin los pagos espejos, que duplican el cobro del cliente)
+    // Ultimos movimientos de todas las cuentas (sin los pagos espejos, que duplican el cobro del cliente
+    // ni los de sucursales o clientes eliminados)
     @Query("""
             select m from Movement m
             where m.id not in (select p.id from Payment p where p.originPayment is not null)
+              and not exists (select 1 from ButcherShop bs
+                              where bs.currentAccount = m.currentAccount
+                                and (bs.isActive = false or bs.client.isActive = false))
             order by m.date desc, m.id desc
             """)
     List<Movement> findRecent(Pageable pageable);
