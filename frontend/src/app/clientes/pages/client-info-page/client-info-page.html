@@ -9,6 +9,8 @@
       (paymentCreated)="clientResource.reload(); movementsTable.reload()"
       (shopSelected)="selectedButcherShopId.set($event)"
       (butcherShopCreated)="clientResource.reload()"
+      (butcherShopUpdated)="clientResource.reload()"
+      (butcherShopDeleted)="clientResource.reload()"
     />
 
     <!-- Divisior (filtros) -->

@@ -40,7 +40,7 @@ public class SaleService implements ISaleService{
         CutMeat cutMeat = cutMeatRepository.findById(request.getCutMeatId())
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat", "id", request.getCutMeatId()));
 
-        ButcherShop butcherShop = butcherShopRepository.findById(request.getButcherShopId())
+        ButcherShop butcherShop = butcherShopRepository.findByIdAndIsActiveTrue(request.getButcherShopId())
                 .orElseThrow(() -> new ResourceNotFoundException("ButcherShop", "id", request.getButcherShopId()));
 
         // Validamos si la sucursal es del cliente

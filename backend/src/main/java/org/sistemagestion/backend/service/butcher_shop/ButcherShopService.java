@@ -3,6 +3,8 @@ package org.sistemagestion.backend.service.butcher_shop;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
+import org.sistemagestion.backend.dto.butcher_shop.ButcherShopUpdateRequestDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.ButcherShopMapper;
 import org.sistemagestion.backend.model.ButcherShop;
@@ -52,19 +54,45 @@ public class ButcherShopService implements IButcherShopService{
 
     @Override
     @Transactional
-    public ButcherShopResponseDto updateButcherShop(Long id, ButcherShopRequestDto requestDto) {
+    public ButcherShopResponseDto updateButcherShop(Long id, ButcherShopUpdateRequestDto requestDto) {
 
-        Client client = clientRepository.findByIdAndIsActiveTrue(requestDto.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client","id", requestDto.getClientId()));
+        ButcherShop butcherShop = findActive(id);
 
-        ButcherShop butcherShop = butcherShopRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Butcher Shop", "id", id));
+        // La sucursal de un cliente eliminado se trata como inexistente
+        Client client = butcherShop.getClient();
+        if (!Boolean.TRUE.equals(client.getIsActive())) {
+            throw new ResourceNotFoundException("Client","id", client.getId());
+        }
 
         butcherShop.setName(requestDto.getName());
         butcherShop.setAddress(requestDto.getAddress());
-        butcherShop.setClient(client);
 
         return mapper.toDto(butcherShopRepository.save(butcherShop));
+    }
+
+    // Borrado logico: la sucursal deja de aparecer, pero su cuenta y sus movimientos se conservan
+    // (la Caja y los saldos de proveedores dependen de ese historial)
+    @Override
+    @Transactional
+    public void deleteButcherShop(Long id) {
+
+        ButcherShop butcherShop = findActive(id);
+
+        if (butcherShopRepository.countByClientIdAndIsActiveTrue(butcherShop.getClient().getId()) <= 1) {
+            throw new BusinessRuleException(
+                    "Un cliente debe tener al menos una sucursal. Para dar de baja todo, eliminá el cliente."
+            );
+        }
+
+        butcherShop.setIsActive(false);
+        butcherShopRepository.save(butcherShop);
+
+    }
+
+    // Una sucursal eliminada se trata como inexistente
+    private ButcherShop findActive(Long id) {
+        return butcherShopRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Butcher Shop","id",id));
     }
 
 }

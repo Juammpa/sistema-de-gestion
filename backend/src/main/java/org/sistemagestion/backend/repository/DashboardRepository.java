@@ -19,6 +19,9 @@ public interface DashboardRepository extends Repository<Payment, Long> {
                 year(s.date), month(s.date), sum(s.amount))
             from Sale s
             where s.date between :from and :to
+              and exists (select 1 from ButcherShop bs
+                          where bs.currentAccount = s.currentAccount
+                            and bs.isActive = true and bs.client.isActive = true)
             group by year(s.date), month(s.date)
             """)
     List<MonthlyTotalDto> salesByMonth(@Param("from") LocalDate from, @Param("to") LocalDate to);
@@ -32,13 +35,15 @@ public interface DashboardRepository extends Repository<Payment, Long> {
             """)
     List<MonthlyTotalDto> purchasesByMonth(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
-    // Pagos de cuentas de clientes (cobros)
+    // Pagos de cuentas de clientes (cobros) de sucursales y clientes activos
     @Query("""
             select new org.sistemagestion.backend.dto.dashboard.MonthlyTotalDto(
                 year(p.date), month(p.date), sum(p.amount))
             from Payment p
             where p.date between :from and :to
-              and exists (select 1 from ButcherShop bs where bs.currentAccount = p.currentAccount)
+              and exists (select 1 from ButcherShop bs
+                          where bs.currentAccount = p.currentAccount
+                            and bs.isActive = true and bs.client.isActive = true)
             group by year(p.date), month(p.date)
             """)
     List<MonthlyTotalDto> collectionsByMonth(@Param("from") LocalDate from, @Param("to") LocalDate to);
@@ -56,7 +61,14 @@ public interface DashboardRepository extends Repository<Payment, Long> {
 
     // ==== Saldos ====
 
-    @Query("select sum(a.currentBalance) from ButcherShop bs join bs.currentAccount a")
+    // Saldo que deben los clientes: solo sucursales y clientes activos
+    @Query("""
+            select sum(a.currentBalance)
+            from ButcherShop bs
+            join bs.client c
+            join bs.currentAccount a
+            where bs.isActive = true and c.isActive = true
+            """)
     Double totalClientBalance();
 
     @Query("select sum(a.currentBalance) from Supplier s join s.currentAccount a")
@@ -71,7 +83,7 @@ public interface DashboardRepository extends Repository<Payment, Long> {
             from ButcherShop bs
             join bs.client c
             join bs.currentAccount a
-            where c.isActive = true
+            where c.isActive = true and bs.isActive = true
             group by c.id, c.lastName, c.name
             having sum(a.currentBalance) > 0
             order by sum(a.currentBalance) desc

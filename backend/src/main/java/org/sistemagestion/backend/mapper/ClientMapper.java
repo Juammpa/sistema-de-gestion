@@ -28,7 +28,7 @@ public class ClientMapper {
                 .name(client.getName())
                 .lastName(client.getLastName())
                 .phoneNumber(client.getPhoneNumber())
-                .butcherShops(client.getButcherShops().stream()
+                .butcherShops(client.getActiveButcherShops().stream()
                         .map(butcherShopMapper::toDto)
                         .toList()
                 )

@@ -34,4 +34,11 @@ public class Client {
     @Builder.Default
     private List<Sale> sales = new ArrayList<>();
 
+    // Sucusales que no fueron eliminadas
+    public List<ButcherShop>  getActiveButcherShops() {
+        return butcherShops.stream()
+                .filter(shop -> Boolean.TRUE.equals(shop.getIsActive()))
+                .toList();
+    }
+
 }
