@@ -81,6 +81,22 @@
                 <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
                 Editar sucursal
               </button>
+              <!-- El title va en el span: un botón deshabilitado no siempre muestra su tooltip -->
+              <span
+                class="inline-flex"
+                [attr.title]="isLastShop() ? 'Un cliente debe tener al menos una sucursal' : null"
+              >
+                <button
+                  type="button"
+                  (click)="showDeleteShopModal.set(true)"
+                  [disabled]="isLastShop()"
+                  [attr.aria-label]="'Eliminar sucursal ' + shop.name"
+                  class="inline-flex min-h-11 cursor-pointer touch-manipulation items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-300 transition-ui duration-150 enabled:hover:border-red-400/60 enabled:hover:bg-red-500/20 enabled:hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to motion-reduce:transition-none motion-safe:enabled:active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9"
+                >
+                  <i class="fa-solid fa-trash-can text-xs" aria-hidden="true"></i>
+                  Eliminar sucursal
+                </button>
+              </span>
             </div>
           }
         </div>
@@ -172,5 +188,19 @@
     [butcherShop]="shop"
     (cancel)="showEditShopModal.set(false)"
     (saved)="showEditShopModal.set(false); butcherShopUpdated.emit()"
+  />
+}
+
+@if (showDeleteShopModal() && selectedButcherShop(); as shop) {
+  <delete-modal
+    animate.leave="modal-host-leave"
+    description="Eliminar Sucursal"
+    entityType="La sucursal"
+    [entityName]="shop.name + ' - ' + shop.address"
+    [permanent]="false"
+    [warning]="deleteShopWarning()"
+    [loading]="deletingShop()"
+    (cancel)="showDeleteShopModal.set(false)"
+    (confirm)="deleteSelectedShop()"
   />
 }

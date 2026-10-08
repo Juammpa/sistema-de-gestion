@@ -77,16 +77,21 @@ export default class ClientInfoPage implements OnDestroy {
 
   // Aviso del modal de eliminar: un saldo pendiente sigue contando en "Por cobrar"
   deleteWarning = computed(() => {
+    const note =
+      'Las ventas y cobros de sus sucursales dejarán de contarse en el Dashboard. La Caja de Ahorro no cambia.';
     const client = this.clientResource.hasValue() ? this.clientResource.value() : null;
     const balance = client?.butcherShops.reduce((sum, shop) => sum + shop.currentBalance, 0) ?? 0;
 
-    if (Math.abs(balance) < 0.005) return null;
+    if (Math.abs(balance) < 0.005) return note;
 
     const amount = formatCurrency(Math.abs(balance), this.locale, '$', 'ARS', '1.0-0');
 
-    return balance > 0
-      ? `Este cliente tiene un saldo pendiente de ${amount} que seguirá contando en «Por cobrar».`
-      : `Este cliente tiene un saldo a favor de ${amount} que seguirá contando en «Por cobrar». `;
+    const detail =
+      balance > 0
+        ? `Este cliente tiene un saldo pendiente de ${amount}, que dejará de contarse en «Por cobrar».`
+        : `Este cliente tiene un saldo a favor de ${amount}, que dejará de contarse en «Por cobrar».`;
+
+    return `${detail} ${note}`;
   });
 
   deleteClient(clientId: number) {

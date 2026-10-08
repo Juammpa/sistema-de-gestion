@@ -20,4 +20,9 @@ export class ButcherShopService {
   updateButcherShop(id: number, butcherShop: ButcherShopUpdateRequest) {
     return this.http.put<ButcherShop>(`${environment.apiUrl}/butcher-shops/${id}`, butcherShop);
   }
+
+  // Elimina (logicamente) una sucursal: deja de mostrarse pero su historial se conserva.
+  deleteButcherShop(id: number) {
+    return this.http.delete<void>(`${environment.apiUrl}/butcher-shops/${id}`);
+  }
 }
