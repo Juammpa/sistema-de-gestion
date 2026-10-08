@@ -36,4 +36,11 @@ public class ButcherShopController {
         return ResponseEntity.ok(butcherShopService.updateButcherShop(id, request));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteButcherShop(@PathVariable Long id) {
+
+        butcherShopService.deleteButcherShop(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

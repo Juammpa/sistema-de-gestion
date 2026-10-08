@@ -10,5 +10,5 @@ public interface IButcherShopService {
     ButcherShopResponseDto createButcherShop(ButcherShopRequestDto requestDto);
     ButcherShopResponseDto getById(Long id);
     ButcherShopResponseDto updateButcherShop(Long id, ButcherShopUpdateRequestDto requestDto);
-
+    void deleteButcherShop(Long id);
 }

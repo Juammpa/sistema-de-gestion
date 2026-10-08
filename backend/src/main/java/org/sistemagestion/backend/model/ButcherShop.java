@@ -19,6 +19,9 @@ public class ButcherShop {
     private String name;
     private String address;
 
+    @Builder.Default
+    private Boolean isActive = true;
+
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;

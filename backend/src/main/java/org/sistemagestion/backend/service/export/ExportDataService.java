@@ -61,7 +61,7 @@ public class ExportDataService {
         List<Long> accountIds = new ArrayList<>();
 
         for (Client client: clients) {
-            for (ButcherShop shop: client.getButcherShops()) {
+            for (ButcherShop shop: client.getActiveButcherShops()) {
                 accountIds.add(shop.getCurrentAccount().getId());
             }
         }
@@ -84,7 +84,7 @@ public class ExportDataService {
 
         Map<Long, Client> byAccount = new HashMap<>();
         for (Client client: clients) {
-            for (ButcherShop shop: client.getButcherShops()) {
+            for (ButcherShop shop: client.getActiveButcherShops()) {
                 byAccount.put(shop.getCurrentAccount().getId(), client);
             }
         }
@@ -99,11 +99,11 @@ public class ExportDataService {
     private ExportData.ClientSheet toClientSheet(Client client, Map<Long, List<Movement>> movementsByAccount, Set<String> usedSheetNames) {
 
         String clientName = fullName(client);
-        boolean severalShops = client.getButcherShops().size() > 1;
+        boolean severalShops = client.getActiveButcherShops().size() > 1;
 
         List<ExportData.ShopBlock> blocks = new ArrayList<>();
 
-        for (ButcherShop shop: client.getButcherShops()) {
+        for (ButcherShop shop: client.getActiveButcherShops()) {
             CurrentAccount account = shop.getCurrentAccount();
             List<ExportData.ClientRow> rows =
                     movementsByAccount.getOrDefault(account.getId(), List.of()).stream()

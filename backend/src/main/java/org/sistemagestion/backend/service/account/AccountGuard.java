@@ -19,10 +19,11 @@ public class AccountGuard {
         Long accountId = account.getId();
 
         if (supplierRepository.existsByCurrentAccountIdAndIsActiveFalse(accountId) ||
-                butcherShopRepository.existsByCurrentAccountIdAndClientIsActiveFalse(accountId)) {
+                butcherShopRepository.existsByCurrentAccountIdAndClientIsActiveFalse(accountId)
+            || butcherShopRepository.existsByCurrentAccountIdAndIsActiveFalse(accountId)) {
 
             throw new BusinessRuleException(
-                    "No se pueden registrar movimientos: el cliente o proveedor fue eliminado."
+                    "No se pueden registrar movimientos: el cliente, la sucursal o el proveedor fue eliminado."
             );
         }
     }
