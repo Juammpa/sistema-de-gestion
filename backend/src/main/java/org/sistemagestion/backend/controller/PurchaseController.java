@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.purchase.PurchaseRequestDto;
 import org.sistemagestion.backend.dto.purchase.PurchaseResponseDto;
 import org.sistemagestion.backend.service.purchase.IPurchaseService;
+import org.sistemagestion.backend.validation.OnUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -30,7 +32,7 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PurchaseResponseDto> updatePurchase(@PathVariable Long id, @Valid @RequestBody PurchaseRequestDto request) {
+    public ResponseEntity<PurchaseResponseDto> updatePurchase(@PathVariable Long id, @Validated(OnUpdate.class) @RequestBody PurchaseRequestDto request) {
 
         return ResponseEntity.ok(purchaseService.updatePurchase(id, request));
     }
