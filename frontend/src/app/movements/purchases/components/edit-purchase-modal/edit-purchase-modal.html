@@ -57,6 +57,7 @@
         <input
           id="edit-purchase-date"
           type="date"
+          [attr.max]="today"
           formControlName="date"
           [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'date')"
           [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'date')"
@@ -64,6 +65,15 @@
           [class.animate-shake]="formUtils.isValidField(purchaseForm, 'date')"
           class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
         />
+        @if (formUtils.isValidField(purchaseForm, 'date')) {
+          <span
+            role="alert"
+            class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+          >
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+            {{ formUtils.getFieldError(purchaseForm, 'date') }}
+          </span>
+        }
       </div>
       <!-- Grid: Tipo Compra y Unidades -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">

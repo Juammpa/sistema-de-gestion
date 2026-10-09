@@ -6,6 +6,8 @@ import translatePurchaseType, { purchaseTypeOptionsFor } from '../../utils/purch
 import { Purchase, PurchaseRequest } from '../../interfaces/purchase.interface';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import { SupplierType } from '../../../../supplier/interfaces/supplier.interface';
+import { toIsoDate } from '../../../../shared/utils/date.utils';
+import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'edit-purchase-modal',
@@ -24,12 +26,15 @@ export class EditPurchaseModal implements OnInit {
 
   purchaseTypeOptions = computed(() => purchaseTypeOptionsFor(this.supplierType()));
 
+  // Tope del selector de fecha: no se puede elegir un dia futuro.
+  today = toIsoDate(new Date());
+
   purchaseForm: FormGroup = this.fb.group({
-    date: [null as string | null, [Validators.required]],
+    date: [null as string | null, [Validators.required, AppValidators.notFutureDate]],
     purchaseType: [null as string | null, [Validators.required]],
-    unit: [1, [Validators.required, Validators.min(1)]],
-    kilograms: [1, [Validators.required, Validators.min(1)]],
-    pricePerKilo: [1, [Validators.required, Validators.min(1)]],
+    unit: [1, [Validators.required, AppValidators.integer(1, 9_999)]],
+    kilograms: ['', [Validators.required, AppValidators.amount(99_999.99)]],
+    pricePerKilo: ['', [Validators.required, AppValidators.amount(9_999_999.99)]],
   });
 
   // Outputs
@@ -62,8 +67,13 @@ export class EditPurchaseModal implements OnInit {
       return;
     }
 
+    const { date, purchaseType, unit, kilograms, pricePerKilo } = this.purchaseForm.value;
     const request: PurchaseRequest = {
-      ...this.purchaseForm.value,
+      date,
+      purchaseType,
+      unit: this.formUtils.parseDecimal(unit)!,
+      kilograms: this.formUtils.parseDecimal(kilograms)!,
+      pricePerKilo: this.formUtils.parseDecimal(pricePerKilo)!,
       currentAccountId: this.purchase().currentAccountId,
     };
 
