@@ -38,7 +38,7 @@ export class FormUtils {
           return 'El formato es inválido';
 
         case 'amountFormat':
-          return 'Ingresá un número válido. Ej: 1500,50';
+          return 'Ingresá un número válido. Ej: 100,50';
 
         case 'decimals':
           return `Máximo ${errors['decimals'].max} decimales`;
@@ -51,6 +51,9 @@ export class FormUtils {
 
         case 'futureDate':
           return 'La fecha no puede ser futura';
+
+        case 'insufficientCash':
+          return `Supera el saldo disponible en la caja`;
       }
     }
 
