@@ -11,4 +11,6 @@ public interface IButcherShopService {
     ButcherShopResponseDto getById(Long id);
     ButcherShopResponseDto updateButcherShop(Long id, ButcherShopUpdateRequestDto requestDto);
     void deleteButcherShop(Long id);
+
+    boolean existsByName(Long clientId, String name, Long excludeId);
 }

@@ -23,4 +23,10 @@ public interface ButcherShopRepository extends JpaRepository<ButcherShop, Long> 
 
     // true si la cuenta corriente pertenece a una sucursal eliminada
     boolean existsByCurrentAccountIdAndIsActiveFalse(Long currentAccountId);
+
+    // Nombre ya usado por otra sucursal activa del mismo cliente
+    boolean existsByClientIdAndNameIgnoreCaseAndIsActiveTrue(Long clientId, String name);
+    // Igual, pero ignorando la sucursal que se esta editando
+    boolean existsByClientIdAndNameIgnoreCaseAndIsActiveTrueAndIdNot(Long clientId, String name, Long id);
+
 }

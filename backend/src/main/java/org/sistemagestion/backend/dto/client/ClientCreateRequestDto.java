@@ -27,8 +27,10 @@ public class ClientCreateRequestDto {
     private String phoneNumber;
 
     @NotBlank(message = "El nombre de la sucursal es obligatorio.")
+    @Size(min = 2, max = 60, message = "El nombre debe tener entre 2 y 60 caracteres.")
     private String butcherShopName;
 
     @NotBlank(message = "La dirección de la sucursal es obligatorio.")
+    @Size(min = 3, max = 120, message = "El nombre debe tener entre 3 y 120 caracteres.")
     private String butcherShopAddress;
 }
