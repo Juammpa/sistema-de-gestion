@@ -28,7 +28,10 @@ public class SupplierService implements ISupplierService{
     @Override
     public SupplierResponseDto createSupplier(SupplierRequestDto request) {
 
+        assertCompanyNameAvailable(request.getCompanyName(), null);
+
         Supplier supplier = mapper.toSupplier(request);
+        supplier.setCompanyName(request.getCompanyName().trim());
 
         CurrentAccount currentAccount = new CurrentAccount();
         currentAccount.setCurrentBalance(0.0);
@@ -58,6 +61,7 @@ public class SupplierService implements ISupplierService{
 
         Supplier supplier = findActive(id);
 
+        assertCompanyNameAvailable(request.getCompanyName(), id);
         assertTypeChangeAllowed(supplier, request.getSupplierType());
 
         supplier.setCompanyName(request.getCompanyName());
@@ -78,6 +82,17 @@ public class SupplierService implements ISupplierService{
         supplierRepository.save(supplier);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByCompanyName(String companyName, Long excludeId) {
+
+        String name = companyName.trim();
+
+        return excludeId == null
+                ? supplierRepository.existsByCompanyNameIgnoreCaseAndIsActiveTrue(name)
+                : supplierRepository.existsByCompanyNameIgnoreCaseAndIsActiveTrueAndIdNot(name, excludeId);
+    }
+
     // Un proveedor eliminado se trata como inexistente
     private Supplier findActive(Long id) {
         return supplierRepository.findByIdAndIsActiveTrue(id)
@@ -95,6 +110,16 @@ public class SupplierService implements ISupplierService{
             throw new BusinessRuleException(String.format(
                     "No se puede cambiar el tipo a %s: el proveedor ya tiene compras registradas de otro tipo.",
                     newType.getLabel()
+            ));
+        }
+    }
+
+    // No puede haber dos proveedores activos con el mismo nombre
+    private void assertCompanyNameAvailable(String companyName, Long excludeId) {
+
+        if (existsByCompanyName(companyName, excludeId)) {
+            throw new BusinessRuleException(String.format(
+                    "Ya existe un proveedor con el nombre \\\"%s\\\".\"", companyName.trim()
             ));
         }
     }

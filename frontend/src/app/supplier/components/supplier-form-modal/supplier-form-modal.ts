@@ -4,6 +4,8 @@ import { SupplierService } from '../../services/supplier.service';
 import { FormUtils } from '../../../shared/utils/form-utils';
 import { Supplier, SupplierRequest, SupplierType } from '../../interfaces/supplier.interface';
 import { SUPPLIER_TYPE_OPTIONS } from '../../utils/supplier-type.utils';
+import { uniqueValue } from '../../../shared/validators/async-validators';
+import { AppValidators } from '../../../shared/validators/app-validators';
 
 @Component({
   selector: 'supplier-form-modal',
@@ -26,8 +28,17 @@ export class SupplierFormModal implements OnInit {
 
   // Definimos nuestro formulario
   supplierForm: FormGroup = this.fb.group({
-    companyName: ['', [Validators.required, Validators.minLength(3)]],
-    phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
+    companyName: [
+      '',
+      [Validators.required, AppValidators.noBlank, AppValidators.trimmedLength(2, 80)],
+      [
+        uniqueValue(
+          (name) => this.supplierService.companyNameExists(name, this.supplier()?.id),
+          'un proveedor',
+        ),
+      ],
+    ],
+    phoneNumber: ['', [Validators.required, AppValidators.phoneNumber]],
     supplierType: [null as SupplierType | null, [Validators.required]],
   });
 
@@ -52,8 +63,11 @@ export class SupplierFormModal implements OnInit {
       return;
     }
 
+    // Esperamos a que termine la validacion asincrona
+    if (this.supplierForm.pending) return;
+
     // Obtenemos el request
-    const request: SupplierRequest = this.supplierForm.value;
+    const request: SupplierRequest = this.formUtils.trimValues(this.supplierForm.value);
 
     // Segun el request: editar o crear
     const request$ = this.isEdit()

@@ -51,4 +51,10 @@ public class SupplierController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> existsByCompanyName(@RequestParam String companyName, @RequestParam(required = false) Long excludeId) {
+
+        return ResponseEntity.ok(supplierService.existsByCompanyName(companyName, excludeId));
+    }
+
 }
