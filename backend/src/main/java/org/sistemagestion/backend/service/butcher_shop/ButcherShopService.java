@@ -30,6 +30,8 @@ public class ButcherShopService implements IButcherShopService{
         Client client = clientRepository.findByIdAndIsActiveTrue(requestDto.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", requestDto.getClientId()));
 
+        assertNameAvailable(client.getId(), requestDto.getName(), null);
+
         ButcherShop butcherShop = mapper.toButcherShop(requestDto);
         butcherShop.setClient(client);
 
@@ -64,6 +66,8 @@ public class ButcherShopService implements IButcherShopService{
             throw new ResourceNotFoundException("Client","id", client.getId());
         }
 
+        assertNameAvailable(client.getId(), requestDto.getName(), id);
+
         butcherShop.setName(requestDto.getName());
         butcherShop.setAddress(requestDto.getAddress());
 
@@ -89,10 +93,34 @@ public class ButcherShopService implements IButcherShopService{
 
     }
 
+    // Revisa si el nombre ya esta en uso (excludeId: sucursal que se edita)
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByName(Long clientId, String name, Long excludeId) {
+
+        String trimmed = name.trim();
+
+        return excludeId == null
+                ? butcherShopRepository.existsByClientIdAndNameIgnoreCaseAndIsActiveTrue(clientId, trimmed)
+                : butcherShopRepository.existsByClientIdAndNameIgnoreCaseAndIsActiveTrueAndIdNot(clientId, trimmed, excludeId);
+
+    }
+
     // Una sucursal eliminada se trata como inexistente
     private ButcherShop findActive(Long id) {
         return butcherShopRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Butcher Shop","id",id));
+    }
+
+    // Un cliente no puede tener dos sucursales activas con el mismo nombre
+    private void assertNameAvailable(Long clientId, String name, Long excludeId) {
+
+        if (existsByName(clientId, name, excludeId)) {
+            throw new BusinessRuleException(String.format(
+                    "Este cliente ya tiene una sucursal llamada \"%s\".",
+                    name.trim()
+            ));
+        }
     }
 
 }

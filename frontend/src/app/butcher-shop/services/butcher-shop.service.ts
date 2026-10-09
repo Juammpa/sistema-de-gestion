@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   ButcherShop,
@@ -24,5 +24,15 @@ export class ButcherShopService {
   // Elimina (logicamente) una sucursal: deja de mostrarse pero su historial se conserva.
   deleteButcherShop(id: number) {
     return this.http.delete<void>(`${environment.apiUrl}/butcher-shops/${id}`);
+  }
+
+  // Indica si el cliente ya tiene una sucursal activa con ese nombre
+  // (excludeId: la que se edita)
+  nameExists(clientId: number, name: string, excludeId?: number) {
+    let params = new HttpParams().set('clientId', clientId).set('name', name);
+
+    if (excludeId !== undefined) params = params.set('excludeId', excludeId);
+
+    return this.http.get<boolean>(`${environment.apiUrl}/butcher-shops/exists`, { params });
   }
 }

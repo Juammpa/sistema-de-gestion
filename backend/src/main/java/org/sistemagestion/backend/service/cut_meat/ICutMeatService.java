@@ -2,6 +2,7 @@ package org.sistemagestion.backend.service.cut_meat;
 
 import org.sistemagestion.backend.dto.cut_meat.CutMeatRequestDto;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatResponseDto;
+import org.sistemagestion.backend.model.enums.Specie;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface ICutMeatService {
     void activeCutMeatById(Long id);
     void deleteCutMeatById(Long id);
 
+    boolean existsByNameAndSpecie(String name, Specie specie, Long excludeId);
 }

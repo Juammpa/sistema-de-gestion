@@ -5,6 +5,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormUtils } from '../../../shared/utils/form-utils';
 import { DeleteModal } from '../../../shared/components/delete-modal/delete-modal';
 import { SPECIE_OPTIONS } from '../../utils/specie.utils';
+import { AppValidators } from '../../../shared/validators/app-validators';
+import { uniqueValue } from '../../../shared/validators/async-validators';
+import { of } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'edit-cut-meat-modal',
@@ -32,10 +36,28 @@ export class EditCutMeatModal implements OnInit {
   activating = signal<boolean>(false);
 
   cutMeatForm: FormGroup = this.fb.group({
-    cutMeatName: ['', [Validators.required, Validators.minLength(3)]],
-    pricePerKilo: [1, [Validators.required, Validators.min(1)]],
+    cutMeatName: [
+      '',
+      [Validators.required, AppValidators.noBlank, AppValidators.trimmedLength(2, 60)],
+      [
+        uniqueValue((name, control) => {
+          const specie = control.parent?.get('specie')?.value;
+          return specie
+            ? this.cutMeatService.existsByNameAndSpecie(name, specie, this.cutMeat().id)
+            : of(false);
+        }, 'un corte de esa especie'),
+      ],
+    ],
+    pricePerKilo: ['', [Validators.required, AppValidators.amount(9_999_999.99)]],
     specie: [null as string | null, [Validators.required]],
   });
+
+  constructor() {
+    // La unicidad depende de la especie: si cambia, hay que volver a validar el nombre
+    this.cutMeatForm.controls['specie'].valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.cutMeatForm.controls['cutMeatName'].updateValueAndValidity());
+  }
 
   ngOnInit() {
     const current = this.cutMeat();
@@ -56,7 +78,15 @@ export class EditCutMeatModal implements OnInit {
       return;
     }
 
-    const request: CutMeatRequest = this.cutMeatForm.value;
+    // Esperamos a que termine la validación asíncrona
+    if (this.cutMeatForm.pending) return;
+
+    const { cutMeatName, pricePerKilo, specie } = this.formUtils.trimValues(this.cutMeatForm.value);
+    const request: CutMeatRequest = {
+      cutMeatName,
+      pricePerKilo: this.formUtils.parseDecimal(pricePerKilo)!,
+      specie,
+    };
 
     this.cutMeatService.updateCutMeat(this.cutMeat().id, request).subscribe({
       next: () => {

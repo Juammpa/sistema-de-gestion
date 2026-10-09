@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatRequestDto;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatResponseDto;
+import org.sistemagestion.backend.model.enums.Specie;
 import org.sistemagestion.backend.service.cut_meat.ICutMeatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,12 @@ public class CutMeatController {
 
         cutMeatService.deleteCutMeatById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> existsByNameAndSpecie(@RequestParam String name, @RequestParam Specie specie, @RequestParam(required = false) Long excludeId) {
+
+        return ResponseEntity.ok(cutMeatService.existsByNameAndSpecie(name, specie, excludeId));
     }
 
 }

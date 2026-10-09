@@ -25,14 +25,8 @@ export class AppValidators {
       const length = value.trim().length;
 
       if (length === 0) return null; // lo resuelve "required" / "noBlank"
-      if (length < min)
-        return {
-          minLength: { requiredLength: min, actualLength: length },
-        };
-      if (length > max)
-        return {
-          maxLength: { requiredLength: max, actualLength: length },
-        };
+      if (length < min) return { minlength: { requiredLength: min, actualLength: length } };
+      if (length > max) return { maxlength: { requiredLength: max, actualLength: length } };
 
       return null;
     };
@@ -44,6 +38,26 @@ export class AppValidators {
 
   static phoneNumber(control: AbstractControl): ValidationErrors | null {
     return AppValidators.matches(control, PHONE_NUMBER_REGEX, 'phoneNumber');
+  }
+
+  // Importe: positivo, con coma o punto decimal
+  static amount(max: number, maxDecimals = 2): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const raw = control.value;
+      if (raw === null || raw === undefined || String(raw).trim() === '') return null;
+
+      const text = String(raw).trim().replace(',', '.');
+      if (!/^\d+(\.\d+)?$/.test(text)) return { amountFormat: true };
+
+      const decimals = text.split('.')[1]?.length ?? 0;
+      if (decimals > maxDecimals) return { decimals: { max: maxDecimals } };
+
+      const value = Number(text);
+      if (value <= 0) return { positive: true };
+      if (value > max) return { max: { max, actual: value } };
+
+      return null;
+    };
   }
 
   // Valida contra una regex ignorando espacios en los extremos y valores vacios

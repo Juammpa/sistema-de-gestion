@@ -1,7 +1,6 @@
 package org.sistemagestion.backend.dto.cut_meat;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +13,13 @@ import org.sistemagestion.backend.model.enums.Specie;
 @Builder
 public class CutMeatRequestDto {
 
-    @NotNull(message = "El nombre es obligatorio.")
+    @NotBlank(message = "El nombre es obligatorio.")
+    @Size(min = 2, max = 60, message = "El nombre debe tener entre 2 y 60 caracteres")
     private String cutMeatName;
 
     @NotNull(message = "El precio es obligatorio.")
-    @PositiveOrZero(message = "El precio debe ser positivo.")
+    @Positive(message = "El precio debe ser mayor a 0.")
+    @DecimalMax(value = "9999999.99", message = "El precio no puede superar a $9.999.999,99.")
     private Double pricePerKilo;
 
     @NotNull(message = "La especie es obligatoria.")

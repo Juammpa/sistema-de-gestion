@@ -2,7 +2,7 @@ import { FormGroup, ValidationErrors } from '@angular/forms';
 
 export class FormUtils {
   // Textos descriptivos del error
-  static getTextError(errors: ValidationErrors): string | null {
+  static getTextError(errors: ValidationErrors): string {
     // Obtenemos los errores
     for (const key of Object.keys(errors)) {
       // Por cada error, retornamos un mensaje
@@ -36,10 +36,19 @@ export class FormUtils {
 
         case 'pattern':
           return 'El formato es inválido';
+
+        case 'amountFormat':
+          return 'Ingresá un número válido. Ej: 1500,50';
+
+        case 'decimals':
+          return `Máximo ${errors['decimals'].max} decimales`;
+
+        case 'positive':
+          return 'Debe ser mayor a 0';
       }
     }
 
-    return null;
+    return 'El valor ingresado no es válido';
   }
 
   // Valida campo del formulario
@@ -63,5 +72,13 @@ export class FormUtils {
     return Object.fromEntries(
       Object.entries(value).map(([key, val]) => [key, typeof val === 'string' ? val.trim() : val]),
     ) as T;
+  }
+
+  // Convierte "1500,50" a "1500.50" en numero (null si esta vacio o no es valido)
+  static parseDecimal(value: unknown): number | null {
+    if (value === null || value === undefined || String(value).trim() === '') return null;
+
+    const parsed = Number(String(value).trim().replace(',', '.'));
+    return Number.isFinite(parsed) ? parsed : null;
   }
 }

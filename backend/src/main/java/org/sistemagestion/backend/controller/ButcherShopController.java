@@ -43,4 +43,10 @@ public class ButcherShopController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> existsByName(@RequestParam Long clientId, @RequestParam String name, @RequestParam(required = false) Long excludeId) {
+
+        return ResponseEntity.ok(butcherShopService.existsByName(clientId, name, excludeId));
+    }
+
 }
