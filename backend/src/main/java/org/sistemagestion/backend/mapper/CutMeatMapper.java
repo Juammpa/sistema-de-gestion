@@ -10,7 +10,7 @@ public class CutMeatMapper {
 
     public CutMeat toEntity(CutMeatRequestDto requestDto) {
         return CutMeat.builder()
-                .cutMeatName(requestDto.getCutMeatName())
+                .cutMeatName(requestDto.getCutMeatName().trim())
                 .pricePerKilo(requestDto.getPricePerKilo())
                 .specie(requestDto.getSpecie())
                 .isActive(true)
