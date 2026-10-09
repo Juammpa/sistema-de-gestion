@@ -69,6 +69,7 @@
             id="edit-payment-date"
             type="date"
             formControlName="date"
+            [attr.max]="today"
             [attr.aria-invalid]="formUtils.isValidField(paymentForm, 'date')"
             [class.!border-red-500/80]="formUtils.isValidField(paymentForm, 'date')"
             [class.!ring-red-500/20]="formUtils.isValidField(paymentForm, 'date')"

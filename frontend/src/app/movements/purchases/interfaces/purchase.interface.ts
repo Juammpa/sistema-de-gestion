@@ -15,5 +15,5 @@ export interface PurchaseRequest {
   unit: number;
   kilograms: number;
   pricePerKilo: number;
-  date: string;
+  date?: string;
 }

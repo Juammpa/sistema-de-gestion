@@ -1,4 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { toIsoDate } from '../utils/date.utils';
 
 // Misma regex que el backend (ClientRequestDto.phoneNumber)
 const PHONE_NUMBER_REGEX = /^\+?[0-9. ()-]{7,25}$/;
@@ -70,5 +71,32 @@ export class AppValidators {
     if (typeof value !== 'string' || value.trim() === '') return null;
 
     return regex.test(value.trim()) ? null : { [errorKey]: true };
+  }
+
+  // Entero (sin decimales) entre min y max
+  static integer(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const raw = control.value;
+      if (raw === null || raw === undefined || String(raw).trim() === '') return null;
+
+      const text = String(raw).trim();
+      if (!/^\d+$/.test(text)) return { integer: true };
+
+      const value = Number(text);
+      if (value < min) return { min: { min, actual: value } };
+      if (value > max) return { max: { max, actual: value } };
+
+      return null;
+    };
+  }
+
+  // Fecha (yyyy-MM-dd) que no sea posterior a hoy
+  static notFutureDate(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+
+    if (typeof value !== 'string' || value === '') return null;
+
+    // Las fechas ISO se comparan bien como texto
+    return value > toIsoDate(new Date()) ? { futureDate: true } : null;
   }
 }

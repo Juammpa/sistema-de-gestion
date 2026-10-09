@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PurchaseRequest } from '../../interfaces/purchase.interface';
 import { SupplierType } from '../../../../supplier/interfaces/supplier.interface';
+import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'purchase-form-modal',
@@ -31,9 +32,9 @@ export class PurchaseFormModal implements OnInit {
   // Definimos nuestros formulario
   purchaseForm: FormGroup = this.fb.group({
     purchaseType: [null as string | null, [Validators.required]],
-    unit: [1, [Validators.required, Validators.min(1)]],
-    kilograms: [1, [Validators.required, Validators.min(1)]],
-    pricePerKilo: [1, [Validators.required, Validators.min(1)]],
+    unit: [1, [Validators.required, AppValidators.integer(1, 9_999)]],
+    kilograms: ['', [Validators.required, AppValidators.amount(99_999.99)]],
+    pricePerKilo: ['', [Validators.required, AppValidators.amount(9_999_999.99)]],
   });
 
   ngOnInit() {
@@ -54,9 +55,13 @@ export class PurchaseFormModal implements OnInit {
       return;
     }
 
-    /// Armamos el request explicitamente
+    // Armamos el request explicitamente (los números llegan como texto: se convierten acá)
+    const { purchaseType, unit, kilograms, pricePerKilo } = this.purchaseForm.value;
     const request: PurchaseRequest = {
-      ...this.purchaseForm.value,
+      purchaseType,
+      unit: this.formUtils.parseDecimal(unit)!,
+      kilograms: this.formUtils.parseDecimal(kilograms)!,
+      pricePerKilo: this.formUtils.parseDecimal(pricePerKilo)!,
       currentAccountId: this.currentAccountId(),
     };
 

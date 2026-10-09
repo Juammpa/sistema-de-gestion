@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.dto.sales.SaleRequestDto;
 import org.sistemagestion.backend.dto.sales.SaleResponseDto;
 import org.sistemagestion.backend.service.sale.ISaleService;
+import org.sistemagestion.backend.validation.OnUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class SaleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SaleResponseDto> updateSale(@PathVariable Long id, @Valid @RequestBody SaleRequestDto request) {
+    public ResponseEntity<SaleResponseDto> updateSale(@PathVariable Long id, @Validated(OnUpdate.class) @RequestBody SaleRequestDto request) {
 
         return ResponseEntity.ok(saleService.updateSale(id, request));
     }

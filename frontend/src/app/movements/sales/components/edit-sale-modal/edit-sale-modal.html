@@ -56,12 +56,22 @@
           id="edit-sale-date"
           type="date"
           formControlName="date"
+          [attr.max]="today"
           [attr.aria-invalid]="formUtils.isValidField(saleForm, 'date')"
           [class.!border-red-500/80]="formUtils.isValidField(saleForm, 'date')"
           [class.!ring-red-500/20]="formUtils.isValidField(saleForm, 'date')"
           [class.animate-shake]="formUtils.isValidField(saleForm, 'date')"
           class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
         />
+        @if (formUtils.isValidField(saleForm, 'date')) {
+          <span
+            role="alert"
+            class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+          >
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+            {{ formUtils.getFieldError(saleForm, 'date') }}
+          </span>
+        }
       </div>
       <!-- Grid: Tipo de Corte y Unidades -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
