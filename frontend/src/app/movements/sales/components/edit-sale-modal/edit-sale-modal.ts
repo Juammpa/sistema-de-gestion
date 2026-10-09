@@ -7,6 +7,8 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { Sale, SaleRequest } from '../../interfaces/sales.interface';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import { TitleCasePipe } from '@angular/common';
+import { toIsoDate } from '../../../../shared/utils/date.utils';
+import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'edit-sale-modal',
@@ -33,6 +35,9 @@ export class EditSaleModal implements OnInit {
     stream: () => this.cutMeatService.getAllCutMeats(),
   });
 
+  // Tope del selector de fecha: no se puede elegir un dia futuro
+  today = toIsoDate(new Date());
+
   // Cortes de carnes activos
   activeCutMeats = computed(() =>
     (this.cutMeatOptions.hasValue() ? this.cutMeatOptions.value() : []).filter(
@@ -41,10 +46,10 @@ export class EditSaleModal implements OnInit {
   );
 
   saleForm: FormGroup = this.fb.group({
-    date: [null as string | null, [Validators.required]],
+    date: [null as string | null, [Validators.required, AppValidators.notFutureDate]],
     cutMeatId: [null as number | null, [Validators.required]],
-    kilograms: [0, [Validators.required, Validators.min(0)]],
-    unit: [1, [Validators.required, Validators.min(1)]],
+    kilograms: ['', [Validators.required, AppValidators.amount(9_999.999, 3)]],
+    unit: [1, [Validators.required, AppValidators.integer(1, 9_999)]],
   });
 
   // Precarga el form con los datos actuales de la venta
@@ -72,8 +77,12 @@ export class EditSaleModal implements OnInit {
       return;
     }
 
+    const { date, cutMeatId, kilograms, unit } = this.saleForm.value;
     const request: SaleRequest = {
-      ...this.saleForm.value,
+      date,
+      cutMeatId,
+      kilograms: this.formUtils.parseDecimal(kilograms)!,
+      unit: this.formUtils.parseDecimal(unit)!,
       clientId: this.sale().clientId,
       butcherShopId: this.butcherShopId(),
     };
