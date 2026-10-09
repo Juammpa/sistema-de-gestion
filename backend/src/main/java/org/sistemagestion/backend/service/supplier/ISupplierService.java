@@ -13,4 +13,5 @@ public interface ISupplierService {
     SupplierResponseDto updateSupplier(Long id, SupplierRequestDto request);
     void deleteById(Long id);
 
+    boolean existsByCompanyName(String companyName, Long excludeId);
 }

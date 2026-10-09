@@ -20,4 +20,10 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     // Para exportar: proveedores activos ordenados por nombre
     List<Supplier> findByIsActiveTrueOrderByCompanyNameAsc();
 
+    // Nombre ya usado por un proveedor activo (sin distinguir mayusculas)
+    boolean existsByCompanyNameIgnoreCaseAndIsActiveTrue(String companyName);
+    // Igual, pero ignorando al proveedor que se esta editando
+    boolean existsByCompanyNameIgnoreCaseAndIsActiveTrueAndIdNot(String companyName, Long id);
+
+
 }
