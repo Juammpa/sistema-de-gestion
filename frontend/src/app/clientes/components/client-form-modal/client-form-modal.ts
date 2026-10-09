@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormUtils } from '../../../shared/utils/form-utils';
 import { Client, ClientCreateRequest, ClientRequest } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/cliente.service';
+import { AppValidators } from '../../../shared/validators/app-validators';
 
 @Component({
   selector: 'client-form-modal',
@@ -24,9 +25,25 @@ export class ClientFormModal implements OnInit {
 
   // Definimos nuestro formulario
   clientForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    lastName: ['', [Validators.required, Validators.minLength(3)]],
-    phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
+    name: [
+      '',
+      [
+        Validators.required,
+        AppValidators.noBlank,
+        AppValidators.trimmedLength(2, 50),
+        AppValidators.personName,
+      ],
+    ],
+    lastName: [
+      '',
+      [
+        Validators.required,
+        AppValidators.noBlank,
+        AppValidators.trimmedLength(2, 50),
+        AppValidators.personName,
+      ],
+    ],
+    phoneNumber: ['', [Validators.required, AppValidators.phoneNumber]],
     butcherShopName: ['', this.client() ? [] : [Validators.required, Validators.minLength(3)]],
     butcherShopAddress: ['', this.client() ? [] : [Validators.required]],
   });
@@ -57,8 +74,8 @@ export class ClientFormModal implements OnInit {
       return;
     }
 
-    // Obtenemos el request
-    const request: ClientCreateRequest = this.clientForm.value;
+    // Obtenemos el request (sin espacios sobrantes)
+    const request: ClientCreateRequest = this.formUtils.trimValues(this.clientForm.value);
 
     // Segun el request: editar o crear
     const request$ = this.isEdit()

@@ -10,11 +10,29 @@ export class FormUtils {
         case 'required':
           return 'Este campo es requerido';
 
+        case 'blank':
+          return 'No puede contener solo espacios';
+
         case 'minlength':
-          return `Minimo de ${errors['minlength'].requiredLength} carácteres`;
+          return `Mínimo de ${errors['minlength'].requiredLength} caracteres`;
+
+        case 'maxlength':
+          return `Máximo de ${errors['maxlength'].requiredLength} caracteres`;
 
         case 'min':
-          return `El valor minimo es ${errors['min'].min}`;
+          return `El valor mínimo es ${errors['min'].min}`;
+
+        case 'max':
+          return `El valor máximo es ${errors['max'].max}`;
+
+        case 'personName':
+          return 'Solo se permiten letras, espacios, apóstrofes, puntos y guiones';
+
+        case 'phoneNumber':
+          return 'Formato inválido. Ej: +54 9 3442 123456';
+
+        case 'pattern':
+          return 'El formato es inválido';
       }
     }
 
@@ -35,5 +53,12 @@ export class FormUtils {
     const errors = form.controls[fieldName].errors ?? {};
 
     return FormUtils.getTextError(errors);
+  }
+
+  // Quita los espacios sobrantes de los textos antes de enviar al backend
+  static trimValues<T extends Record<string, unknown>>(value: T): T {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, val]) => [key, typeof val === 'string' ? val.trim() : val]),
+    ) as T;
   }
 }
