@@ -25,14 +25,8 @@ export class AppValidators {
       const length = value.trim().length;
 
       if (length === 0) return null; // lo resuelve "required" / "noBlank"
-      if (length < min)
-        return {
-          minLength: { requiredLength: min, actualLength: length },
-        };
-      if (length > max)
-        return {
-          maxLength: { requiredLength: max, actualLength: length },
-        };
+      if (length < min) return { minlength: { requiredLength: min, actualLength: length } };
+      if (length > max) return { maxlength: { requiredLength: max, actualLength: length } };
 
       return null;
     };

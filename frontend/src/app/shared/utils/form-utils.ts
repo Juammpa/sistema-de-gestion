@@ -2,7 +2,7 @@ import { FormGroup, ValidationErrors } from '@angular/forms';
 
 export class FormUtils {
   // Textos descriptivos del error
-  static getTextError(errors: ValidationErrors): string | null {
+  static getTextError(errors: ValidationErrors): string {
     // Obtenemos los errores
     for (const key of Object.keys(errors)) {
       // Por cada error, retornamos un mensaje
@@ -39,7 +39,7 @@ export class FormUtils {
       }
     }
 
-    return null;
+    return 'El valor ingresado no es válido';
   }
 
   // Valida campo del formulario
