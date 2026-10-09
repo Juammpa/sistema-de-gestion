@@ -44,8 +44,14 @@ export class ClientFormModal implements OnInit {
       ],
     ],
     phoneNumber: ['', [Validators.required, AppValidators.phoneNumber]],
-    butcherShopName: ['', this.client() ? [] : [Validators.required, Validators.minLength(3)]],
-    butcherShopAddress: ['', this.client() ? [] : [Validators.required]],
+    butcherShopName: [
+      '',
+      [Validators.required, AppValidators.noBlank, AppValidators.trimmedLength(2, 60)],
+    ],
+    butcherShopAddress: [
+      '',
+      [Validators.required, AppValidators.noBlank, AppValidators.trimmedLength(3, 120)],
+    ],
   });
 
   // true si estamos editanto un cliente existente
