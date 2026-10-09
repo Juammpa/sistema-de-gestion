@@ -45,6 +45,12 @@ export class FormUtils {
 
         case 'positive':
           return 'Debe ser mayor a 0';
+
+        case 'integer':
+          return 'Ingresá un número entero';
+
+        case 'futureDate':
+          return 'La fecha no puede ser futura';
       }
     }
 
