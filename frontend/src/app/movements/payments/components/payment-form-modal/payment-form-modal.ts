@@ -1,5 +1,11 @@
-import { Component, computed, inject, input, output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, input, output } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
 import { PaymentRequest } from '../../interfaces/payment.interface';
@@ -9,6 +15,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 import { CashService } from '../../../../cash/services/cash.service';
 import { CurrencyPipe } from '@angular/common';
+import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'payment-form-modal',
@@ -49,10 +56,26 @@ export class PaymentFormModal {
     stream: ({ params }) => (params ? this.supplierService.getAllSuppliers() : of([])),
   });
 
+  // Un pago en efectivo a un proveedor no puede superar el efectivo disponible en caja
+  private withinCashBalance: ValidatorFn = (control) => {
+    const isCashWithdrawal =
+      this.showCashBalance() && this.paymentForm?.controls['paymentType'].value === 'CASH';
+    if (!isCashWithdrawal || !this.cashBalance.hasValue()) return null;
+
+    const available = this.cashBalance.value();
+    const amount = this.formUtils.parseDecimal(control.value);
+    if (available == null || amount === null) return null;
+
+    return amount > available ? { insufficientCash: { available } } : null;
+  };
+
   // Definimos nuestro formulario
   paymentForm: FormGroup = this.fb.group({
     paymentType: [null as string | null, [Validators.required]],
-    amount: [0, [Validators.required, Validators.min(0)]],
+    amount: [
+      '',
+      [Validators.required, AppValidators.amount(999_999_999.99), this.withinCashBalance],
+    ],
     supplierId: [null as number | null],
   });
 
@@ -68,6 +91,15 @@ export class PaymentFormModal {
         supplierControl.setValue(null);
       }
       supplierControl.updateValueAndValidity();
+
+      // El tope de caja solo aplica al efectivo: al cambiar de tipo hay que revalidar el monto
+      this.paymentForm.controls['amount'].updateValueAndValidity();
+    });
+
+    // Cuando termina de cargar el saldo de caja, tambien se revalida el monto
+    effect(() => {
+      this.cashBalance.hasValue();
+      this.paymentForm.controls['amount'].updateValueAndValidity();
     });
   }
 
@@ -86,9 +118,12 @@ export class PaymentFormModal {
       return;
     }
 
-    // Armamos el request explicitamente
+    // Armamos el request explicitamente (el monto llega como texto: se convierte acá)
+    const { paymentType, amount, supplierId } = this.paymentForm.value;
     const request: PaymentRequest = {
-      ...this.paymentForm.value,
+      paymentType,
+      amount: this.formUtils.parseDecimal(amount)!,
+      supplierId,
       currentAccountId: this.currentAccountId(),
     };
 

@@ -1,5 +1,11 @@
-import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
 import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
@@ -11,6 +17,8 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 import { CashService } from '../../../../cash/services/cash.service';
 import { CurrencyPipe } from '@angular/common';
+import { toIsoDate } from '../../../../shared/utils/date.utils';
+import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'edit-payment-modal',
@@ -25,6 +33,9 @@ export class EditPaymentModal implements OnInit {
   formUtils = FormUtils;
 
   translatePaymentType = translatePaymentType;
+
+  // Tope del selector de fecha: no se puede elegir un dia futuro.
+  today = toIsoDate(new Date());
 
   // Inputs
   payment = input.required<Payment>();
@@ -47,11 +58,31 @@ export class EditPaymentModal implements OnInit {
     stream: ({ params }) => (params ? this.supplierService.getAllSuppliers() : of([])),
   });
 
+  // Un pago en efectivo a un proveedor no puede superar el efectivo disponible en caja
+  private withinCashBalance: ValidatorFn = (control) => {
+    const isCashWithdrawal =
+      this.showCashBalance() && this.paymentForm?.controls['paymentType'].value === 'CASH';
+    if (!isCashWithdrawal || !this.cashBalance.hasValue()) return null;
+
+    const balance = this.cashBalance.value();
+    const amount = this.formUtils.parseDecimal(control.value);
+    if (balance == null || amount === null) return null;
+
+    // El pago que se edita ya está descontado de la caja: se suma de nuevo
+    const previous = this.payment().paymentType === 'CASH' ? this.payment().amount : 0;
+    const available = balance + previous;
+
+    return amount > available ? { insufficientCash: { available } } : null;
+  };
+
   // Definimos el formulario
   paymentForm: FormGroup = this.fb.group({
-    date: [null as string | null, [Validators.required]],
+    date: [null as string | null, [Validators.required, AppValidators.notFutureDate]],
     paymentType: [null as string | null, [Validators.required]],
-    amount: [0, [Validators.required, Validators.min(0)]],
+    amount: [
+      '',
+      [Validators.required, AppValidators.amount(999_999_999.99), this.withinCashBalance],
+    ],
     supplierId: [null as number | null],
   });
 
@@ -71,6 +102,15 @@ export class EditPaymentModal implements OnInit {
         supplierControl.setValue(null);
       }
       supplierControl.updateValueAndValidity();
+
+      // El tope de caja solo aplica al efectivo: al cambiar el tipo hay que revalidar el monto
+      this.paymentForm.controls['amount'].updateValueAndValidity();
+    });
+
+    // Cuando termina de cargar el saldo de caja, también se revalida el monto
+    effect(() => {
+      this.cashBalance.hasValue();
+      this.paymentForm.controls['amount'].updateValueAndValidity();
     });
   }
 
@@ -107,9 +147,12 @@ export class EditPaymentModal implements OnInit {
       return;
     }
 
-    // Armamos el request explicitamente
+    const { date, paymentType, amount, supplierId } = this.paymentForm.value;
     const request: PaymentRequest = {
-      ...this.paymentForm.value,
+      date,
+      paymentType,
+      amount: this.formUtils.parseDecimal(amount)!,
+      supplierId,
       currentAccountId: this.payment().currentAccountId,
     };
 

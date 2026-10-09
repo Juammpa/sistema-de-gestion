@@ -15,6 +15,6 @@ export interface PaymentRequest {
   paymentType: string;
   amount: number;
   currentAccountId: number;
-  date: string;
+  date?: string;
   supplierId?: number | null;
 }
