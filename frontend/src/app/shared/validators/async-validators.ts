@@ -5,7 +5,7 @@ import { catchError, map, Observable, of, switchMap, timer } from 'rxjs';
 // - exists: consulta al backend y responde true si el valor ya está en uso
 // - entity: cómo nombrar lo repetido en el mensaje ("un proveedor")
 export function uniqueValue(
-  exists: (value: string) => Observable<boolean>,
+  exists: (value: string, control: AbstractControl) => Observable<boolean>,
   entity: string,
   debounceMs = 400,
 ): AsyncValidatorFn {
@@ -15,7 +15,7 @@ export function uniqueValue(
 
     // Angular cancela la ejecución anterior si el valor cambia: el timer funciona como debounce
     return timer(debounceMs).pipe(
-      switchMap(() => exists(value)),
+      switchMap(() => exists(value, control)),
       map((taken) => (taken ? { duplicated: { entity } } : null)),
       // Si la consulta falla no bloqueamos al usuario: el backend vuelve a validar al guardar
       catchError(() => of(null)),
