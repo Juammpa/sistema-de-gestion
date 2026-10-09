@@ -13,6 +13,9 @@ export class FormUtils {
         case 'blank':
           return 'No puede contener solo espacios';
 
+        case 'duplicated':
+          return `Ya existe ${errors['duplicated'].entity} con ese nombre`;
+
         case 'minlength':
           return `Mínimo de ${errors['minlength'].requiredLength} caracteres`;
 

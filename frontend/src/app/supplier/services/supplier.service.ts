@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Supplier, SupplierRequest } from '../interfaces/supplier.interface';
 import { environment } from '../../../environments/environment';
@@ -32,5 +32,13 @@ export class SupplierService {
   // Elimina un proveedor por Id
   deleteSupplier(id: number) {
     return this.http.delete(`${environment.apiUrl}/suppliers/${id}`);
+  }
+
+  // Indica si ya existe un proveedor activo con ese nombre (excludeId: el que se esta editando)
+  companyNameExists(companyName: string, excludeId?: number) {
+    let params = new HttpParams().set('companyName', companyName);
+    if (excludeId !== undefined) params = params.set('excludeId', excludeId);
+
+    return this.http.get<boolean>(`${environment.apiUrl}/suppliers/exists`, { params });
   }
 }
