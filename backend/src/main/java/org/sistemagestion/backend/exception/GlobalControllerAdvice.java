@@ -17,6 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,10 +48,17 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class) // 409
     public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex, WebRequest request) {
 
-        log.warn("Violación de integridad - {} - {}", request.getDescription(false), ex.getMostSpecificCause().getMessage());
+        Throwable cause = ex.getMostSpecificCause();
+        log.warn("Violación de integridad - {} - {}", request.getDescription(false), cause.getMessage());
 
-        return problem(HttpStatus.CONFLICT, "Conflicto de datos", "data-integrity",
+        // 23505 = unique_violation (PostgreSQL): Dos request simultaneos pasaron el chequeo del servicio
+        if (cause instanceof SQLException sql && "23505".equals(sql.getSQLState())) {
+            return problem(HttpStatus.CONFLICT, "Registro duplicado", "duplicate", "Ya existe un registro con esos datos.");
+        }
+
+        return problem(HttpStatus.CONFLICT,"Conflicto de datos","data-integrity",
                 "No se pudo completar la operación porque el registro está relacionado con otros datos.");
+
     }
 
     @ExceptionHandler(Exception.class) // 500
