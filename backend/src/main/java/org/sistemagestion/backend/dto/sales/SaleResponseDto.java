@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.sales;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +21,8 @@ public class SaleResponseDto {
     private Long cutMeatId;
     private String cutMeatName;
     private Integer unit;
-    private Double kilograms;
-    private Double pricePerKilo;
-    private Double subtotal;
+    private BigDecimal kilograms;
+    private BigDecimal pricePerKilo;
+    private BigDecimal subtotal;
 
 }

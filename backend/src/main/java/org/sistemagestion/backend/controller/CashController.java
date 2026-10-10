@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class CashController {
     }
 
     @GetMapping("/balance")
-    public ResponseEntity<Double> getBalance() {
+    public ResponseEntity<BigDecimal> getBalance() {
 
         return ResponseEntity.ok(cashService.getCurrentBalance());
     }

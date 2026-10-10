@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.cash;
 
+import java.math.BigDecimal;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -8,9 +10,9 @@ public record CashDayDto(
         LocalDate date,
         List<CashPaymentDto> payments,
         List<CashWithdrawalDto> withdrawals,
-        double total,           // Todos los pagos de clientes del dia
-        double cash,            // Todoo lo cobrado a clientes ese dia, menos transf. a proveedor
-        double withdrawn,       // Efectivo pagado a proveedores
-        double closingBalance   // Caja acumulada al cierre del dia
+        BigDecimal total,           // Todos los pagos de clientes del dia
+        BigDecimal cash,            // Todoo lo cobrado a clientes ese dia, menos transf. a proveedor
+        BigDecimal withdrawn,       // Efectivo pagado a proveedores
+        BigDecimal closingBalance   // Caja acumulada al cierre del dia
 ) {
 }

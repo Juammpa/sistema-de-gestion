@@ -1,5 +1,6 @@
 package org.sistemagestion.backend.mapper;
 
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatRequestDto;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatResponseDto;
 import org.sistemagestion.backend.model.CutMeat;
@@ -11,7 +12,7 @@ public class CutMeatMapper {
     public CutMeat toEntity(CutMeatRequestDto requestDto) {
         return CutMeat.builder()
                 .cutMeatName(requestDto.getCutMeatName().trim())
-                .pricePerKilo(requestDto.getPricePerKilo())
+                .pricePerKilo(Decimals.money(requestDto.getPricePerKilo()))
                 .specie(requestDto.getSpecie())
                 .isActive(true)
                 .build();

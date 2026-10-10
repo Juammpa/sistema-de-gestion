@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.supplier;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +19,5 @@ public class SupplierResponseDto {
     private String phoneNumber;
     private SupplierType supplierType;
     private Long currentAccountId;
-    private Double currentBalance;
+    private BigDecimal currentBalance;
 }

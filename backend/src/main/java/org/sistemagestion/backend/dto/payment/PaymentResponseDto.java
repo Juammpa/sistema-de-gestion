@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.payment;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +20,7 @@ public class PaymentResponseDto {
     private Long currentAccountId;
     private LocalDate date;
     private PaymentType paymentType;
-    private Double amount;
+    private BigDecimal amount;
 
     private boolean mirror;
     private Long supplierId;

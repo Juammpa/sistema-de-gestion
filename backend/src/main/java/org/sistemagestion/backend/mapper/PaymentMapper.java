@@ -2,9 +2,11 @@ package org.sistemagestion.backend.mapper;
 
 import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.model.*;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
@@ -12,12 +14,14 @@ public class PaymentMapper {
 
     public Payment toPayment(PaymentRequestDto requestDto, CurrentAccount currentAccount) {
 
+        BigDecimal amount = Decimals.money(requestDto.getAmount());
+
         return Payment.builder()
                 .paymentType(requestDto.getPaymentType())
-                .amount(requestDto.getAmount())
+                .amount(amount)
                 .date(LocalDate.now())
                 .currentAccount(currentAccount)
-                .balance(currentAccount.getCurrentBalance() - requestDto.getAmount())
+                .balance(Decimals.moneyOrZero(currentAccount.getCurrentBalance()).subtract(amount))
                 .build();
     }
 

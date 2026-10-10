@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.supplier;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.supplier.SupplierRequestDto;
 import org.sistemagestion.backend.dto.supplier.SupplierResponseDto;
 import org.sistemagestion.backend.exception.BusinessRuleException;
@@ -34,7 +35,7 @@ public class SupplierService implements ISupplierService{
         supplier.setCompanyName(request.getCompanyName().trim());
 
         CurrentAccount currentAccount = new CurrentAccount();
-        currentAccount.setCurrentBalance(0.0);
+        currentAccount.setCurrentBalance(Decimals.MONEY_ZERO);
 
         supplier.setCurrentAccount(currentAccount);
 

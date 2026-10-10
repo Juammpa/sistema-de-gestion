@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.sale;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.sales.SaleRequestDto;
 import org.sistemagestion.backend.dto.sales.SaleResponseDto;
@@ -80,11 +81,11 @@ public class SaleService implements ISaleService{
 
         sale.setDate(request.getDate());
         sale.setUnit(request.getUnit());
-        sale.setKilograms(request.getKilograms());
+        sale.setKilograms(Decimals.kilograms(request.getKilograms()));
         sale.setCutMeat(cutMeat);
         sale.setCutMeatName(cutMeat.getCutMeatName());
         sale.setPricePerKilo(cutMeat.getPricePerKilo());
-        sale.setAmount(request.getKilograms() * cutMeat.getPricePerKilo());
+        sale.setAmount(Decimals.multiply(request.getKilograms(), cutMeat.getPricePerKilo()));
 
         Sale saleUpdated = saleRepository.saveAndFlush(sale);
 

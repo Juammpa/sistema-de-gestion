@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.cut_meat;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,7 @@ public class CutMeatResponseDto {
 
     private Long id;
     private String cutMeatName;
-    private Double pricePerKilo;
+    private BigDecimal pricePerKilo;
     private Boolean isActive;
     private Specie specie;
 

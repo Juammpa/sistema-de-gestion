@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -21,8 +22,12 @@ public abstract class Movement {
     private Long id;
 
     private LocalDate date;
-    private Double amount;
-    private Double balance;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal amount;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal balance;
 
     @ManyToOne
     @JoinColumn(name = "current_account_id", nullable = false)

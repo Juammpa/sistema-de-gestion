@@ -3,6 +3,8 @@ package org.sistemagestion.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 // Peso ajustado a mano de una pieza de stock.
 // Solo existe para las compras cuyo reparto dejo de ser parejo.
 // Sin filas aca, la compra se reparte en partes (kg) iguales.
@@ -29,6 +31,6 @@ public class PurchasePieceWeight {
     @Column(name = "piece_number", nullable = false)
     private Integer pieceNumber;
 
-    @Column(nullable = false)
-    private Double kilograms;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal kilograms;
 }

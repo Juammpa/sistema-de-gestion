@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -69,10 +70,10 @@ public interface DashboardRepository extends Repository<Payment, Long> {
             join bs.currentAccount a
             where bs.isActive = true and c.isActive = true
             """)
-    Double totalClientBalance();
+    BigDecimal totalClientBalance();
 
     @Query("select sum(a.currentBalance) from Supplier s join s.currentAccount a")
-    Double totalSupplierBalance();
+    BigDecimal totalSupplierBalance();
 
     // ==== Rankings ====
 

@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.sales;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,7 +30,8 @@ public class SaleRequestDto {
     @NotNull(message = "Los kilogramos son obligatorios.")
     @Positive(message = "Los kilogramos deben ser positivos.")
     @DecimalMax(value = "9999.999", message = "Los kilogramos no pueden superar 9.999,999")
-    private Double kilograms;
+    @Digits(integer = 4, fraction = 3, message = "Los kilogramos admiten hasta 3 decimales.")
+    private BigDecimal kilograms;
 
     @NotNull(message = "Las unidades son obligatorias.")
     @Positive(message = "Las unidades deben ser positivas.")

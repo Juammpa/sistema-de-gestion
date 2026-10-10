@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.purchase;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,12 +29,14 @@ public class PurchaseRequestDto {
     @NotNull(message = "Los kilogramos son obligatorios.")
     @Positive(message = "Los kilogramos deben ser positivos.")
     @DecimalMax(value = "99999.99", message = "Los kilogramos no pueden superar 99.999,99")
-    private Double kilograms;
+    @Digits(integer = 5, fraction = 2, message = "Los kilogramos admiten hasta 2 decimales.")
+    private BigDecimal kilograms;
 
     @NotNull(message = "El precio es obligatorio.")
     @Positive(message = "El precio debe ser positivo.")
     @DecimalMax(value = "9999999.99", message = "El precio no puede superar $9.999.999,99")
-    private Double pricePerKilo;
+    @Digits(integer = 7, fraction = 2, message = "El precio admite hasta 2 decimales.")
+    private BigDecimal pricePerKilo;
 
     @NotNull(message = "El ID de la cuenta corriente asociada es obligatorio.")
     private Long currentAccountId;

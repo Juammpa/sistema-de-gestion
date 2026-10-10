@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.payment;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
@@ -77,7 +78,7 @@ public class PaymentService implements IPaymentService{
 
         payment.setDate(request.getDate());
         payment.setPaymentType(request.getPaymentType());
-        payment.setAmount(request.getAmount());
+        payment.setAmount(Decimals.money(request.getAmount()));
         payment.setSupplier(supplier);
 
         Payment paymentUpdated = paymentRepository.saveAndFlush(payment);

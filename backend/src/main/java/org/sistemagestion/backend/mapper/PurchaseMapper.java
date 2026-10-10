@@ -5,8 +5,10 @@ import org.sistemagestion.backend.dto.purchase.PurchaseResponseDto;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.model.enums.Specie;
+import org.sistemagestion.backend.common.Decimals;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
@@ -14,18 +16,18 @@ public class PurchaseMapper {
 
     public Purchase toPurchase(PurchaseRequestDto requestDto, CurrentAccount currentAccount) {
 
-        Double amount = requestDto.getKilograms() * requestDto.getPricePerKilo();
+        BigDecimal amount = Decimals.multiply(requestDto.getKilograms(), requestDto.getPricePerKilo());
 
         return Purchase.builder()
                 .purchaseType(requestDto.getPurchaseType())
                 .specie(Specie.BOVINE)  // TODO: Obtener especie mediante el proveedor
-                .kilograms(requestDto.getKilograms())
+                .kilograms(Decimals.kilograms(requestDto.getKilograms()))
                 .unit(requestDto.getUnit())
-                .pricePerKilo(requestDto.getPricePerKilo())
+                .pricePerKilo(Decimals.money(requestDto.getPricePerKilo()))
                 .currentAccount(currentAccount)
                 .date(LocalDate.now())
                 .amount(amount)
-                .balance(currentAccount.getCurrentBalance() + amount)
+                .balance(Decimals.moneyOrZero(currentAccount.getCurrentBalance()).add(amount))
                 .build();
     }
 
@@ -38,7 +40,7 @@ public class PurchaseMapper {
                 .unit(purchase.getUnit())
                 .kilograms(purchase.getKilograms())
                 .pricePerKilo(purchase.getPricePerKilo())
-                .subtotal(purchase.getKilograms() * purchase.getPricePerKilo())
+                .subtotal(purchase.getAmount())
                 .build();
     }
 

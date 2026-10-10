@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.stock;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.stock.StockItemDto;
 import org.sistemagestion.backend.dto.stock.StockPurchaseDto;
 import org.sistemagestion.backend.dto.stock.StockResponseDto;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class StockService implements IStockService {
 
     @Override
     @Transactional
-    public void updatePieceWeights(Long purchaseId, List<Double> kilograms) {
+    public void updatePieceWeights(Long purchaseId, List<BigDecimal> kilograms) {
 
         Purchase purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase", "id", purchaseId));
@@ -74,14 +74,14 @@ public class StockService implements IStockService {
                     "La compra tiene %d unidades: ingresá el peso de cada una.", units));
         }
 
-        List<BigDecimal> weights = kilograms.stream().map(this::toTwoDecimal).toList();
+        List<BigDecimal> weights = kilograms.stream().map(Decimals::pieceKg).toList();
 
         // Un peso que redondea a 0 (por ejemplo, 0,004) tampoco es valido
         if (weights.stream().anyMatch(weight -> weight.signum() <= 0)) {
             throw new BusinessRuleException("Cada pieza debe pesar más de 0 kg.");
         }
 
-        BigDecimal total = toTwoDecimal(purchase.getKilograms() != null ? purchase.getKilograms() : 0.0);
+        BigDecimal total = Decimals.pieceKg(purchase.getKilograms());
         BigDecimal sum = weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (sum.compareTo(total) != 0) {
@@ -92,10 +92,9 @@ public class StockService implements IStockService {
 
         // Se reemplaza el reparto completo: primero se borra el anterior (si lo habia)
         pieceWeightRepository.deleteByPurchaseId(purchaseId);
-        List<Double> values = weights.stream().map(BigDecimal::doubleValue).toList();
 
         // Si el usuario dejo el reparto parejo, no hay nada que guardar: no queda como "ajustada".
-        if (values.equals(PieceWeights.evenSplit(total.doubleValue(),units))) {
+        if (PieceWeights.sameWeights(weights, PieceWeights.evenSplit(total, units))) {
             return;
         }
 
@@ -104,7 +103,7 @@ public class StockService implements IStockService {
             rows.add(PurchasePieceWeight.builder()
                     .purchase(purchase)
                     .pieceNumber(index + 1)
-                    .kilograms(values.get(index))
+                    .kilograms(weights.get(index))
                     .build());
         }
 
@@ -174,7 +173,7 @@ public class StockService implements IStockService {
 
             byType.add(new StockSummaryDto.TypeTotals(
                     type,
-                    ofType.stream().mapToDouble(this::kilogramsOf).sum(),
+                    ofType.stream().map(this::kilogramsOf).reduce(BigDecimal.ZERO, BigDecimal::add),
                     ofType.stream().mapToInt(this::unitsOf).sum()
             ));
         }
@@ -183,7 +182,7 @@ public class StockService implements IStockService {
         StockSummaryDto.SpecieTotals porcine = totalsOf(byType, Specie.PORCINE);
 
         return new StockSummaryDto(
-                bovine.kilograms() + porcine.kilograms(),
+                bovine.kilograms().add(porcine.kilograms()),
                 bovine.units() + porcine.units(),
                 bovine,
                 porcine,
@@ -191,12 +190,12 @@ public class StockService implements IStockService {
     }
 
     private StockSummaryDto.SpecieTotals totalsOf(List<StockSummaryDto.TypeTotals> byType, Specie specie) {
-        double kilograms = 0;
+        BigDecimal kilograms = BigDecimal.ZERO;
         int units = 0;
 
         for (StockSummaryDto.TypeTotals totals: byType) {
             if (totals.purchaseType().getSpecie() == specie) {
-                kilograms += totals.kilograms();
+                kilograms = kilograms.add(totals.kilograms());
                 units += totals.units();
             }
         }
@@ -210,13 +209,9 @@ public class StockService implements IStockService {
                 ? purchase.unit() : 1;
     }
 
-    private double kilogramsOf(StockPurchaseDto purchase) {
+    private BigDecimal kilogramsOf(StockPurchaseDto purchase) {
         return purchase.kilograms() != null
-                ? purchase.kilograms() : 0.0;
-    }
-
-    private BigDecimal toTwoDecimal(double kilograms) {
-        return BigDecimal.valueOf(kilograms).setScale(2, RoundingMode.HALF_UP);
+                ? purchase.kilograms() : BigDecimal.ZERO;
     }
 
     // Coma decimal, como lo ve el usuario (210,00)
