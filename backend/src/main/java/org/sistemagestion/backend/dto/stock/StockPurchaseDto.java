@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.stock;
 
+import java.math.BigDecimal;
+
 import org.sistemagestion.backend.model.enums.PurchaseType;
 
 import java.time.LocalDate;
@@ -10,7 +12,7 @@ public record StockPurchaseDto(
         LocalDate date,
         PurchaseType purchaseType,
         Integer unit,
-        Double kilograms,
+        BigDecimal kilograms,
         Long supplierId,
         String supplierName
 ) {}

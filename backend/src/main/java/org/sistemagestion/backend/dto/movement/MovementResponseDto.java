@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.movement;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,14 +21,14 @@ public class MovementResponseDto {
     private Long id;
     private MovementType type;
     private LocalDate date;
-    private Double amount;
-    private Double balance;
+    private BigDecimal amount;
+    private BigDecimal balance;
 
     // Propios de Sale/Purchase (null si type === PAYMENT)
     private String cutMeatName;
     private Integer unit;
-    private Double kilograms;
-    private Double pricePerKilo;
+    private BigDecimal kilograms;
+    private BigDecimal pricePerKilo;
 
     // Propio de Payment (null si type == SALE)
     private PaymentType paymentType;

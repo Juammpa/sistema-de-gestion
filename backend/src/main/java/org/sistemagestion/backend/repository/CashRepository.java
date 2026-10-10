@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public interface CashRepository extends Repository<Payment, Long> {
             where p.paymentType <> :excluded and p.date < :date
               and exists (select 1 from ButcherShop bs where bs.currentAccount = p.currentAccount)
             """)
-    Double sumClientPaymentsBefore(@Param("excluded") PaymentType excluded, @Param("date") LocalDate date);
+    BigDecimal sumClientPaymentsBefore(@Param("excluded") PaymentType excluded, @Param("date") LocalDate date);
 
     // Saldo de arrastre: efectivo pagado a proveedores antes de una fecha
     @Query("""
@@ -54,7 +55,7 @@ public interface CashRepository extends Repository<Payment, Long> {
             where p.paymentType = :type and p.date < :date
               and exists (select 1 from Supplier sup where sup.currentAccount = p.currentAccount)
             """)
-    Double sumSupplierPaymentsBefore(@Param("type") PaymentType type, @Param("date") LocalDate date);
+    BigDecimal sumSupplierPaymentsBefore(@Param("type") PaymentType type, @Param("date") LocalDate date);
 
     // Total historico que entro a la caja por cobros a clientes (todoo menos SUPPLIER_TRANSFER)
     @Query("""
@@ -63,7 +64,7 @@ public interface CashRepository extends Repository<Payment, Long> {
         where p.paymentType <> :excluded
           and exists (select 1 from ButcherShop bs where bs.currentAccount = p.currentAccount)
         """)
-    Double sumClientPayments(@Param("excluded") PaymentType excluded);
+    BigDecimal sumClientPayments(@Param("excluded") PaymentType excluded);
 
     // Total historico pagado en efectivo a proveedores
     @Query("""
@@ -72,5 +73,5 @@ public interface CashRepository extends Repository<Payment, Long> {
         where p.paymentType = :type
           and exists (select 1 from Supplier sup where sup.currentAccount = p.currentAccount)
         """)
-    Double sumSupplierPayments(@Param("type") PaymentType type);
+    BigDecimal sumSupplierPayments(@Param("type") PaymentType type);
 }

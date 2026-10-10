@@ -1,6 +1,9 @@
 package org.sistemagestion.backend.dto.payment;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
@@ -25,7 +28,8 @@ public class PaymentRequestDto {
     @NotNull(message = "El monto es obligatorio.")
     @Positive(message = "El monto debe ser positivo.")
     @DecimalMax(value = "999999999.99", message = "El monto no puede superar $999.999.999,99")
-    private Double amount;
+    @Digits(integer = 9, fraction = 2, message = "El monto admite hasta 2 decimales.")
+    private BigDecimal amount;
 
     @NotNull(message = "El ID de la cuenta corriente asociada es obligatorio.")
     @Positive(message = "El ID de la cuenta corriente debe ser positivo.")

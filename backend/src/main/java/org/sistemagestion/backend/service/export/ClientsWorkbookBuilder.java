@@ -3,11 +3,13 @@ package org.sistemagestion.backend.service.export;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.service.export.ExcelStyles.CellKind;
 import org.sistemagestion.backend.service.export.ExcelStyles.Look;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,7 +129,9 @@ final class ClientsWorkbookBuilder {
         }
 
         // Saldo total, arriba, sobre las columnas Nombre y Saldo del primer grupo
-        double total = blocks.stream().mapToDouble(ExportData.ShopBlock::balance).sum();
+        BigDecimal total = blocks.stream()
+                .map(ExportData.ShopBlock::balance)
+                .reduce(Decimals.MONEY_ZERO, BigDecimal::add);
 
         Row bannerRow = ExcelCells.row(sheet, 1, SUMMARY_BIG_ROW_HEIGHT);
         ExcelCells.merged(sheet, bannerRow, 1, 2, "Saldo", styles.summaryBanner());

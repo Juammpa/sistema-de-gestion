@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.butcher_shop;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopRequestDto;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopResponseDto;
 import org.sistemagestion.backend.dto.butcher_shop.ButcherShopUpdateRequestDto;
@@ -36,7 +37,7 @@ public class ButcherShopService implements IButcherShopService{
         butcherShop.setClient(client);
 
         CurrentAccount currentAccount =  new CurrentAccount();
-        currentAccount.setCurrentBalance(0.0);
+        currentAccount.setCurrentBalance(Decimals.MONEY_ZERO);
 
         butcherShop.setCurrentAccount(currentAccount);
 

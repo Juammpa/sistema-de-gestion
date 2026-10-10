@@ -1,5 +1,8 @@
 package org.sistemagestion.backend.dto.stock;
 
+import java.math.BigDecimal;
+
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,6 +15,7 @@ public record StockWeightsRequestDto(
         List<
                     @NotNull(message = "Cada pieza debe tener un peso.")
                     @Positive(message = "Cada pieza debe pesar más de 0 kg.")
-                    Double
+                    @Digits(integer = 5, fraction = 2, message = "Cada peso admite hasta 2 decimales.")
+                    BigDecimal
                     > kilograms
 ) {}

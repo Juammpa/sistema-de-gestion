@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.purchase;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.purchase.PurchaseRequestDto;
 import org.sistemagestion.backend.dto.purchase.PurchaseResponseDto;
@@ -71,15 +72,15 @@ public class PurchaseService implements IPurchaseService {
 
         assertSupplierCanSell(purchase.getCurrentAccount(), request.getPurchaseType());
 
-        boolean distributionChanged = !Objects.equals(purchase.getKilograms(), request.getKilograms()) ||
+        boolean distributionChanged = !Decimals.sameValue(purchase.getKilograms(), request.getKilograms()) ||
                 !Objects.equals(purchase.getUnit(), request.getUnit());
 
         purchase.setDate(request.getDate());
         purchase.setPurchaseType(request.getPurchaseType());
-        purchase.setKilograms(request.getKilograms());
-        purchase.setPricePerKilo(request.getPricePerKilo());
+        purchase.setKilograms(Decimals.kilograms(request.getKilograms()));
+        purchase.setPricePerKilo(Decimals.money(request.getPricePerKilo()));
         purchase.setUnit(request.getUnit());
-        purchase.setAmount(request.getKilograms() * request.getPricePerKilo());
+        purchase.setAmount(Decimals.multiply(request.getKilograms(), request.getPricePerKilo()));
 
         if (distributionChanged) {
             pieceWeightRepository.deleteByPurchaseId(id);

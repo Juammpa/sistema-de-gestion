@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.stock;
 
+import java.math.BigDecimal;
+
 import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.model.enums.Specie;
 
@@ -12,7 +14,7 @@ public record StockItemDto(
         int totalUnits,     // unidades de la compra (para mostrar "2 de 4")
         PurchaseType purchaseType,
         Specie specie,
-        double kilograms,   // kilos de la compra / unidades
+        BigDecimal kilograms,   // kilos de la compra / unidades
         LocalDate date,
         Long supplierId,
         String supplierName,

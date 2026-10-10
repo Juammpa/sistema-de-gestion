@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.cash;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.cash.CashDayDto;
 import org.sistemagestion.backend.dto.cash.CashPaymentDto;
 import org.sistemagestion.backend.dto.cash.CashWithdrawalDto;
@@ -13,9 +14,11 @@ import org.sistemagestion.backend.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +55,7 @@ public class CashService implements ICashService{
         SortedSet<LocalDate> dates = new TreeSet<>(paymentsByDate.keySet());
         dates.addAll(withdrawalsByDate.keySet());
 
-        double closingBalance = openingBalance(start);
+        BigDecimal closingBalance = openingBalance(start);
         List<CashDayDto> days = new ArrayList<>();
 
         for (LocalDate date: dates) {
@@ -60,14 +63,14 @@ public class CashService implements ICashService{
             List<CashWithdrawalDto> withdrawals = withdrawalsByDate.getOrDefault(date, List.of());
 
             // Obtenemos el total
-            double total = payments.stream().mapToDouble(CashPaymentDto::amount).sum();
+            BigDecimal total = sum(payments.stream().map(CashPaymentDto::amount));
             // Obtenemos el total de pagos recibidos (no tenemos en cuenta 'Transferencia a proveedor')
-            double cash = payments.stream()
+            BigDecimal cash = sum(payments.stream()
                     .filter(payment -> payment.paymentType() != PaymentType.SUPPLIER_TRANSFER)
-                    .mapToDouble(CashPaymentDto::amount).sum();
-            double withdrawn = withdrawals.stream().mapToDouble(CashWithdrawalDto::amount).sum();
+                    .map(CashPaymentDto::amount));
+            BigDecimal withdrawn = sum(withdrawals.stream().map(CashWithdrawalDto::amount));
 
-            closingBalance += cash - withdrawn;
+            closingBalance = closingBalance.add(cash).subtract(withdrawn);
 
             days.add(new CashDayDto(date, payments, withdrawals, total, cash, withdrawn, closingBalance));
         }
@@ -78,38 +81,38 @@ public class CashService implements ICashService{
 
     @Override
     @Transactional(readOnly = true)
-    public double getCurrentBalance() {
-        double cashIn = orZero(cashRepository.sumClientPayments(PaymentType.SUPPLIER_TRANSFER));
-        double cashOut = orZero(cashRepository.sumSupplierPayments(PaymentType.CASH));
+    public BigDecimal getCurrentBalance() {
+        BigDecimal cashIn = Decimals.moneyOrZero(cashRepository.sumClientPayments(PaymentType.SUPPLIER_TRANSFER));
+        BigDecimal cashOut = Decimals.moneyOrZero(cashRepository.sumSupplierPayments(PaymentType.CASH));
 
-        return cashIn - cashOut;
+        return cashIn.subtract(cashOut);
     }
 
     // Efectivo acumulado hasta el dia anterior al rango (la caja arranca en cero)
-    private double openingBalance(LocalDate start) {
-        double cashIn = orZero(cashRepository.sumClientPaymentsBefore(PaymentType.SUPPLIER_TRANSFER, start));
-        double cashOut = orZero(cashRepository.sumSupplierPaymentsBefore(PaymentType.CASH, start));
+    private BigDecimal openingBalance(LocalDate start) {
+        BigDecimal cashIn = Decimals.moneyOrZero(cashRepository.sumClientPaymentsBefore(PaymentType.SUPPLIER_TRANSFER, start));
+        BigDecimal cashOut = Decimals.moneyOrZero(cashRepository.sumSupplierPaymentsBefore(PaymentType.CASH, start));
 
-        return cashIn - cashOut;
+        return cashIn.subtract(cashOut);
     }
 
-    private double orZero(Double value) {
-        return value != null ? value : 0.0;
+    private BigDecimal sum(Stream<BigDecimal> amounts) {
+        return amounts.filter(Objects::nonNull).reduce(Decimals.MONEY_ZERO, BigDecimal::add);
     }
 
     // Valida que un pago en efectivo a un proveedor no supere la caja disponible
     // 'existing' es el pago antes de editarlo (null si es un alta), para no descontarlo dos veces
-    public void assertSufficientBalance(CurrentAccount account, PaymentType newType, Double newAmount, Payment existing) {
+    public void assertSufficientBalance(CurrentAccount account, PaymentType newType, BigDecimal newAmount, Payment existing) {
 
         if (newType != PaymentType.CASH || !supplierRepository.existsByCurrentAccountId(account.getId())) {
             return;
         }
 
         boolean wasCashWithdrawal = existing != null && existing.getPaymentType() == PaymentType.CASH;
-        double previousAmount = wasCashWithdrawal ? existing.getAmount() :  0.0;
-        double available = getCurrentBalance() + previousAmount;
+        BigDecimal previousAmount = wasCashWithdrawal ? Decimals.moneyOrZero(existing.getAmount()) : Decimals.MONEY_ZERO;
+        BigDecimal available = getCurrentBalance().add(previousAmount);
 
-        if (newAmount > available) {
+        if (newAmount.compareTo(available) > 0) {
             throw new BusinessRuleException(String.format(
                     Locale.forLanguageTag("es-AR"),
                     "Saldo de caja insuficiente: disponible $%.2f, solicitado $%.2f", available, newAmount));

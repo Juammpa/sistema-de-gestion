@@ -6,8 +6,10 @@ import org.sistemagestion.backend.model.Client;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.CutMeat;
 import org.sistemagestion.backend.model.Sale;
+import org.sistemagestion.backend.common.Decimals;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
@@ -15,10 +17,10 @@ public class SaleMapper {
 
     public Sale toSale(SaleRequestDto requestDto, Client client, CutMeat cutMeat, CurrentAccount currentAccount) {
 
-        Double amount = requestDto.getKilograms() * cutMeat.getPricePerKilo();
+        BigDecimal amount = Decimals.multiply(requestDto.getKilograms(), cutMeat.getPricePerKilo());
 
         return Sale.builder()
-                .kilograms(requestDto.getKilograms())
+                .kilograms(Decimals.kilograms(requestDto.getKilograms()))
                 .unit(requestDto.getUnit())
                 .client(client)
                 .cutMeat(cutMeat)
@@ -27,7 +29,7 @@ public class SaleMapper {
                 .cutMeatName(cutMeat.getCutMeatName())
                 .amount(amount)
                 .date(LocalDate.now())
-                .balance(currentAccount.getCurrentBalance() + amount)
+                .balance(Decimals.moneyOrZero(currentAccount.getCurrentBalance()).add(amount))
                 .build();
     }
 

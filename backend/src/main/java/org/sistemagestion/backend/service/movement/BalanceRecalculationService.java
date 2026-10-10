@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.movement;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Movement;
 import org.sistemagestion.backend.model.Payment;
@@ -8,6 +9,7 @@ import org.sistemagestion.backend.repository.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -22,12 +24,12 @@ public class BalanceRecalculationService {
         List<Movement> movements = movementRepository
                 .findByCurrentAccountIdOrderByDateAscIdAsc(currentAccount.getId());
 
-        Double runningBalance = 0.0;
+        BigDecimal runningBalance = Decimals.MONEY_ZERO;
         for (Movement movement : movements) {
-            Double signedAmount = movement instanceof Payment ? -
-                    movement.getAmount() : movement.getAmount();
+            BigDecimal amount = Decimals.moneyOrZero(movement.getAmount());
+            BigDecimal signedAmount = movement instanceof Payment ? amount.negate() : amount;
 
-            runningBalance += signedAmount;
+            runningBalance = runningBalance.add(signedAmount);
             movement.setBalance(runningBalance);
         }
 

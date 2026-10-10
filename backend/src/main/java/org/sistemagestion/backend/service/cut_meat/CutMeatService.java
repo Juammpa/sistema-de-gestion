@@ -2,6 +2,7 @@ package org.sistemagestion.backend.service.cut_meat;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatRequestDto;
 import org.sistemagestion.backend.dto.cut_meat.CutMeatResponseDto;
 import org.sistemagestion.backend.exception.BusinessRuleException;
@@ -59,7 +60,7 @@ public class CutMeatService implements ICutMeatService{
         assertNameAvailable(request.getCutMeatName(), request.getSpecie(), id);
 
         cutMeat.setCutMeatName(request.getCutMeatName());
-        cutMeat.setPricePerKilo(request.getPricePerKilo());
+        cutMeat.setPricePerKilo(Decimals.money(request.getPricePerKilo()));
         cutMeat.setSpecie(request.getSpecie());
         log.info("Corte de carne actualizado correctamente");
 

@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.butcher_shop;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +19,5 @@ public class ButcherShopResponseDto {
     private Long clientId;
     private String clientName;
     private Long currentAccountId;
-    private Double currentBalance;
+    private BigDecimal currentBalance;
 }

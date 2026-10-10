@@ -1,5 +1,7 @@
 package org.sistemagestion.backend.dto.purchase;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +21,7 @@ public class PurchaseResponseDto {
     private LocalDate date;
     private PurchaseType purchaseType;
     private Integer unit;
-    private Double kilograms;
-    private Double pricePerKilo;
-    private Double subtotal;
+    private BigDecimal kilograms;
+    private BigDecimal pricePerKilo;
+    private BigDecimal subtotal;
 }

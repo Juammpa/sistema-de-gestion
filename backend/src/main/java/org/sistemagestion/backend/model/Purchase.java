@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.model.enums.Specie;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,11 @@ public class Purchase extends Movement{
     private PurchaseType purchaseType;
 
     private Integer unit;
-    private Double kilograms;
-    private Double pricePerKilo;
+
+    @Column(precision = 10, scale = 3)
+    private BigDecimal kilograms;
+
+    @Column(name = "price_per_kilo", precision = 12, scale = 2)
+    private BigDecimal pricePerKilo;
 
 }

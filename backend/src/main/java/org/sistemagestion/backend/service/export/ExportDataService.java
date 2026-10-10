@@ -1,6 +1,7 @@
 package org.sistemagestion.backend.service.export;
 
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.model.*;
 import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
@@ -10,6 +11,7 @@ import org.sistemagestion.backend.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -213,8 +215,8 @@ public class ExportDataService {
         return String.format("%s %s", client.getLastName(), client.getName().trim());
     }
 
-    private double balanceOf(CurrentAccount account) {
-        return Objects.requireNonNullElse(account.getCurrentBalance(), 0.0);
+    private BigDecimal balanceOf(CurrentAccount account) {
+        return Decimals.moneyOrZero(account.getCurrentBalance());
     }
 
     // Excel no admite mas de 31 caracteres, ni : \ / ?  * [ ], ni nombres repetidos
