@@ -23,7 +23,7 @@ public class AccountGuard {
             || butcherShopRepository.existsByCurrentAccountIdAndIsActiveFalse(accountId)) {
 
             throw new BusinessRuleException(
-                    "No se pueden registrar movimientos: el cliente, la sucursal o el proveedor fue eliminado."
+                    "No se pueden registrar ni modificar movimientos: el cliente, la sucursal o el proveedor fue eliminado."
             );
         }
     }

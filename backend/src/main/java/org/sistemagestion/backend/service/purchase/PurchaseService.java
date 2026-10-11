@@ -70,6 +70,7 @@ public class PurchaseService implements IPurchaseService {
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", id));
 
+        accountGuard.assertOwnerActive(purchase.getCurrentAccount());
         assertSupplierCanSell(purchase.getCurrentAccount(), request.getPurchaseType());
 
         boolean distributionChanged = !Decimals.sameValue(purchase.getKilograms(), request.getKilograms()) ||

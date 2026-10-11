@@ -13,6 +13,7 @@ import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.ClientRepository;
 import org.sistemagestion.backend.repository.CutMeatRepository;
 import org.sistemagestion.backend.repository.SaleRepository;
+import org.sistemagestion.backend.service.account.AccountGuard;
 import org.sistemagestion.backend.service.movement.BalanceRecalculationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class SaleService implements ISaleService{
     private final CutMeatRepository cutMeatRepository;
     private final ButcherShopRepository butcherShopRepository;
     private final BalanceRecalculationService balanceRecalculationService;
+    private final AccountGuard accountGuard;
     private final SaleMapper mapper;
 
     @Override
@@ -40,6 +42,8 @@ public class SaleService implements ISaleService{
 
         CutMeat cutMeat = cutMeatRepository.findById(request.getCutMeatId())
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat", "id", request.getCutMeatId()));
+
+        assertCutMeatActive(cutMeat);
 
         ButcherShop butcherShop = butcherShopRepository.findByIdAndIsActiveTrue(request.getButcherShopId())
                 .orElseThrow(() -> new ResourceNotFoundException("ButcherShop", "id", request.getButcherShopId()));
@@ -76,16 +80,29 @@ public class SaleService implements ISaleService{
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sale","id",id));
 
+        accountGuard.assertOwnerActive(sale.getCurrentAccount());
+
         CutMeat cutMeat = cutMeatRepository.findById(request.getCutMeatId())
                 .orElseThrow(() -> new ResourceNotFoundException("CutMeat","id", request.getCutMeatId()));
+
+        // Se puede conservar el corte original aunque ya este eliminado, pero no elegir uno eliminado.
+        boolean cutChanged = !cutMeat.getId().equals(sale.getCutMeat().getId());
+        if (cutChanged) {
+            assertCutMeatActive(cutMeat);
+        }
+
+        // Nombre y precio son una foto del momento de la venta: solo se actualiza si se cambia de corte
+        // (o si es una venta antigua que no tiene precio guardado)
+        if (cutChanged || sale.getPricePerKilo() == null) {
+            sale.setCutMeat(cutMeat);
+            sale.setCutMeatName(cutMeat.getCutMeatName());
+            sale.setPricePerKilo(cutMeat.getPricePerKilo());
+        }
 
         sale.setDate(request.getDate());
         sale.setUnit(request.getUnit());
         sale.setKilograms(Decimals.kilograms(request.getKilograms()));
-        sale.setCutMeat(cutMeat);
-        sale.setCutMeatName(cutMeat.getCutMeatName());
-        sale.setPricePerKilo(cutMeat.getPricePerKilo());
-        sale.setAmount(Decimals.multiply(request.getKilograms(), cutMeat.getPricePerKilo()));
+        sale.setAmount(Decimals.multiply(request.getKilograms(), sale.getPricePerKilo()));
 
         Sale saleUpdated = saleRepository.saveAndFlush(sale);
 
@@ -126,4 +143,15 @@ public class SaleService implements ISaleService{
         balanceRecalculationService.recalculate(currentAccount);
         log.info("Venta eliminada correctamente. ID: {}", sale.getId());
     }
+
+    // Un corte eliminado (borrado logico) no se puede vender
+    private void assertCutMeatActive(CutMeat cutMeat) {
+        if (Boolean.FALSE.equals(cutMeat.getIsActive())) {
+            throw new BusinessRuleException(String.format(
+                    "El corte \"%s\" fue eliminado y no se puede vender.",
+                    cutMeat.getCutMeatName()
+            ));
+        }
+    }
+
 }
