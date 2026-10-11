@@ -72,6 +72,7 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
 
+        accountGuard.assertOwnerActive(payment.getCurrentAccount());
         paymentMirrorService.assertEditable(payment);
         Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), payment.getCurrentAccount());
         cashService.assertSufficientBalance(payment.getCurrentAccount(), request.getPaymentType(), request.getAmount(), payment);

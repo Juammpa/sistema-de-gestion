@@ -31,7 +31,7 @@ public final class PieceWeights {
            return new Distribution(weights, true);
        }
 
-       return new Distribution(evenSplit(total, units), true);
+       return new Distribution(evenSplit(total, units), false);
 
     }
 
