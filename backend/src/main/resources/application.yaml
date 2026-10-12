@@ -6,6 +6,11 @@ spring:
   jackson:
     generator:
       write-bigdecimal-as-plain: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 
   datasource:
     url: ${DB_URL}
