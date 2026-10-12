@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, RestAuthenticationEntryPoint authenticationEntryPoint, RestAccessDeniedHandler accessDeniedHandler) throws Exception {
 
         http
                 // API sin sesion ni cookies: el token viaja en el header Authorization, no aplica CSRF
@@ -35,8 +35,11 @@ public class SecurityConfig {
                         // Toddo lo que no se habilito explicitamente queda cerrado
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                        oauth2
+                                .authenticationEntryPoint(authenticationEntryPoint)
+                                .accessDeniedHandler(accessDeniedHandler)
+                                .jwt(jwt ->
+                                    jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         return http.build();
 
