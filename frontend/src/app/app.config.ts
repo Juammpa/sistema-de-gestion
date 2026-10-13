@@ -13,6 +13,9 @@ import {
   INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
   includeBearerTokenInterceptor,
   provideKeycloak,
+  AutoRefreshTokenService,
+  UserActivityService,
+  withAutoRefreshToken,
 } from 'keycloak-angular';
 import { environment } from '../environments/environment';
 import { provideRouter, withViewTransitions } from '@angular/router';
@@ -24,6 +27,7 @@ import { GlobalErrorHandler } from './core/errors/global-error-handler';
 import { registerLocaleData } from '@angular/common';
 import { ThemeService } from './core/theme/theme.service';
 import { AccentService } from './core/theme/accent.service';
+import { unauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
 
 // Datos de formato (separadores, simbolo de moneda, fechas) para es-AR
 registerLocaleData(localeEsAr);
@@ -43,7 +47,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(
       withFetch(),
-      withInterceptors([errorInterceptor, includeBearerTokenInterceptor]),
+      withInterceptors([includeBearerTokenInterceptor, errorInterceptor, unauthorizedInterceptor]),
     ),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: LOCALE_ID, useValue: 'es-AR' },
@@ -57,6 +61,14 @@ export const appConfig: ApplicationConfig = {
         onLoad: 'login-required',
         pkceMethod: 'S256',
       },
+      features: [
+        withAutoRefreshToken({
+          // Si no tocamos la app en 30min, se cierra la sesion.
+          sessionTimeout: 30 * 60 * 1000,
+          onInactivityTimeout: 'logout',
+        }),
+      ],
+      providers: [AutoRefreshTokenService, UserActivityService],
     }),
     { provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG, useValue: [apiTokenCondition] },
   ],
