@@ -2,9 +2,11 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.TenantId;
 import org.sistemagestion.backend.model.enums.Specie;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "cut_meats")
@@ -18,6 +20,11 @@ public class CutMeat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // Dueño del registro
+    @TenantId
+    @Column(name = "owner_id", nullable = false, updatable = false)
+    private UUID ownerId;
 
     private String cutMeatName;
 

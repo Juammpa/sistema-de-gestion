@@ -2,7 +2,10 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.TenantId;
 import org.sistemagestion.backend.model.enums.SupplierType;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "suppliers")
@@ -16,6 +19,11 @@ public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // Dueño del registro
+    @TenantId
+    @Column(name = "owner_id", nullable = false, updatable = false)
+    private UUID ownerId;
 
     private String companyName;
     private String phoneNumber;
