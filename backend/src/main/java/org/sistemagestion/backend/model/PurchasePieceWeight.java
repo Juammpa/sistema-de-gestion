@@ -2,8 +2,10 @@ package org.sistemagestion.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.TenantId;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 // Peso ajustado a mano de una pieza de stock.
 // Solo existe para las compras cuyo reparto dejo de ser parejo.
@@ -22,6 +24,11 @@ public class PurchasePieceWeight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // Dueño del registro
+    @TenantId
+    @Column(name = "owner_id", nullable = false, updatable = false)
+    private UUID ownerId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "purchase_id", nullable = false)
