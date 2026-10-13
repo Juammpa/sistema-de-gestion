@@ -40,6 +40,8 @@ const apiTokenCondition = createInterceptorCondition<IncludeBearerTokenCondition
   bearerPrefix: 'Bearer',
 });
 
+const SESSION_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -64,7 +66,7 @@ export const appConfig: ApplicationConfig = {
       features: [
         withAutoRefreshToken({
           // Si no tocamos la app en 30min, se cierra la sesion.
-          sessionTimeout: 30 * 60 * 1000,
+          sessionTimeout: SESSION_INACTIVITY_TIMEOUT_MS,
           onInactivityTimeout: 'logout',
         }),
       ],
