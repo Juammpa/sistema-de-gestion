@@ -68,6 +68,31 @@
         [ngTemplateOutletContext]="{ title: 'Gestión', items: managementItems }"
       />
     </nav>
+    <!-- USUARIO -->
+    <div class="h-px w-full bg-linear-to-r from-transparent via-slate-700/70 to-transparent"></div>
+    <div class="flex w-full items-center gap-3" [class]="collapsed() ? 'flex-col' : 'px-2.5'">
+      <div
+        aria-hidden="true"
+        class="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent-500/30 bg-accent-500/15 text-sm font-bold text-accent-300"
+      >
+        {{ auth.initials }}
+      </div>
+      @if (!collapsed()) {
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-semibold text-slate-100">{{ auth.fullName }}</p>
+          <p class="truncate text-xs text-slate-400">{{ auth.roleLabel }}</p>
+        </div>
+      }
+      <button
+        type="button"
+        (click)="auth.logout()"
+        aria-label="Cerrar sesión"
+        title="Cerrar sesión"
+        class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl text-slate-400 transition-ui hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 active:scale-[0.97]"
+      >
+        <i aria-hidden="true" class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
   </aside>
   <!-- MAIN CONTENT CONTAINER -->
   <div class="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas">
@@ -99,43 +124,38 @@
         {{ title }}
       </h3>
     }
-        @for (item of items; track $index) {
-          <a
-            routerLink="{{ item.route }}"
-            routerLinkActive="!bg-accent-500/15 !text-slate-50 ring-1 ring-inset ring-accent-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-accent-400"
-            ariaCurrentWhenActive="page"
-            (click)="mobileOpen.set(false)"
-            class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 active:scale-[0.97] motion-reduce:transition-none"
-            [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'"
+    @for (item of items; track $index) {
+      <a
+        routerLink="{{ item.route }}"
+        routerLinkActive="!bg-accent-500/15 !text-slate-50 ring-1 ring-inset ring-accent-500/30 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-accent-400"
+        ariaCurrentWhenActive="page"
+        (click)="mobileOpen.set(false)"
+        class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 active:scale-[0.97] motion-reduce:transition-none"
+        [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'"
+      >
+        <!-- Icono del item con tamaño constante -->
+        <i aria-hidden="true" class="{{ item.icon }} w-5 shrink-0 text-center text-base"></i>
+        <!-- Etiqueta de texto (solo modo expandido) -->
+        <span
+          class="overflow-hidden whitespace-nowrap text-sm transition-[margin,opacity] duration-150 motion-reduce:transition-none"
+          [class]="collapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'"
+        >
+          {{ item.name }}
+        </span>
+        <!-- Tooltip flotante (solo modo colapsado) -->
+        @if (collapsed()) {
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-ui duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
           >
-            <!-- Icono del item con tamaño constante -->
-            <i
-              aria-hidden="true"
-              class="{{
-                item.icon
-              }} w-5 shrink-0 text-center text-base"
-            ></i>
-            <!-- Etiqueta de texto (solo modo expandido) -->
-            <span
-              class="overflow-hidden whitespace-nowrap text-sm transition-[margin,opacity] duration-150 motion-reduce:transition-none"
-              [class]="collapsed() ? 'ml-0 w-0 opacity-0' : 'ml-3 w-auto opacity-100'"
-            >
-              {{ item.name }}
-            </span>
-            <!-- Tooltip flotante (solo modo colapsado) -->
-            @if (collapsed()) {
-              <div
-                aria-hidden="true"
-                class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-slate-700/80 bg-panel-from px-3 py-1.5 text-xs font-medium text-slate-100 opacity-0 shadow-2xl shadow-black/50 transition-ui duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
-              >
-                {{ item.name }}
-                <!-- Flechita decorativa hacia la izquierda -->
-                <div
-                  class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-700/80"
-                ></div>
-              </div>
-            }
-          </a>
+            {{ item.name }}
+            <!-- Flechita decorativa hacia la izquierda -->
+            <div
+              class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-700/80"
+            ></div>
+          </div>
         }
+      </a>
+    }
   </div>
 </ng-template>

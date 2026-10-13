@@ -19,6 +19,8 @@ const UNKNOWN = 'Ocurrió un error inesperado.';
 
 const FALLBACK_4XX: Record<number, string> = {
   400: 'Los datos enviados no son válidos.',
+  401: 'Tu sesión expiró. Iniciá sesión nuevamente.',
+  403: 'No tenés permisos para realizar esta acción.',
   404: 'No se encontró el registro solicitado. Es posible que haya sido eliminado.',
   409: 'La operación no se pudo completar por el estado actual de los datos.',
 };
