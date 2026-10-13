@@ -7,6 +7,14 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
+import {
+  createInterceptorCondition,
+  IncludeBearerTokenCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+  includeBearerTokenInterceptor,
+  provideKeycloak,
+} from 'keycloak-angular';
+import { environment } from '../environments/environment';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import localeEsAr from '@angular/common/locales/es-AR';
 import { routes } from './app.routes';
@@ -20,17 +28,36 @@ import { AccentService } from './core/theme/accent.service';
 // Datos de formato (separadores, simbolo de moneda, fechas) para es-AR
 registerLocaleData(localeEsAr);
 
+// El token se envia solo a nuestra API, nunca a terceros
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const apiTokenCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: new RegExp(`^${escapeRegExp(environment.apiUrl)}(/.*)?$`, 'i'),
+  bearerPrefix: 'Bearer',
+});
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
-    provideHttpClient(withFetch(), withInterceptors([errorInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([errorInterceptor, includeBearerTokenInterceptor]),
+    ),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: LOCALE_ID, useValue: 'es-AR' },
     provideAppInitializer(() => {
       inject(ThemeService);
       inject(AccentService);
     }),
+    provideKeycloak({
+      config: environment.keycloak,
+      initOptions: {
+        onLoad: 'login-required',
+        pkceMethod: 'S256',
+      },
+    }),
+    { provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG, useValue: [apiTokenCondition] },
   ],
 };
