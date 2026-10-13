@@ -715,8 +715,8 @@
             "fullScopeAllowed": true,
             "nodeReRegistrationTimeout": -1,
             "defaultClientScopes": [
-                "service_account",
                 "web-origins",
+                "service_account",
                 "acr",
                 "profile",
                 "roles",
@@ -826,6 +826,22 @@
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": true,
             "nodeReRegistrationTimeout": -1,
+            "protocolMappers": [
+                {
+                    "id": "5e666cd4-290e-47ba-995d-86fff4f3a1f1",
+                    "name": "api-audience",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-audience-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "id.token.claim": "false",
+                        "lightweight.claim": "false",
+                        "access.token.claim": "true",
+                        "introspection.token.claim": "true",
+                        "included.custom.audience": "sistema-gestion-api"
+                    }
+                }
+            ],
             "defaultClientScopes": [
                 "web-origins",
                 "acr",

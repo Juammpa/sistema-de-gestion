@@ -9,6 +9,8 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -59,6 +61,24 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.CONFLICT,"Conflicto de datos","data-integrity",
                 "No se pudo completar la operación porque el registro está relacionado con otros datos.");
 
+    }
+
+    @ExceptionHandler(AuthenticationException.class) // 401
+    public ProblemDetail handleUnauthenticated(AuthenticationException ex, WebRequest request) {
+
+        log.warn("No autenticado - {} - {}", request.getDescription(false), ex.getMessage());
+
+        return problem(HttpStatus.UNAUTHORIZED, "No autenticado", "unauthorized",
+                "Tu sesión no es válida o expiró. Iniciá sesión nuevamente.");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class) // 403
+    public ProblemDetail handleAccessDenied(AccessDeniedException ex, WebRequest request) {
+
+        log.warn("Acceso denegado - {} - {}", request.getDescription(false), ex.getMessage());
+
+        return problem(HttpStatus.FORBIDDEN, "Acceso denegado","forbidden",
+        "No tenés permisos para realizar esta acción.");
     }
 
     @ExceptionHandler(Exception.class) // 500
