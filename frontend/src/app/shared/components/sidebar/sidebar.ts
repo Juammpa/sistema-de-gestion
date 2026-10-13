@@ -6,6 +6,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SidebarService } from './services/sidebar.service';
 import { MenuItem } from './interfaces/sidebar.interface';
+import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,6 +15,7 @@ import { MenuItem } from './interfaces/sidebar.interface';
 })
 export class Sidebar {
   sidebarService = inject(SidebarService);
+  protected readonly auth = inject(AuthService);
 
   // En pantallas chicas (< md) el menú es un drawer que se abre con el botón de la barra superior
   protected isMobile = toSignal(
