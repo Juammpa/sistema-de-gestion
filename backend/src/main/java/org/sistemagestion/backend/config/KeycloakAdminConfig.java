@@ -18,12 +18,14 @@ import org.springframework.web.client.RestClient;
 import java.net.http.HttpClient;
 import java.time.Duration;
 
+// Acceso del backend a la Admin API de Keycloak con la service account "backend-admin"
 @Configuration
 @EnableConfigurationProperties(KeycloakProperties.class)
 public class KeycloakAdminConfig {
 
     private static final String REGISTRATION_ID = "keycloak-admin";
 
+    // Pide y renueva el token de la service account automaticamente, sin codigo propio de cache.
     @Bean
     OAuth2AuthorizedClientManager keycloakAdminClientManager(ClientRegistrationRepository registrations, OAuth2AuthorizedClientService authorizedClients) {
 
@@ -36,6 +38,7 @@ public class KeycloakAdminConfig {
         return manager;
     }
 
+    // Cliente apuntado a /admin/realms/{realm}: cada request lleva el token y respeta timeouts
     @Bean
     RestClient keycloakAdminRestClient(KeycloakProperties properties, OAuth2AuthorizedClientManager clientManager) {
 

@@ -2,11 +2,15 @@ package org.sistemagestion.backend.integration.keycloak;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.IdentityProviderException;
+import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.model.enums.UserRole;
 import org.sistemagestion.backend.service.user.IdentityProviderClient;
 import org.sistemagestion.backend.service.user.IdentityUser;
+import org.sistemagestion.backend.service.user.NewIdentityUser;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -14,6 +18,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriBuilder;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -21,11 +26,14 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+// Adaptador de Keycloak: traduce su Admin REST API (JSON de Keycloak) al modelo del sistema.
+// Es la unica clase que conoce rutas y detalles de Keycloak
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class KeycloakClient implements IdentityProviderClient {
 
+    // Tipo con genericos para que Jackson deserialice una lista de KeycloakUser
     private static final ParameterizedTypeReference<List<KeycloakUser>> USER_LIST = new ParameterizedTypeReference<List<KeycloakUser>>() {};
 
     // Tope de miembros que se leen por rol
@@ -63,6 +71,80 @@ public class KeycloakClient implements IdentityProviderClient {
         return orEmpty(members).stream().map(KeycloakUser::id).collect(Collectors.toSet());
     }
 
+    @Override
+    public IdentityUser findUserById(String userId) {
+
+        KeycloakUser user = call(() -> keycloakAdminRestClient.get()
+                .uri("/users/{id}", userId)
+                .retrieve()
+                .onStatus(status -> status.value() == HttpStatus.NOT_FOUND.value(), (request, response) -> {
+                    throw new ResourceNotFoundException("User","id",userId);
+                }).body(KeycloakUser.class));
+
+        return toIdentityUser(user);
+    }
+
+    @Override
+    public String createUser(NewIdentityUser user, String temporaryPassword) {
+
+        // enabled y emailVerified en true: no hay SMTP para verificar el correo.
+        // temporary=true obliga a cambiar la contraseña en el primer ingreso
+        KeycloakNewUser body = new KeycloakNewUser(
+                user.username(), user.email(), user.firstName(), user.lastName(), true, true,
+                List.of(new KeycloakCredential("password", temporaryPassword, true)));
+
+        URI location = call(() -> keycloakAdminRestClient.post()
+                .uri("/users")
+                .body(body)
+                .retrieve()
+                .onStatus(status -> status.value() == HttpStatus.CONFLICT.value(), (request, response) -> {
+                    throw new BusinessRuleException("Ya existe un usuario con ese nombre de usuario o correo.");
+                })
+                .onStatus(status -> status.value() == HttpStatus.BAD_REQUEST.value(), (request, response) -> {
+                    throw new BusinessRuleException(
+                            "No se pudo crear el usuario: la contraseña no cumple con la política de seguridad o algún dato no es válido.");
+                })
+                .toBodilessEntity()
+                .getHeaders()
+                .getLocation());
+
+        if (location == null) {
+            throw new IdentityProviderException("Keycloak no devolvío la ubicación del usuario creado",null);
+        }
+
+        // El id es el ultimo tramo de la URL: .../users/{id}
+        String path = location.getPath();
+        return path.substring(path.lastIndexOf('/') + 1);
+
+    }
+
+    @Override
+    public void assignRole(String userId, UserRole role) {
+
+        execute(() -> {
+            KeycloakRole keycloakRole = keycloakAdminRestClient.get()
+                    .uri("/roles/{role}", role.name())
+                    .retrieve()
+                    .body(KeycloakRole.class);
+
+            keycloakAdminRestClient.post()
+                    .uri("/users/{id}/role-mappings/realm", userId)
+                    .body(List.of(keycloakRole))
+                    .retrieve()
+                    .toBodilessEntity();
+        });
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+
+        execute(() -> keycloakAdminRestClient.delete()
+                .uri("/users/{id}", userId)
+                .retrieve()
+                .toBodilessEntity());
+
+    }
+
     // Cualquier falla al hablar con Keycloak (red, timeout, token, 4xx/5xx) se traduce a una excepcion propia
     private <T> T call(Supplier<T> request) {
 
@@ -75,6 +157,15 @@ public class KeycloakClient implements IdentityProviderClient {
         }
     }
 
+    // Igual que call, para operaciones que no devuelven resultado
+    private void execute(Runnable request) {
+        call(() -> {
+            request.run();
+            return null;
+        });
+    }
+
+    // Si Keycloak responde sin cuerpo, se trata como lista vacia
     private static <T> List<T> orEmpty(List<T> list) {
         return Objects.requireNonNullElse(list, List.of());
     }

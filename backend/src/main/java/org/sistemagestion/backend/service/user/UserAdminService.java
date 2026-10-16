@@ -1,7 +1,9 @@
 package org.sistemagestion.backend.service.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.common.SliceResponseDto;
+import org.sistemagestion.backend.dto.user.UserCreateRequestDto;
 import org.sistemagestion.backend.dto.user.UserResponseDto;
 import org.sistemagestion.backend.model.enums.UserRole;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserAdminService implements IUserAdminService {
 
     private static final int MAX_PAGE = 10_000;
@@ -40,6 +43,36 @@ public class UserAdminService implements IUserAdminService {
         return new SliceResponseDto<>(content, safePage, hasNext);
     }
 
+    @Override
+    public UserResponseDto createUser(UserCreateRequestDto request) {
+
+        String userId = identityProvider.createUser(
+                new NewIdentityUser(
+                        request.username().trim(),
+                        request.email().trim(),
+                        request.firstName().trim(),
+                        request.lastName().trim()),
+                request.temporaryPassword());
+
+        try {
+            identityProvider.assignRole(userId, request.role());
+        } catch (RuntimeException ex) {
+            // Sin rol el usuario no podria usar la API: se deshace la creacion
+            rollbackCreation(userId);
+            throw ex;
+        }
+
+        return toResponse(identityProvider.findUserById(userId), request.role());
+    }
+
+    // Mejor esfuerzo: si el borrado tambien falla, solo se registra para limpiarlo a mano
+    private void rollbackCreation(String userId) {
+        try {
+            identityProvider.deleteUser(userId);
+        } catch (RuntimeException ex) {
+            log.error("No se pudo deshacer la creacion del usuario {}", userId, ex);
+        }
+    }
 
     // Si tiene los dos roles, manda ADMIN.
     // Sin ningun rol, devuelve null
