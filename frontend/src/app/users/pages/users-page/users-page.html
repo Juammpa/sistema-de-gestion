@@ -1,9 +1,50 @@
-<!-- Gestion de usuarios (solo ADMIN) -->
+<!-- Búsqueda de usuarios (el botón Agregar se conecta en el próximo paso) -->
 <div
   class="mx-3 mb-6 mt-2 max-w-3xl rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to p-5 text-slate-50 shadow-md shadow-black/20 sm:p-6 md:mx-auto"
 >
-  <h1 class="text-lg font-semibold">Usuarios</h1>
-  <p class="mt-1 text-sm text-slate-400">
-    Administrá quiénes pueden entrar al sistema y con qué rol.
-  </p>
+  <search-input
+    placeholder="Buscar por usuario, nombre o correo..."
+    [numberFound]="users().length"
+    [searchName]="hasNext() ? 'usuarios cargados' : 'usuarios'"
+    (searchChange)="searchText.set($event)"
+  />
+</div>
+
+<!-- Lista de usuarios -->
+<div
+  class="mx-3 flex max-h-[calc(100dvh-11.5rem)] max-w-3xl flex-col gap-3 overflow-y-auto pb-4 scrollbar-none md:mx-auto"
+>
+  @if (isLoading()) {
+    <list-skeleton />
+  } @else if (error() && users().length === 0) {
+    <!-- Falló la primera página -->
+    <error-state title="No se pudieron cargar los usuarios" [error]="error()" (retry)="reload()" />
+  } @else {
+    @for (user of users(); track user.id) {
+      <user-list-item [user]="user" />
+    } @empty {
+      <empty-state
+        infoMessage="No hay usuarios que coincidan con la búsqueda"
+        icon="fa-solid fa-filter-circle-xmark"
+      />
+    }
+
+    @if (error()) {
+      <!-- Falló una página siguiente: se conserva lo ya cargado -->
+      <error-state
+        title="No se pudieron cargar más usuarios"
+        [error]="error()"
+        (retry)="loadNextPage()"
+      />
+    } @else if (hasNext()) {
+      <button
+        type="button"
+        (click)="loadNextPage()"
+        [disabled]="isLoadingMore()"
+        class="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/60 px-5 text-sm font-medium text-slate-300 transition-ui duration-150 hover:border-slate-600 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:cursor-wait disabled:opacity-60 motion-reduce:transition-none"
+      >
+        {{ isLoadingMore() ? 'Cargando...' : 'Cargar más' }}
+      </button>
+    }
+  }
 </div>
