@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LayoutPage } from './pages/layout-page/layout-page';
+import { adminGuard } from '../core/auth/admin.guard';
 
 export const Sharedroutes: Routes = [
   {
@@ -35,6 +36,11 @@ export const Sharedroutes: Routes = [
       {
         path: 'stock',
         loadComponent: () => import('../stock/pages/stock-page/stock-page'),
+      },
+      {
+        path: 'usuarios',
+        canMatch: [adminGuard], // Solo ADMIN
+        loadComponent: () => import('../users/pages/users-page/users-page'),
       },
       {
         path: 'ajustes',
