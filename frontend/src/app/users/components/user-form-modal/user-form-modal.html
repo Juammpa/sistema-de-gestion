@@ -1,0 +1,252 @@
+<!-- Backdrop: cierra al hacer click fuera del panel -->
+<div
+  (click)="close()"
+  (document:keydown.escape)="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md modal-backdrop"
+>
+  <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
+  <div
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="create-user-modal-title"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/80 ring-1 ring-white/10"
+  >
+    <!-- ====== HEADER ====== -->
+    <div
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-5 py-5 sm:px-7"
+    >
+      <div class="flex min-w-0 items-center gap-3.5">
+        <span
+          aria-hidden="true"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
+        >
+          <i class="fa-solid fa-user-plus text-base"></i>
+        </span>
+        <div class="min-w-0 space-y-0.5">
+          <h2
+            id="create-user-modal-title"
+            class="text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
+          >
+            Crear Usuario
+          </h2>
+          <p class="text-sm text-slate-400">Datos de acceso y rol dentro del sistema</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
+        title="Cerrar modal"
+        aria-label="Cerrar modal"
+      >
+        <i aria-hidden="true" class="fa-solid fa-xmark block text-base"></i>
+      </button>
+    </div>
+
+    <!-- ====== BODY (form) ====== -->
+    <form [formGroup]="userForm" (ngSubmit)="onSave()" class="space-y-5 px-5 py-6 sm:px-7">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <!-- Usuario -->
+        <div class="space-y-1.5">
+          <label for="create-user-username" class="block text-sm font-medium text-slate-200">
+            Usuario <span aria-hidden="true" class="text-accent-400">*</span>
+          </label>
+          <input
+            id="create-user-username"
+            type="text"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+            formControlName="username"
+            placeholder="Ej. juan.perez"
+            [attr.aria-invalid]="formUtils.isValidField(userForm, 'username')"
+            [class.!border-red-500/80]="formUtils.isValidField(userForm, 'username')"
+            [class.!ring-red-500/20]="formUtils.isValidField(userForm, 'username')"
+            [class.animate-shake]="formUtils.isValidField(userForm, 'username')"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+          />
+          @if (formUtils.isValidField(userForm, 'username')) {
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
+              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+              {{ formUtils.getFieldError(userForm, 'username') }}
+            </span>
+          }
+        </div>
+
+        <!-- Correo -->
+        <div class="space-y-1.5">
+          <label for="create-user-email" class="block text-sm font-medium text-slate-200">
+            Correo <span aria-hidden="true" class="text-accent-400">*</span>
+          </label>
+          <input
+            id="create-user-email"
+            type="email"
+            autocomplete="off"
+            spellcheck="false"
+            formControlName="email"
+            placeholder="Ej. juan@correo.com"
+            [attr.aria-invalid]="formUtils.isValidField(userForm, 'email')"
+            [class.!border-red-500/80]="formUtils.isValidField(userForm, 'email')"
+            [class.!ring-red-500/20]="formUtils.isValidField(userForm, 'email')"
+            [class.animate-shake]="formUtils.isValidField(userForm, 'email')"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+          />
+          @if (formUtils.isValidField(userForm, 'email')) {
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
+              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+              {{ formUtils.getFieldError(userForm, 'email') }}
+            </span>
+          }
+        </div>
+
+        <!-- Nombre -->
+        <div class="space-y-1.5">
+          <label for="create-user-first-name" class="block text-sm font-medium text-slate-200">
+            Nombre <span aria-hidden="true" class="text-accent-400">*</span>
+          </label>
+          <input
+            id="create-user-first-name"
+            type="text"
+            autocomplete="off"
+            formControlName="firstName"
+            placeholder="Ej. Juan"
+            [attr.aria-invalid]="formUtils.isValidField(userForm, 'firstName')"
+            [class.!border-red-500/80]="formUtils.isValidField(userForm, 'firstName')"
+            [class.!ring-red-500/20]="formUtils.isValidField(userForm, 'firstName')"
+            [class.animate-shake]="formUtils.isValidField(userForm, 'firstName')"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+          />
+          @if (formUtils.isValidField(userForm, 'firstName')) {
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
+              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+              {{ formUtils.getFieldError(userForm, 'firstName') }}
+            </span>
+          }
+        </div>
+
+        <!-- Apellido -->
+        <div class="space-y-1.5">
+          <label for="create-user-last-name" class="block text-sm font-medium text-slate-200">
+            Apellido <span aria-hidden="true" class="text-accent-400">*</span>
+          </label>
+          <input
+            id="create-user-last-name"
+            type="text"
+            autocomplete="off"
+            formControlName="lastName"
+            placeholder="Ej. Pérez"
+            [attr.aria-invalid]="formUtils.isValidField(userForm, 'lastName')"
+            [class.!border-red-500/80]="formUtils.isValidField(userForm, 'lastName')"
+            [class.!ring-red-500/20]="formUtils.isValidField(userForm, 'lastName')"
+            [class.animate-shake]="formUtils.isValidField(userForm, 'lastName')"
+            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+          />
+          @if (formUtils.isValidField(userForm, 'lastName')) {
+            <span
+              role="alert"
+              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+            >
+              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+              {{ formUtils.getFieldError(userForm, 'lastName') }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Rol -->
+      <div class="space-y-1.5 sm:w-1/2">
+        <label for="create-user-role" class="block text-sm font-medium text-slate-200">
+          Rol <span aria-hidden="true" class="text-accent-400">*</span>
+        </label>
+        <select
+          id="create-user-role"
+          formControlName="role"
+          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+        >
+          @for (option of roleOptions; track option.value) {
+            <option [ngValue]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Contraseña temporal -->
+      <div class="space-y-1.5">
+        <label for="create-user-password" class="block text-sm font-medium text-slate-200">
+          Contraseña temporal <span aria-hidden="true" class="text-accent-400">*</span>
+        </label>
+        <div class="flex gap-2">
+          <input
+            id="create-user-password"
+            type="text"
+            autocomplete="new-password"
+            autocapitalize="none"
+            spellcheck="false"
+            formControlName="temporaryPassword"
+            placeholder="Mínimo 8 caracteres"
+            [attr.aria-invalid]="formUtils.isValidField(userForm, 'temporaryPassword')"
+            [class.!border-red-500/80]="formUtils.isValidField(userForm, 'temporaryPassword')"
+            [class.!ring-red-500/20]="formUtils.isValidField(userForm, 'temporaryPassword')"
+            [class.animate-shake]="formUtils.isValidField(userForm, 'temporaryPassword')"
+            class="min-w-0 flex-1 rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 font-mono text-base text-slate-100 placeholder:font-sans placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+          />
+          <button
+            type="button"
+            (click)="generatePassword()"
+            class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.97]"
+          >
+            <i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            Generar
+          </button>
+        </div>
+        <p class="text-xs text-slate-400">
+          La persona deberá cambiarla en su primer ingreso. Copiala antes de crear el usuario.
+        </p>
+        @if (formUtils.isValidField(userForm, 'temporaryPassword')) {
+          <span
+            role="alert"
+            class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+          >
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+            {{ formUtils.getFieldError(userForm, 'temporaryPassword') }}
+          </span>
+        }
+      </div>
+
+      <!-- ====== FOOTER ====== -->
+      <div
+        class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:items-center sm:justify-end"
+      >
+        <button
+          type="button"
+          (click)="close()"
+          class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.97] sm:w-auto"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="userForm.invalid || isSaving()"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+        >
+          @if (isSaving()) {
+            <i aria-hidden="true" class="fa-solid fa-spinner fa-spin text-xs"></i>
+            <span>Creando...</span>
+          } @else {
+            <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
+            <span>Crear Usuario</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -7,6 +7,9 @@ const PHONE_NUMBER_REGEX = /^\+?[0-9. ()-]{7,25}$/;
 // Empieza con letra; luego letras, espacios, apostrofe, punto y guion.
 const PERSON_NAME_REGEX = /^\p{L}[\p{L} '.-]*$/u;
 
+// Letras, números, punto, guion y guion bajo
+const USERNAME_REGEX = /^[A-Za-z0-9._-]+$/;
+
 export class AppValidators {
   // Rechaza textos con solo espacios
   static noBlank(control: AbstractControl): ValidationErrors | null {
@@ -39,6 +42,10 @@ export class AppValidators {
 
   static phoneNumber(control: AbstractControl): ValidationErrors | null {
     return AppValidators.matches(control, PHONE_NUMBER_REGEX, 'phoneNumber');
+  }
+
+  static username(control: AbstractControl): ValidationErrors | null {
+    return AppValidators.matches(control, USERNAME_REGEX, 'username');
   }
 
   // Importe: positivo, con coma o punto decimal

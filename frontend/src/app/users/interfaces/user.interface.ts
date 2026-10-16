@@ -11,3 +11,12 @@ export interface User {
   role: UserRole | null;
   createdAt: string | null;
 }
+
+export interface UserCreateRequest {
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  temporaryPassword: string;
+}

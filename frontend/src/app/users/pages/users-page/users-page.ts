@@ -8,13 +8,14 @@ import { ListSkeleton } from '../../../shared/components/list-skeleton/list-skel
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { UserListItem } from '../../components/user-list-item/user-list-item';
+import { UserFormModal } from '../../components/user-form-modal/user-form-modal';
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 300;
 
 @Component({
   selector: 'users-page',
-  imports: [SearchInput, ListSkeleton, EmptyState, ErrorState, UserListItem],
+  imports: [SearchInput, ListSkeleton, EmptyState, ErrorState, UserListItem, UserFormModal],
   templateUrl: './users-page.html',
 })
 export default class UsersPage {
@@ -31,6 +32,9 @@ export default class UsersPage {
     ),
     { initialValue: '' },
   );
+
+  // Modal de alta
+  showModal = signal<boolean>(false);
 
   // ====== Paginacion ======
 

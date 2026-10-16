@@ -13,3 +13,9 @@ export default function translateRole(role: UserRole | null): string {
       return 'Sin rol';
   }
 }
+
+// Opciones para elegir el rol
+export const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
+  { value: 'USER', label: 'Usuario' },
+  { value: 'ADMIN', label: 'Administrador' },
+];

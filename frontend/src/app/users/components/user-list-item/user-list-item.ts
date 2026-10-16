@@ -30,7 +30,7 @@ export class UserListItem {
         .join('') || '?',
   );
 
-  // Colores del bagde segun el rol
+  // Colores del badge segun el rol
   roleBadgeClass = computed(() => {
     switch (this.user().role) {
       case 'ADMIN':

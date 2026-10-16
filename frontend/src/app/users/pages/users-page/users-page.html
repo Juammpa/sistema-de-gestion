@@ -6,6 +6,7 @@
     placeholder="Buscar por usuario, nombre o correo..."
     [numberFound]="users().length"
     [searchName]="hasNext() ? 'usuarios cargados' : 'usuarios'"
+    (add)="showModal.set(true)"
     (searchChange)="searchText.set($event)"
   />
 </div>
@@ -48,3 +49,11 @@
     }
   }
 </div>
+
+@if (showModal()) {
+  <user-form-modal
+    animate.leave="modal-host-leave"
+    (cancel)="showModal.set(false)"
+    (created)="showModal.set(false); reload()"
+  />
+}
