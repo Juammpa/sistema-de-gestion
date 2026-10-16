@@ -10,6 +10,7 @@ export class AuthService {
   readonly roles: readonly string[] = this.keycloak.realmAccess?.roles ?? [];
   readonly isAdmin = this.roles.includes('ADMIN');
 
+  readonly userId: string = this.keycloak.idTokenParsed?.sub ?? '';
   readonly username: string = this.keycloak.idTokenParsed?.['preferred_username'] ?? '';
   readonly email: string = this.keycloak.idTokenParsed?.['email'] ?? '';
   readonly fullName: string = this.keycloak.idTokenParsed?.['name'] ?? this.username;

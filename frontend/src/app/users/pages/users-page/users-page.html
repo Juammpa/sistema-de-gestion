@@ -22,7 +22,15 @@
     <error-state title="No se pudieron cargar los usuarios" [error]="error()" (retry)="reload()" />
   } @else {
     @for (user of users(); track user.id) {
-      <user-list-item [user]="user" />
+      <user-list-item
+        [user]="user"
+        role="button"
+        tabindex="0"
+        class="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
+        (click)="selectedUser.set(user)"
+        (keydown.enter)="selectedUser.set(user)"
+        (keydown.space)="selectedUser.set(user); $event.preventDefault()"
+      />
     } @empty {
       <empty-state
         infoMessage="No hay usuarios que coincidan con la búsqueda"
@@ -55,5 +63,14 @@
     animate.leave="modal-host-leave"
     (cancel)="showModal.set(false)"
     (created)="showModal.set(false); reload()"
+  />
+}
+
+@if (selectedUser(); as user) {
+  <user-manage-modal
+    animate.leave="modal-host-leave"
+    [user]="user"
+    (cancel)="selectedUser.set(null)"
+    (updated)="onUserUpdated($event)"
   />
 }

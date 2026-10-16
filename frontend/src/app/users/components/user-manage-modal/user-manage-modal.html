@@ -1,0 +1,177 @@
+<!-- Backdrop: cierra al hacer click fuera del panel. Con la confirmación abierta, Escape solo la cancela -->
+<div
+  (click)="close()"
+  (document:keydown.escape)="confirmingDisable() ? confirmingDisable.set(false) : close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md modal-backdrop"
+>
+  <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
+  <div
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="manage-user-modal-title"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/80 ring-1 ring-white/10"
+  >
+    <!-- ====== HEADER ====== -->
+    <div
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-5 py-5 sm:px-7"
+    >
+      <div class="flex min-w-0 items-center gap-3.5">
+        <span
+          aria-hidden="true"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
+        >
+          <i class="fa-solid fa-user-gear text-base"></i>
+        </span>
+        <div class="min-w-0 space-y-0.5">
+          <h2
+            id="manage-user-modal-title"
+            class="text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
+          >
+            Gestionar Usuario
+          </h2>
+          <p class="truncate text-sm text-slate-400">{{ displayName() }} · {{ user().username }}</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
+        title="Cerrar modal"
+        aria-label="Cerrar modal"
+      >
+        <i aria-hidden="true" class="fa-solid fa-xmark block text-base"></i>
+      </button>
+    </div>
+
+    <!-- ====== BODY ====== -->
+    <div class="space-y-6 px-5 py-6 sm:px-7">
+      @if (isSelf()) {
+        <p
+          role="note"
+          class="flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left text-sm leading-relaxed text-amber-200"
+        >
+          <i aria-hidden="true" class="fa-solid fa-circle-info mt-0.5 shrink-0 text-amber-300"></i>
+          Es tu propia cuenta: no podés cambiar tu rol ni deshabilitarte.
+        </p>
+      }
+
+      <!-- ===== Rol ===== -->
+      <section class="space-y-3">
+        <h3 class="text-sm font-semibold text-slate-200">Rol</h3>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <select
+            aria-label="Rol"
+            [disabled]="isSelf() || isSavingRole()"
+            (change)="onRoleSelect($event)"
+            class="w-full flex-1 cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3 py-3 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+          >
+            @for (option of roleOptions; track option.value) {
+              <option [value]="option.value" [selected]="option.value === selectedRole()">
+                {{ option.label }}
+              </option>
+            }
+          </select>
+          <button
+            type="button"
+            (click)="saveRole()"
+            [disabled]="isSelf() || !roleChanged() || isSavingRole()"
+            class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+          >
+            @if (isSavingRole()) {
+              <i aria-hidden="true" class="fa-solid fa-spinner fa-spin text-xs"></i>
+              <span>Guardando...</span>
+            } @else {
+              <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
+              <span>Guardar rol</span>
+            }
+          </button>
+        </div>
+        @if (user().role === null) {
+          <p class="text-xs text-amber-300">
+            Este usuario no tiene rol asignado, así que no puede usar el sistema. Elegí uno y
+            guardalo.
+          </p>
+        }
+      </section>
+
+      <!-- ===== Acceso ===== -->
+      <section class="space-y-3 border-t border-slate-800/80 pt-5">
+        <h3 class="text-sm font-semibold text-slate-200">Acceso</h3>
+        <p class="text-sm text-slate-400">
+          @if (user().enabled) {
+            Puede iniciar sesión en el sistema.
+          } @else {
+            Está deshabilitado: no puede iniciar sesión. Sus datos se conservan.
+          }
+        </p>
+
+        @if (!isSelf()) {
+          @if (!user().enabled) {
+            <!-- Habilitar: acción directa -->
+            <button
+              type="button"
+              [disabled]="isTogglingAccess()"
+              (click)="enable()"
+              class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-300 transition-ui duration-150 enabled:hover:border-emerald-400/60 enabled:hover:bg-emerald-500/20 enabled:hover:text-emerald-200 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            >
+              <i aria-hidden="true" class="fa-solid fa-rotate-left text-xs"></i>
+              <span>{{ isTogglingAccess() ? 'Habilitando...' : 'Habilitar acceso' }}</span>
+            </button>
+          } @else if (confirmingDisable()) {
+            <!-- Deshabilitar: pide confirmación -->
+            <div class="space-y-3 rounded-xl border border-red-500/25 bg-red-950/25 px-4 py-3.5">
+              <p class="flex items-center gap-2 text-sm font-semibold text-red-300">
+                <i aria-hidden="true" class="fa-solid fa-triangle-exclamation text-xs"></i>
+                ¿Deshabilitar a {{ displayName() }}?
+              </p>
+              <p class="text-sm leading-relaxed text-slate-300">
+                No podrá volver a iniciar sesión y se cerrarán sus sesiones abiertas. Sus datos se
+                conservan y podés volver a habilitarlo cuando quieras. En una sesión ya abierta
+                puede tardar unos minutos en perder el acceso.
+              </p>
+              <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  (click)="confirmingDisable.set(false)"
+                  class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.97] sm:w-auto"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  (click)="disable()"
+                  [disabled]="isTogglingAccess()"
+                  class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-600/25 transition-ui duration-150 enabled:hover:bg-red-500 enabled:hover:shadow-red-600/35 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
+                >
+                  <i aria-hidden="true" class="fa-solid fa-ban text-xs"></i>
+                  <span>{{ isTogglingAccess() ? 'Deshabilitando...' : 'Sí, deshabilitar' }}</span>
+                </button>
+              </div>
+            </div>
+          } @else {
+            <button
+              type="button"
+              (click)="confirmingDisable.set(true)"
+              class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-300 transition-ui duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 motion-safe:active:scale-[0.97] sm:w-auto"
+            >
+              <i aria-hidden="true" class="fa-solid fa-ban text-xs"></i>
+              <span>Deshabilitar acceso</span>
+            </button>
+          }
+        }
+      </section>
+    </div>
+
+    <!-- ====== FOOTER ====== -->
+    <div class="flex justify-end border-t border-slate-800/80 px-5 py-4 sm:px-7">
+      <button
+        type="button"
+        (click)="close()"
+        class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.97] sm:w-auto"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

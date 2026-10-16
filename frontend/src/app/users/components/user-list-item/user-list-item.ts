@@ -1,6 +1,8 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import translateRole from '../../utils/user-role.utils';
 import { User } from '../../interfaces/user.interface';
+import { AuthService } from '../../../core/auth/auth.service';
+import { getDisplayName } from '../../utils/user-display.utils';
 
 @Component({
   selector: 'user-list-item',
@@ -8,16 +10,17 @@ import { User } from '../../interfaces/user.interface';
   templateUrl: './user-list-item.html',
 })
 export class UserListItem {
+  private auth = inject(AuthService);
   translateRole = translateRole;
 
   // Input
   user = input.required<User>();
 
+  // Es la cuenta de quien esta usando el sistema
+  isSelf = computed(() => this.user().id === this.auth.userId);
+
   // Nombre completo; si no tiene, se muestra el usuario
-  displayName = computed(() => {
-    const { firstName, lastName, username } = this.user();
-    return `${firstName ?? ''} ${lastName ?? ''}`.trim() || username;
-  });
+  displayName = computed(() => getDisplayName(this.user()));
 
   // Letras del avatar: iniciales de las dos primeras palabras del nombre
   initials = computed(
