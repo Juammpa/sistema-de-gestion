@@ -11,4 +11,9 @@ public interface IUserAdminService {
     UserResponseDto createUser(UserCreateRequestDto request);
     // actorId es el id del admin que hace el pedido (sale del token)
     UserResponseDto changeRole(String userId, UserRole newRole, String actorId);
+
+    // No borra: la cuenta queda deshabilitada y sus datos se conservan
+    void disableUser(String userId, String actorId);
+
+    void activateUser(String userId);
 }

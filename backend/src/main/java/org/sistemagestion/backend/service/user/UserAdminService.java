@@ -73,7 +73,6 @@ public class UserAdminService implements IUserAdminService {
     @Override
     public UserResponseDto changeRole(String userId, UserRole newRole, String actorId) {
         // Reglas: no se puede cambiar el propio rol ni dejar al sistema sin admins.
-
         if (userId.equals(actorId)) {
             throw new BusinessRuleException("No podés cambiar tu propio rol.");
         }
@@ -84,8 +83,7 @@ public class UserAdminService implements IUserAdminService {
             identityProvider.findUserById(userId);
 
             List<IdentityUser> admins = identityProvider.findUsersByRole(UserRole.ADMIN);
-            boolean isAdmin = admins.stream()
-                    .anyMatch(admin -> admin.id().equals(userId));
+            boolean isAdmin = isIn(admins, userId);
 
             if (isAdmin && newRole != UserRole.ADMIN) {
                 ensureAnotherEnabledAdmin(admins, userId,
@@ -97,6 +95,41 @@ public class UserAdminService implements IUserAdminService {
             return toResponse(identityProvider.findUserById(userId), newRole);
         }
 
+    }
+
+    @Override
+    public void disableUser(String userId, String actorId) {
+        // No se puede deshabilitar la propia cuenta ni al ultimo admin
+        if (userId.equals(actorId)) {
+            throw new BusinessRuleException("No podés deshabilitar tu propia cuenta.");
+        }
+
+        synchronized (adminChangeLock) {
+
+            // Lanza 404 si el usuario no existe
+            IdentityUser user = identityProvider.findUserById(userId);
+
+            // Si ya esta deshabilitado, no hay nada que hacer
+            if (!user.enabled()) {
+                return;
+            }
+
+            List<IdentityUser> admins = identityProvider.findUsersByRole(UserRole.ADMIN);
+
+            if (isIn(admins, userId)) {
+                ensureAnotherEnabledAdmin(admins, userId,
+                        "No se puede deshabilitar al último administrador habilitado.");
+            }
+
+            identityProvider.setEnabled(userId, false);
+        }
+
+        closeSessionsQuietly(userId);
+    }
+
+    @Override
+    public void activateUser(String userId) {
+        identityProvider.setEnabled(userId, true);
     }
 
 
@@ -117,6 +150,15 @@ public class UserAdminService implements IUserAdminService {
             identityProvider.deleteUser(userId);
         } catch (RuntimeException ex) {
             log.error("No se pudo deshacer la creacion del usuario {}", userId, ex);
+        }
+    }
+
+    // Mejor esfuerzo: la cuenta ya esta deshabilitada y Keycloak no le renueva el token, asi que si esto falla solo se registra.
+    private void closeSessionsQuietly(String userId) {
+        try {
+            identityProvider.closeSessions(userId);
+        } catch (RuntimeException ex) {
+            log.warn("No se pudieron cerrar las sesiones del usuario {}", userId, ex);
         }
     }
 
@@ -147,5 +189,10 @@ public class UserAdminService implements IUserAdminService {
         return users.stream()
                 .map(IdentityUser::id)
                 .collect(Collectors.toSet());
+    }
+
+    private boolean isIn(List<IdentityUser> users, String userId) {
+        return users.stream()
+                .anyMatch(user -> user.id().equals(userId));
     }
 }

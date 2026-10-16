@@ -22,6 +22,7 @@ import org.springframework.web.util.UriBuilder;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -35,6 +36,9 @@ public class KeycloakClient implements IdentityProviderClient {
 
     // Tipo con genericos para que Jackson deserialice una lista de KeycloakUser
     private static final ParameterizedTypeReference<List<KeycloakUser>> USER_LIST = new ParameterizedTypeReference<List<KeycloakUser>>() {};
+
+    // Para leer y reenviar el usuario completo sin depender de todos sus campos
+    private static final ParameterizedTypeReference<Map<String, Object>> USER_MAP = new ParameterizedTypeReference<Map<String, Object>>() {};
 
     // Tope de miembros que se leen por rol
     private static final int ROLE_MEMBERS_LIMIT = 1000;
@@ -153,6 +157,37 @@ public class KeycloakClient implements IdentityProviderClient {
                 .retrieve()
                 .toBodilessEntity());
 
+    }
+
+    @Override
+    public void setEnabled(String userId, boolean enabled) {
+
+        execute(() -> {
+            Map<String, Object> user = keycloakAdminRestClient.get()
+                    .uri("/users/{id}", userId)
+                    .retrieve()
+                    .onStatus(status -> status.value() == HttpStatus.NOT_FOUND.value(),
+                            (request, response) -> {
+                                throw new ResourceNotFoundException("User", "id", userId);
+                            }).body(USER_MAP);
+
+            user.put("enabled", enabled);
+
+            keycloakAdminRestClient.put()
+                    .uri("/users/{id}", userId)
+                    .body(user)
+                    .retrieve()
+                    .toBodilessEntity();
+        });
+    }
+
+    @Override
+    public void closeSessions(String userId) {
+
+        execute(() -> keycloakAdminRestClient.post()
+                .uri("/users/{id}/logout", userId)
+                .retrieve()
+                .toBodilessEntity());
     }
 
     // Cualquier falla al hablar con Keycloak (red, timeout, token, 4xx/5xx) se traduce a una excepcion propia

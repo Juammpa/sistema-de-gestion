@@ -19,4 +19,10 @@ public interface IdentityProviderClient {
 
     // Solo para deshacer una creacion incompleta
     void deleteUser(String userId);
+
+    // Habilita o deshabilita la cuenta (no la borra).
+    void setEnabled(String userId, boolean enabled);
+
+    // Cierra las sesiones abiertas del usuarios para que no pueda renovar su token
+    void closeSessions(String userId);
 }

@@ -45,4 +45,18 @@ public class AdminUserController {
         return ResponseEntity.ok(userAdminService.changeRole(id.toString(), request.role(), jwt.getSubject()));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> disableUser(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+
+        userAdminService.disableUser(id.toString(), jwt.getSubject());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<Void> activateUser(@PathVariable UUID id) {
+
+        userAdminService.activateUser(id.toString());
+        return ResponseEntity.noContent().build();
+    }
+
 }
