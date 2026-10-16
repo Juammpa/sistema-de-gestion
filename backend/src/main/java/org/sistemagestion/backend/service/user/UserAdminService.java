@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.common.SliceResponseDto;
 import org.sistemagestion.backend.dto.user.UserCreateRequestDto;
 import org.sistemagestion.backend.dto.user.UserResponseDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.model.enums.UserRole;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,9 @@ public class UserAdminService implements IUserAdminService {
 
     private static final int MAX_PAGE = 10_000;
     private static final int MAX_PAGE_SIZE = 100;
+
+    // Candado: las operaciones que pueden dejar al sistema sin admin se ejecutan de a una.
+    private final Object adminChangeLock = new Object();
 
     private final IdentityProviderClient identityProvider;
 
@@ -33,8 +38,8 @@ public class UserAdminService implements IUserAdminService {
         List<IdentityUser> pageUsers = hasNext ? found.subList(0, safeSize) : found;
 
         // Dos consultas para resolver el rol de todos, en vez de una por usuaro
-        Set<String> adminIds = identityProvider.findUserIdsByRole(UserRole.ADMIN);
-        Set<String> userIds = identityProvider.findUserIdsByRole(UserRole.USER);
+        Set<String> adminIds = idsOf(identityProvider.findUsersByRole(UserRole.ADMIN));
+        Set<String> userIds = idsOf(identityProvider.findUsersByRole(UserRole.USER));
 
         List<UserResponseDto> content = pageUsers.stream()
                 .map(user -> toResponse(user, roleOf(user.id(), adminIds, userIds)))
@@ -63,6 +68,47 @@ public class UserAdminService implements IUserAdminService {
         }
 
         return toResponse(identityProvider.findUserById(userId), request.role());
+    }
+
+    @Override
+    public UserResponseDto changeRole(String userId, UserRole newRole, String actorId) {
+        // Reglas: no se puede cambiar el propio rol ni dejar al sistema sin admins.
+
+        if (userId.equals(actorId)) {
+            throw new BusinessRuleException("No podés cambiar tu propio rol.");
+        }
+
+        synchronized (adminChangeLock) {
+
+            // Lanza 404 si el usuario no existe
+            identityProvider.findUserById(userId);
+
+            List<IdentityUser> admins = identityProvider.findUsersByRole(UserRole.ADMIN);
+            boolean isAdmin = admins.stream()
+                    .anyMatch(admin -> admin.id().equals(userId));
+
+            if (isAdmin && newRole != UserRole.ADMIN) {
+                ensureAnotherEnabledAdmin(admins, userId,
+                        "No se puede quitar el rol de administrador al último administrador habilitado.");
+            }
+
+            identityProvider.changeRole(userId, newRole);
+
+            return toResponse(identityProvider.findUserById(userId), newRole);
+        }
+
+    }
+
+
+    // Despues del cambio tiene que quedar al menos otro admin habilitado
+    private void ensureAnotherEnabledAdmin(List<IdentityUser> admins, String userId, String message) {
+
+        boolean anotherEnabledAdmin = admins.stream()
+                .anyMatch(admin -> admin.enabled() && !admin.id().equals(userId));
+
+        if (!anotherEnabledAdmin) {
+            throw new BusinessRuleException(message);
+        }
     }
 
     // Mejor esfuerzo: si el borrado tambien falla, solo se registra para limpiarlo a mano
@@ -97,4 +143,9 @@ public class UserAdminService implements IUserAdminService {
                 user.createdAt());
     }
 
+    private Set<String> idsOf(List<IdentityUser> users) {
+        return users.stream()
+                .map(IdentityUser::id)
+                .collect(Collectors.toSet());
+    }
 }

@@ -10,6 +10,7 @@ import org.sistemagestion.backend.service.user.IdentityProviderClient;
 import org.sistemagestion.backend.service.user.IdentityUser;
 import org.sistemagestion.backend.service.user.NewIdentityUser;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.stereotype.Component;
@@ -22,9 +23,8 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+
 
 // Adaptador de Keycloak: traduce su Admin REST API (JSON de Keycloak) al modelo del sistema.
 // Es la unica clase que conoce rutas y detalles de Keycloak
@@ -61,14 +61,18 @@ public class KeycloakClient implements IdentityProviderClient {
     }
 
     @Override
-    public Set<String> findUserIdsByRole(UserRole role) {
+    public List<IdentityUser> findUsersByRole(UserRole role) {
 
-        List<KeycloakUser> members = call(() ->
+        List<KeycloakUser> members = orEmpty(call(() ->
                 keycloakAdminRestClient.get()
                         .uri("/roles/{role}/users?first=0&max={max}", role.name(), ROLE_MEMBERS_LIMIT)
-                        .retrieve().body(USER_LIST));
+                        .retrieve().body(USER_LIST)));
 
-        return orEmpty(members).stream().map(KeycloakUser::id).collect(Collectors.toSet());
+        if (members.size() >= ROLE_MEMBERS_LIMIT) {
+            log.warn("El rol {} alcanzó el tope de {} miembros leídos: algunos usuarios podrían mostrarse sin rol", role, ROLE_MEMBERS_LIMIT);
+        }
+
+        return members.stream().map(KeycloakClient::toIdentityUser).toList();
     }
 
     @Override
@@ -121,18 +125,24 @@ public class KeycloakClient implements IdentityProviderClient {
     @Override
     public void assignRole(String userId, UserRole role) {
 
-        execute(() -> {
-            KeycloakRole keycloakRole = keycloakAdminRestClient.get()
-                    .uri("/roles/{role}", role.name())
-                    .retrieve()
-                    .body(KeycloakRole.class);
+        execute(() -> addRealmRole(userId, role));
+    }
 
-            keycloakAdminRestClient.post()
-                    .uri("/users/{id}/role-mappings/realm", userId)
-                    .body(List.of(keycloakRole))
-                    .retrieve()
-                    .toBodilessEntity();
+    @Override
+    public void changeRole(String userId, UserRole newRole) {
+
+        // Primero agrega el rol nuevo y despues quita los demas.
+        // Si algo falla a mitad de camino, el usuario nunca queda sin rol
+        execute(() -> {
+            addRealmRole(userId, newRole);
+
+            for (UserRole other: UserRole.values()) {
+                if (other != newRole) {
+                    removeRealmRole(userId, other);
+                }
+            }
         });
+
     }
 
     @Override
@@ -168,6 +178,34 @@ public class KeycloakClient implements IdentityProviderClient {
     // Si Keycloak responde sin cuerpo, se trata como lista vacia
     private static <T> List<T> orEmpty(List<T> list) {
         return Objects.requireNonNullElse(list, List.of());
+    }
+
+    // Keycloak pide el rol completo (id y nombre) para asignarlo o quitarlo
+    private KeycloakRole findRealmRole(UserRole role) {
+
+        return keycloakAdminRestClient.get()
+                .uri("/roles/{role}", role.name())
+                .retrieve()
+                .body(KeycloakRole.class);
+    }
+
+    private void addRealmRole(String userId, UserRole role) {
+
+        keycloakAdminRestClient.post()
+                .uri("/users/{id}/role-mappings/realm", userId)
+                .body(List.of(findRealmRole(role)))
+                .retrieve()
+                .toBodilessEntity();
+    }
+
+    // En Keycloak el DELETE de roles lleva el rol en el cuerpo del pedido
+    private void removeRealmRole(String userId, UserRole role) {
+
+        keycloakAdminRestClient.method(HttpMethod.DELETE)
+                .uri("/users/{id}/role-mappings/realm", userId)
+                .body(List.of(findRealmRole(role)))
+                .retrieve()
+                .toBodilessEntity();
     }
 
     private static IdentityUser toIdentityUser(KeycloakUser user) {
