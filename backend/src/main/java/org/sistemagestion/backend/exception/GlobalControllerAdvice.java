@@ -81,6 +81,16 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         "No tenés permisos para realizar esta acción.");
     }
 
+    @ExceptionHandler(IdentityProviderException.class) // 503
+    public ProblemDetail handleIdentityProvider(IdentityProviderException ex, WebRequest request) {
+
+        log.error("Falla del proveedor de identidad - {} - {}",
+                request.getDescription(false), ex.getMessage(), ex);
+
+        return problem(HttpStatus.SERVICE_UNAVAILABLE, "Servicio no disponible", "identity-provider-unavailable",
+                "No se pudo comunicar con el servicio de usuarios. Probá de nuevo en unos minutos.");
+    }
+
     @ExceptionHandler(Exception.class) // 500
     public ProblemDetail handleUnexpected(Exception ex, WebRequest request) {
 
