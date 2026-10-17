@@ -27,13 +27,13 @@ public class UserAdminService implements IUserAdminService {
     private final IdentityProviderClient identityProvider;
 
     @Override
-    public SliceResponseDto<UserResponseDto> getUsers(String search, int page, int size) {
+    public SliceResponseDto<UserResponseDto> getUsers(String search, Boolean enabled,int page, int size) {
 
         int safePage = Math.min(Math.max(page, 0), MAX_PAGE);
         int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
 
         // Se pide uno de mas para saber si hay otra pagina, sin hacer conteo aparte
-        List<IdentityUser> found = identityProvider.findUsers(search, safePage * safeSize, safeSize + 1);
+        List<IdentityUser> found = identityProvider.findUsers(search,enabled, safePage * safeSize, safeSize + 1);
         boolean hasNext = found.size() > safeSize;
         List<IdentityUser> pageUsers = hasNext ? found.subList(0, safeSize) : found;
 

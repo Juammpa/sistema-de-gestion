@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IdentityProviderClient {
 
-    List<IdentityUser> findUsers(String search, int first, int max);
+    List<IdentityUser> findUsers(String search, Boolean enabled ,int first, int max);
     IdentityUser findUserById(String userId);
     List<IdentityUser> findUsersByRole(UserRole role);
 
