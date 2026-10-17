@@ -6,7 +6,9 @@
     placeholder="Buscar por usuario, nombre o correo..."
     [numberFound]="users().length"
     [searchName]="hasNext() ? 'usuarios cargados' : 'usuarios'"
+    [filters]="filters"
     (add)="showModal.set(true)"
+    (filterChange)="onFilterChange($event)"
     (searchChange)="searchText.set($event)"
   />
 </div>
@@ -33,7 +35,7 @@
       />
     } @empty {
       <empty-state
-        infoMessage="No hay usuarios que coincidan con la búsqueda"
+        infoMessage="No hay usuarios que coincidan con la búsqueda o el filtro"
         icon="fa-solid fa-filter-circle-xmark"
       />
     }

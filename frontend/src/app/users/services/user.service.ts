@@ -10,10 +10,11 @@ export class UserService {
   private readonly baseUrl = `${environment.apiUrl}/admin/users`;
 
   // Una pagina de usuarios. "search" filtra por usuario, nombre o correo
-  getUsers(search: string, page: number, size: number) {
+  getUsers(search: string, enabled: boolean | null, page: number, size: number) {
     let params = new HttpParams().set('page', page).set('size', size);
 
     if (search) params = params.set('search', search);
+    if (enabled !== null) params = params.set('enabled', enabled);
 
     return this.http.get<PageResponse<User>>(this.baseUrl, { params });
   }

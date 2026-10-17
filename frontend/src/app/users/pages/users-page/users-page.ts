@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, map, Subscription } from 'rxjs';
@@ -10,6 +10,8 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { UserListItem } from '../../components/user-list-item/user-list-item';
 import { UserFormModal } from '../../components/user-form-modal/user-form-modal';
 import { UserManageModal } from '../../components/user-manage-modal/user-manage-modal';
+import { FilterChange, SearchFilter } from '../../../shared/interfaces/search-filter.interface';
+import { defaultFilterValues } from '../../../shared/utils/search-filter.utils';
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -42,6 +44,38 @@ export default class UsersPage {
     { initialValue: '' },
   );
 
+  // Filtro por estado de la cuenta
+  filters: SearchFilter[] = [
+    {
+      key: 'status',
+      label: 'Filtrar por estado',
+      options: [
+        { value: 'all', label: 'Todos' },
+        { value: 'disabled', label: 'Deshabilitados' },
+        { value: 'enabled', label: 'Habilitados' },
+      ],
+    },
+  ];
+
+  // Valor elegido de cada filtro
+  filterValues = signal<Record<string, string>>(defaultFilterValues(this.filters));
+
+  onFilterChange({ key, value }: FilterChange) {
+    this.filterValues.update((current) => ({ ...current, [key]: value }));
+  }
+
+  // true = solo habilitados, false = solo deshabilitados, null = todos
+  private enabledFilter = computed<boolean | null>(() => {
+    switch (this.filterValues()['status']) {
+      case 'enabled':
+        return true;
+      case 'disabled':
+        return false;
+      default:
+        return null;
+    }
+  });
+
   // Modal de alta
   showModal = signal<boolean>(false);
 
@@ -50,7 +84,13 @@ export default class UsersPage {
 
   // Reemplaza el usuario en la lista sin recargar
   onUserUpdated(updated: User) {
-    this.users.update((list) => list.map((user) => (user.id === updated.id ? updated : user)));
+    const filter = this.enabledFilter();
+
+    this.users.update((list) =>
+      filter !== null && updated.enabled !== filter
+        ? list.filter((user) => user.id !== updated.id)
+        : list.map((user) => (user.id === updated.id ? updated : user)),
+    );
   }
 
   // ====== Paginacion ======
@@ -68,6 +108,7 @@ export default class UsersPage {
     // Cada vez que cambia la busqueda se empieza de cero.
     effect(() => {
       this.debouncedSearch();
+      this.enabledFilter();
       untracked(() => this.reload());
     });
 
@@ -96,7 +137,7 @@ export default class UsersPage {
     this.error.set(null);
 
     this.request = this.userService
-      .getUsers(this.debouncedSearch(), this.nextPage, PAGE_SIZE)
+      .getUsers(this.debouncedSearch(), this.enabledFilter(), this.nextPage, PAGE_SIZE)
       .subscribe({
         next: (page) => {
           this.users.update((current) => [...current, ...page.content]);
