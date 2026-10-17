@@ -9,8 +9,10 @@ Infrastructure: PostgreSQL and Keycloak with Docker Compose.
 docker compose up -d
 ```
 
+Starts PostgreSQL (`127.0.0.1:5433`) and Keycloak (`127.0.0.1:8081`).
 Starts PostgreSQL (`127.0.0.1:5433`) and Keycloak (`127.0.0.1:8081`). Then run the backend
-with its `local` profile and the frontend with `npm start` inside `frontend/`.
+(see [Backend configuration](#backend-configuration)) and the frontend with `npm start`
+inside `frontend/`.
 
 `docker compose down` keeps the data. **Never run `docker compose down -v`**: it deletes
 the database volume.
@@ -21,6 +23,31 @@ Copy `.env.example` to `.env` and fill in the values. `.env` is not versioned an
 part of the backups: keep a copy in a password manager. Keycloak stores
 `BACKEND_ADMIN_SECRET` in its database on the first import (later imports are skipped),
 so after a restore the value must be the original one.
+
+## Backend configuration
+
+`application.yaml` reads every environment-specific value from a placeholder. For local
+development, copy `backend/application-local.example.yaml` to
+`backend/src/main/resources/application-local.yaml` (git-ignored) and fill in the values
+marked with `<...>`. The `local` profile is active by default.
+
+| Setting | Environment variable | Local value |
+|---|---|---|
+| Database URL | `DB_URL` | `jdbc:postgresql://localhost:5433/sistema_gestion` |
+| Database user | `DB_USERNAME` | `POSTGRES_USER` from `.env` |
+| Database password | `DB_PASSWORD` | `POSTGRES_PASSWORD` from `.env` |
+| Token issuer | `KEYCLOAK_ISSUER_URI` | `http://localhost:8081/realms/sistema-gestion` |
+| Keycloak base URL | `KEYCLOAK_BASE_URL` | `http://localhost:8081` |
+| Admin API secret | `BACKEND_ADMIN_SECRET` | same value as in `.env` |
+| Allowed CORS origins | `CORS_ALLOWED_ORIGINS` | `http://localhost:4200` |
+| Initial data owner | `INITIAL_OWNER_ID` | any valid UUID (see below) |
+
+Outside local development, set those environment variables instead of using the local file.
+
+`INITIAL_OWNER_ID` is only used by Flyway migration V3 (data ownership). On an empty or
+restored database it has no effect, but it must be a valid UUID. When migrating a database
+that already has data, use the Keycloak `sub` of the admin user (Keycloak console >
+Users > Details > ID).
 
 ## Backup
 
