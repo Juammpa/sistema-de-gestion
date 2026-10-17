@@ -34,6 +34,12 @@ export class FormUtils {
         case 'phoneNumber':
           return 'Formato inválido. Ej: +54 9 3442 123456';
 
+        case 'username':
+          return 'Solo se permiten letras, números, puntos, guiones y guion bajo.';
+
+        case 'email':
+          return 'Ingresá un correo válido. Ej: nombre@correo.com';
+
         case 'pattern':
           return 'El formato es inválido';
 

@@ -46,16 +46,24 @@ public class KeycloakClient implements IdentityProviderClient {
     private final RestClient keycloakAdminRestClient;
 
     @Override
-    public List<IdentityUser> findUsers(String search, int first, int max) {
+    public List<IdentityUser> findUsers(String search, Boolean enabled,int first, int max) {
+
+        // Keycloak incluye las cuentas de servicio cuando se filtra solo por "enabled"
+        // Con "search" las excluye, y "*" coincide con todos: se usa para ocultarlas.
+        String effectiveSearch = StringUtils.hasText(search) ? search : (enabled != null ? "*" : null);
 
         List<KeycloakUser> users = call(() ->
                 keycloakAdminRestClient.get()
                         .uri(uri -> {
                             UriBuilder builder = uri.path("/users").queryParam("first", first).queryParam("max", max);
 
-                            if (StringUtils.hasText(search)) {
-                                // Como variable de plantilla para que Spring codifique caracteres como + o &
-                                return builder.queryParam("search", "{search}").build(search);
+                            // Sin "enabled" Keycloak devuelve todos; con true o false, solo los de ese estado
+                            if (enabled != null) {
+                                builder.queryParam("enabled", enabled);
+                            }
+
+                            if (effectiveSearch != null) {
+                                return builder.queryParam("search", "{search}").build(effectiveSearch);
                             }
 
                             return builder.build();

@@ -63,6 +63,15 @@ export class Sidebar {
       route: 'caja-ahorro',
       icon: 'fa-solid fa-dollar-sign',
     },
+    ...(this.auth.isAdmin
+      ? [
+          {
+            name: 'Usuarios',
+            route: 'usuarios',
+            icon: 'fa-solid fa-user-shield',
+          },
+        ]
+      : []),
     {
       name: 'Ajustes',
       route: 'ajustes',

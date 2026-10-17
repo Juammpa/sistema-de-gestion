@@ -1,0 +1,56 @@
+<div
+  class="group flex cursor-pointer touch-manipulation items-center justify-between gap-x-4 gap-y-2 rounded-xl border border-line bg-panel-from px-4 py-3 shadow-sm shadow-black/20 transition-ui duration-150 hover:border-slate-600 hover:bg-raised active:border-slate-600 active:bg-raised motion-reduce:transition-none motion-safe:active:scale-[0.995]"
+>
+  <!-- Avatar + nombre + usuario y correo -->
+  <div class="flex min-w-0 items-center gap-3">
+    <div
+      aria-hidden="true"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent-500/30 bg-accent-500/15 text-sm font-bold text-accent-300"
+    >
+      {{ initials() }}
+    </div>
+    <div class="min-w-0">
+      <p class="flex min-w-0 items-center gap-2">
+        <span
+          [title]="displayName()"
+          [class.opacity-70]="!user().enabled"
+          class="truncate text-sm font-semibold tracking-tight text-slate-100 sm:text-base"
+        >
+          {{ displayName() }}
+        </span>
+        @if (isSelf()) {
+          <span
+            class="shrink-0 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 text-[0.75rem] font-semibold leading-none tracking-wide text-accent-300"
+          >
+            Vos
+          </span>
+        }
+      </p>
+    </div>
+  </div>
+
+  <!-- Rol y estado -->
+  <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
+    <span
+      [class]="
+        'inline-flex shrink-0 items-center rounded-md border px-2 py-1 text-xs font-medium leading-none ' +
+        roleBadgeClass()
+      "
+    >
+      {{ translateRole(user().role) }}
+    </span>
+    @if (user().enabled) {
+      <span
+        class="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-xs font-medium leading-none text-emerald-300 before:size-1.5 before:shrink-0 before:rounded-full before:bg-emerald-400"
+      >
+        Habilitado
+      </span>
+    } @else {
+      <span
+        class="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-rose-600/50 bg-rose-700/30 px-2 py-1 text-xs font-medium leading-none text-rose-400 before:size-1.5 before:shrink-0 before:rounded-full before:bg-rose-500"
+      >
+        Deshabilitado
+      </span>
+    }
+  </div>
+</div>
