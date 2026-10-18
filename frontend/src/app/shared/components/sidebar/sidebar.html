@@ -75,11 +75,11 @@
         aria-hidden="true"
         class="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent-500/30 bg-accent-500/15 text-sm font-bold text-accent-300"
       >
-        {{ auth.initials }}
+        {{ auth.initials() }}
       </div>
       @if (!collapsed()) {
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-semibold text-slate-100">{{ auth.fullName }}</p>
+          <p class="truncate text-sm font-semibold text-slate-100">{{ auth.fullName() }}</p>
           <p class="truncate text-xs text-slate-400">{{ auth.roleLabel }}</p>
         </div>
       }

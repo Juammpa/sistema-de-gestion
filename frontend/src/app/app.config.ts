@@ -28,17 +28,19 @@ import { registerLocaleData } from '@angular/common';
 import { ThemeService } from './core/theme/theme.service';
 import { AccentService } from './core/theme/accent.service';
 import { unauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
+import { ACCOUNT_URL } from './core/auth/keycloak-urls';
 
 // Datos de formato (separadores, simbolo de moneda, fechas) para es-AR
 registerLocaleData(localeEsAr);
 
-// El token se envia solo a nuestra API, nunca a terceros
+// El token se envia solo a nuestra API y a la API de cuenta de Keycloak, nunca a terceros.
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-const apiTokenCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
-  urlPattern: new RegExp(`^${escapeRegExp(environment.apiUrl)}(/.*)?$`, 'i'),
-  bearerPrefix: 'Bearer',
-});
+const tokenConditionFor = (baseUrl: string) =>
+  createInterceptorCondition<IncludeBearerTokenCondition>({
+    urlPattern: new RegExp(`^${escapeRegExp(baseUrl)}([/?].*)?$`, 'i'),
+    bearerPrefix: 'Bearer',
+  });
 
 const SESSION_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -72,6 +74,9 @@ export const appConfig: ApplicationConfig = {
       ],
       providers: [AutoRefreshTokenService, UserActivityService],
     }),
-    { provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG, useValue: [apiTokenCondition] },
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [tokenConditionFor(environment.apiUrl), tokenConditionFor(ACCOUNT_URL)],
+    },
   ],
 };
