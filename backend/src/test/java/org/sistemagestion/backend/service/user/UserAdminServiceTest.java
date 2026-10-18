@@ -37,6 +37,7 @@ public class UserAdminServiceTest {
     class GetUsersTests {
 
         @Test
+        @DisplayName("Debe resolver el rol de cada usuario con ADMIN por encima de USER, y null si no tiene ninguno")
         void getUsersResolvesRolesWithAdminTakingPrecedence() {
 
             // Arrange
@@ -65,6 +66,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe indicar que hay otra página cuando existen más resultados")
         void getUsersReportsANextPageWhenThereAreMoreResults() {
 
             // Arrange
@@ -84,6 +86,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe corregir una página y un tamaño fuera de rango")
         void getUsersCorrectsAndOutOfRangePageAndSize() {
 
             // Arrange
@@ -100,6 +103,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe limitar el número de página para que el desplazamiento no se desborde")
         void getUsersCapsThePageNumberSoTheOffsetCannotOverflow() {
 
             // Arrange
@@ -116,6 +120,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe pasar el texto de búsqueda y el filtro de estado al proveedor")
         void getUsersPassesTheSearchTextAndStatusFilterToTheProvider() {
 
             // Arrange
@@ -139,6 +144,7 @@ public class UserAdminServiceTest {
     class CreateUserTests {
 
         @Test
+        @DisplayName("Debe recortar los campos, asignar el rol y devolver el usuario creado")
         void createUserTrimsTheFieldsAssignsTheRoleAndReturnsTheCreatedUser() {
 
             // Arrange
@@ -161,6 +167,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe deshacer la creación cuando falla la asignación del rol")
         void createUserRollsBackTheCreationWhenRoleAssignmentFails() {
 
             // Arrange
@@ -180,6 +187,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe conservar el error original cuando el rollback támbien falla")
         void createUserKeepsTheOriginalErrorWhenTheRollbackAlsoFails() {
 
             // Arrange
@@ -199,6 +207,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("No debe asignar rol cuando el alta es rechazada")
         void createUserDoesNotAssignARoleWhenTheCreationIsRejected() {
 
             // Arrange
@@ -224,6 +233,7 @@ public class UserAdminServiceTest {
     class ChangeRoleTests {
 
         @Test
+        @DisplayName("Debe rechazar que un administrador cambie su propio rol")
         void changeRolRejectsChangingTheOwnRole() {
 
             // Arrange
@@ -241,6 +251,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe rechazar quitar el rol al último administrador habilitado")
         void changeRoleRejectsDemotingTheLastEnabledAdmin() {
 
             // Arannge
@@ -260,6 +271,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("No debe contar a los administradores deshabilitados como otro administrador")
         void changeRoleDoesNotCountDisabledAdminisAsAnotherAdmin() {
 
             // Arrange
@@ -278,6 +290,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe permitir quitar el rol de administrador si queda otro habilitado")
         void changeRoleAllowsDemotingAnAdminWhenAnotherEnabledAdminRemains() {
 
             // Arrange
@@ -296,6 +309,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe permitir ascender a un usuario a administrador")
         void changeRoleAllowsPromotingAUserToAdmin() {
 
             // Arrange
@@ -313,6 +327,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe fallar cuando el usuario no existe")
         void changeRoleFailsWhenTheUserDoesNotExist() {
 
             // Arrange
@@ -334,6 +349,7 @@ public class UserAdminServiceTest {
     class DisableUserTests {
 
         @Test
+        @DisplayName("Debe rechazar que un administrador deshabilite su propia cuenta")
         void disableUserRejectsDisablingTheOwnAccount() {
 
             // Arrange
@@ -350,6 +366,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe rechazar deshabilitar al último administrador habilitado")
         void disableUserRejectsDisablingTheLastEnabledAdmin() {
 
             // Arrange
@@ -371,6 +388,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe permitir deshabilitar a un administrador si queda otro habilitado")
         void disableUserAllowsDisablingAnAdminWhenAnotherEnabledAdminRemains() {
 
             // Arrange
@@ -388,6 +406,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe deshabilitar la cuenta y cerrar sus sesiones")
         void disableUserDisablesTheAccountAndClosesItsSessions() {
 
             // Arrange
@@ -403,6 +422,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("No debe hacer nada cuando la cuenta ya está deshabilitada")
         void disabledUserDoesNotNothingWhenTheAccountIsAlreadyDisabled() {
 
             // Arrange
@@ -417,6 +437,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("Debe completarse aunque falle el cierre de sesiones")
         void disableUserSucceedsEvenWhenClosingTheSessionsFails() {
 
             // Arrange
@@ -439,6 +460,7 @@ public class UserAdminServiceTest {
     class ActivateUserTests {
 
         @Test
+        @DisplayName("Debe habilitar la cuenta")
         void activateUserEnablesTheAccount() {
 
             // Act
@@ -449,6 +471,7 @@ public class UserAdminServiceTest {
         }
 
         @Test
+        @DisplayName("No debe ocultar un error del proveedor")
         void activateUserDoesNotSmallowAnErrorFromTheProvider() {
 
             // Arrange
