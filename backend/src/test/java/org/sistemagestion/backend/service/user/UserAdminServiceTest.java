@@ -229,12 +229,12 @@ public class UserAdminServiceTest {
     }
 
     @Nested
-    @DisplayName("changeRol()")
+    @DisplayName("changeRole()")
     class ChangeRoleTests {
 
         @Test
         @DisplayName("Debe rechazar que un administrador cambie su propio rol")
-        void changeRolRejectsChangingTheOwnRole() {
+        void changeRoleRejectsChangingTheOwnRole() {
 
             // Arrange
             String actorId = "admin-1";
