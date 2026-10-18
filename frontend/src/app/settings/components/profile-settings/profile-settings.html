@@ -1,85 +1,129 @@
 <h2 class="text-xl font-bold text-slate-50">Perfil</h2>
-<p class="mt-1 text-sm text-slate-400">Información pública de tu cuenta.</p>
+<p class="mt-1 text-sm text-slate-400">Información de tu cuenta.</p>
 
-<!-- Foto -->
+<!-- Resumen: iniciales, nombre y correo (se actualizan al guardar) -->
 <div class="mt-5 flex items-center gap-4 border-b border-slate-800/80 pb-5">
-  <div class="relative shrink-0">
-    <div
-      aria-hidden="true"
-      class="flex size-14 items-center justify-center rounded-full border border-accent-500/30 bg-linear-to-br from-accent-500/30 to-indigo-600/10 text-lg font-bold text-accent-300"
-    >
-      {{ initials }}
-    </div>
-    <button
-      type="button"
-      title="Cambiar foto de perfil"
-      aria-label="Cambiar foto de perfil"
-      class="absolute -bottom-1 -right-1 flex size-6 cursor-pointer items-center justify-center rounded-full border-2 border-panel-from bg-raised text-slate-300 transition-colors hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
-    >
-      <i class="fa-solid fa-camera text-xs" aria-hidden="true"></i>
-    </button>
+  <div
+    aria-hidden="true"
+    class="flex size-14 shrink-0 items-center justify-center rounded-full border border-accent-500/30 bg-linear-to-br from-accent-500/30 to-indigo-600/10 text-lg font-bold text-accent-300"
+  >
+    {{ auth.initials() }}
   </div>
   <div class="min-w-0">
-    <p class="truncate text-base font-bold text-slate-100">{{ user.name }} {{ user.lastName }}</p>
-    <p class="truncate text-sm text-slate-400">{{ user.email }}</p>
-    <p [class]="ui.help" class="mt-0.5!">JPG o PNG. Máximo 2MB.</p>
+    <p class="truncate text-base font-bold text-slate-100">{{ auth.fullName() }}</p>
+    <p class="truncate text-sm text-slate-400">{{ auth.email() }}</p>
   </div>
 </div>
 
-<!-- Formulario (visual: todavía no guarda nada) -->
-<form (submit)="$event.preventDefault()" class="mt-5 flex flex-col gap-4">
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-    <div>
-      <label for="profile-name" [class]="ui.label">Nombre</label>
-      <input
-        id="profile-name"
-        type="text"
-        autocomplete="given-name"
-        [value]="user.name"
-        [class]="ui.field"
-      />
-    </div>
-    <div>
-      <label for="profile-last-name" [class]="ui.label">Apellido</label>
-      <input
-        id="profile-last-name"
-        type="text"
-        autocomplete="family-name"
-        [value]="user.lastName"
-        [class]="ui.field"
-      />
-    </div>
-    <div>
-      <label for="profile-email" [class]="ui.label">Email</label>
-      <input
-        id="profile-email"
-        type="email"
-        autocomplete="email"
-        disabled
-        [value]="user.email"
-        [class]="ui.field"
-      />
-      <p [class]="ui.help">Para cambiarlo, contactá a un administrador.</p>
-    </div>
-    <div>
-      <label for="profile-phone" [class]="ui.label">Teléfono</label>
-      <input
-        id="profile-phone"
-        type="tel"
-        autocomplete="tel"
-        [value]="user.phone"
-        [class]="ui.field"
-      />
-    </div>
-  </div>
+@if (profile.hasValue()) {
+  <form [formGroup]="form" (ngSubmit)="save()" class="mt-5 flex flex-col gap-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <!-- Nombre -->
+      <div>
+        <label for="profile-first-name" [class]="ui.label">Nombre</label>
+        <input
+          id="profile-first-name"
+          type="text"
+          autocomplete="given-name"
+          formControlName="firstName"
+          [attr.aria-invalid]="formUtils.isValidField(form, 'firstName')"
+          [class]="ui.field"
+          [class.!border-red-500/80]="formUtils.isValidField(form, 'firstName')"
+        />
+        @if (formUtils.isValidField(form, 'firstName')) {
+          <p role="alert" class="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-400">
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+            {{ formUtils.getFieldError(form, 'firstName') }}
+          </p>
+        }
+      </div>
 
-  <div
-    class="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-4 sm:flex-row sm:justify-end"
-  >
-    <button type="button" [class]="ui.outlineButton">Cancelar</button>
-    <button type="submit" [class]="ui.primaryButton">
-      <i class="fa-solid fa-check text-xs" aria-hidden="true"></i>
-      Guardar cambios
-    </button>
+      <!-- Apellido -->
+      <div>
+        <label for="profile-last-name" [class]="ui.label">Apellido</label>
+        <input
+          id="profile-last-name"
+          type="text"
+          autocomplete="family-name"
+          formControlName="lastName"
+          [attr.aria-invalid]="formUtils.isValidField(form, 'lastName')"
+          [class]="ui.field"
+          [class.!border-red-500/80]="formUtils.isValidField(form, 'lastName')"
+        />
+        @if (formUtils.isValidField(form, 'lastName')) {
+          <p role="alert" class="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-400">
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+            {{ formUtils.getFieldError(form, 'lastName') }}
+          </p>
+        }
+      </div>
+
+      <!-- Usuario (no editable) -->
+      <div>
+        <label for="profile-username" [class]="ui.label">Usuario</label>
+        <input
+          id="profile-username"
+          type="text"
+          disabled
+          [value]="profile.value()?.username ?? ''"
+          [class]="ui.field"
+        />
+        <p [class]="ui.help">El nombre de usuario no se puede cambiar.</p>
+      </div>
+
+      <!-- Email (no editable) -->
+      <div>
+        <label for="profile-email" [class]="ui.label">Email</label>
+        <input
+          id="profile-email"
+          type="email"
+          disabled
+          [value]="profile.value()?.email ?? ''"
+          [class]="ui.field"
+        />
+        <p [class]="ui.help">Para cambiarlo, contactá a un administrador.</p>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-4 sm:flex-row sm:justify-end"
+    >
+      <button
+        type="button"
+        (click)="restore()"
+        [disabled]="!form.dirty || saving()"
+        [class]="ui.outlineButton"
+        class="disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="!form.dirty || form.invalid || saving()"
+        [class]="ui.primaryButton"
+        class="disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        @if (saving()) {
+          <i class="fa-solid fa-spinner fa-spin text-xs" aria-hidden="true"></i>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-check text-xs" aria-hidden="true"></i>
+          Guardar cambios
+        }
+      </button>
+    </div>
+  </form>
+} @else if (profile.isLoading()) {
+  <p role="status" class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+    <i class="fa-solid fa-spinner fa-spin text-xs" aria-hidden="true"></i>
+    Cargando tu perfil...
+  </p>
+} @else if (profile.error()) {
+  <div class="mt-5">
+    <error-state
+      title="No se pudo cargar tu perfil"
+      [error]="profile.error()"
+      (retry)="profile.reload()"
+    />
   </div>
-</form>
+}
