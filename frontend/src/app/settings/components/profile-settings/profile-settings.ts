@@ -9,6 +9,14 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { AppValidators } from '../../../shared/validators/app-validators';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 
+// Mismas reglas para nombre y apellido
+const NAME_VALIDATORS = [
+  Validators.required,
+  AppValidators.noBlank,
+  AppValidators.trimmedLength(1, 50),
+  AppValidators.personName,
+];
+
 @Component({
   selector: 'profile-settings',
   imports: [ReactiveFormsModule, ErrorState],
@@ -31,24 +39,8 @@ export class ProfileSettings {
 
   // Solo nombre y apellido son editables
   protected readonly form = this.fb.nonNullable.group({
-    firstName: [
-      '',
-      [
-        Validators.required,
-        AppValidators.noBlank,
-        AppValidators.trimmedLength(1, 50),
-        AppValidators.personName,
-      ],
-    ],
-    lastName: [
-      '',
-      [
-        Validators.required,
-        AppValidators.noBlank,
-        AppValidators.trimmedLength(1, 50),
-        AppValidators.personName,
-      ],
-    ],
+    firstName: ['', NAME_VALIDATORS],
+    lastName: ['', NAME_VALIDATORS],
   });
 
   protected readonly saving = signal<boolean>(false);
@@ -89,6 +81,8 @@ export class ProfileSettings {
         // Se renueva el token para que el menu lateral muestre el nombre nuevo sin recargar la pagina
         try {
           await this.auth.refreshProfile();
+        } catch {
+          // No se avisa: es un detalle de pantalla que se corrige solo
         } finally {
           this.profile.reload();
           this.saving.set(false);
