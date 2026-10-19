@@ -32,6 +32,7 @@ services:
       - "127.0.0.1:8081:8080"
     volumes:
       - ./infra/keycloak/sistema-gestion-realm.json:/opt/keycloak/data/import/sistema-gestion-realm.json:ro
+      - ./infra/keycloak/themes/sistema-gestion:/opt/keycloak/themes/sistema-gestion:ro
     depends_on:
       postgres:
         condition: service_healthy
