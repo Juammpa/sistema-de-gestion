@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sistema de Gestión">
+  <defs>
+    <linearGradient id="sg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#sg-grad)"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="none" stroke="#93c5fd" stroke-opacity="0.35" stroke-width="2"/>
+  <text x="32" y="41" text-anchor="middle" font-family="system-ui, 'Segoe UI', Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">SG</text>
+</svg>
