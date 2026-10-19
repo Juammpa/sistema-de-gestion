@@ -35,6 +35,9 @@
     "duplicateEmailsAllowed": false,
     "resetPasswordAllowed": false,
     "editUsernameAllowed": false,
+    "internationalizationEnabled": true,
+    "supportedLocales": ["es"],
+    "defaultLocale": "es",
     "bruteForceProtected": false,
     "permanentLockout": false,
     "maxTemporaryLockouts": 0,
@@ -1852,7 +1855,6 @@
             }
         ]
     },
-    "internationalizationEnabled": false,
     "authenticationFlows": [
         {
             "id": "76976e92-2975-4d73-92e6-9509111e0934",
