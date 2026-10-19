@@ -53,4 +53,12 @@ export class AuthService {
       email: (token?.['email'] as string | undefined) ?? '',
     };
   }
+
+  // Lleva al usuario a la pantalla de Keycloak para cambiar la contraseña
+  changePassword(): Promise<void> {
+    return this.keycloak.login({
+      action: 'UPDATE_PASSWORD',
+      redirectUri: `${window.location.origin}/home/ajustes?seccion=seguridad`,
+    });
+  }
 }

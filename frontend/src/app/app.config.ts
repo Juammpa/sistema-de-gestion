@@ -29,6 +29,7 @@ import { ThemeService } from './core/theme/theme.service';
 import { AccentService } from './core/theme/accent.service';
 import { unauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
 import { ACCOUNT_URL } from './core/auth/keycloak-urls';
+import { AccountActionService } from './core/auth/account-action.service';
 
 // Datos de formato (separadores, simbolo de moneda, fechas) para es-AR
 registerLocaleData(localeEsAr);
@@ -58,6 +59,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       inject(ThemeService);
       inject(AccentService);
+      // Debe crearce antes de que Keycloak arranque
+      inject(AccountActionService);
     }),
     provideKeycloak({
       config: environment.keycloak,
