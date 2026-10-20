@@ -14,7 +14,7 @@
     (document:keydown.escape)="mobileOpen.set(false)"
     [attr.inert]="isMobile() && !drawerOpen() ? '' : null"
     [class.max-md:-translate-x-full]="!drawerOpen()"
-    class="z-20 flex shrink-0 select-none flex-col gap-4 border-r border-slate-800/80 bg-sidebar px-2.5 py-4 shadow-xl shadow-black/20 transition-[width,translate] duration-200 ease-in-out [view-transition-name:sidebar] max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-40 max-md:w-64 max-md:ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none"
+    class="z-20 flex shrink-0 select-none flex-col gap-3 border-r border-slate-800/80 bg-sidebar px-2.5 py-3 shadow-xl shadow-black/20 transition-[width,translate] duration-200 ease-in-out [view-transition-name:sidebar] max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-40 max-md:w-64 max-md:ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none"
     [class]="collapsed() ? 'w-16 items-center' : 'w-64 overflow-hidden'"
   >
     <!-- LOGO / BRANDING -->
@@ -51,7 +51,7 @@
     <!-- NAVEGACIÓN -->
     <nav
       aria-label="Navegación principal"
-      class="flex w-full flex-1 flex-col gap-4 [scrollbar-color:var(--color-slate-800)_transparent] scrollbar-thin"
+      class="flex w-full flex-1 flex-col gap-3 [scrollbar-color:var(--color-slate-800)_transparent] scrollbar-thin"
       [class]="collapsed() ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'"
     >
       <!-- Cada sección repite la misma plantilla: se define una sola vez al final del archivo -->
@@ -120,7 +120,7 @@
 <ng-template #section let-title="title" let-items="items">
   <div class="flex w-full flex-col gap-1">
     @if (!collapsed()) {
-      <h3 class="px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-400">
+      <h3 class="px-3 py-0.5 text-xs font-semibold uppercase tracking-widest text-slate-400">
         {{ title }}
       </h3>
     }
@@ -131,7 +131,7 @@
         ariaCurrentWhenActive="page"
         (click)="mobileOpen.set(false)"
         class="group relative flex items-center rounded-xl font-medium text-slate-300 transition-ui duration-150 hover:bg-slate-800/70 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 active:scale-[0.97] motion-reduce:transition-none"
-        [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3'"
+        [class]="collapsed() ? 'mx-auto h-11 w-11 justify-center' : 'mx-1 px-3 py-3 md:py-2.5'"
       >
         <!-- Icono del item con tamaño constante -->
         <i aria-hidden="true" class="{{ item.icon }} w-5 shrink-0 text-center text-base"></i>
