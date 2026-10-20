@@ -65,7 +65,7 @@
           id="profile-username"
           type="text"
           disabled
-          [value]="profile.value()?.username ?? ''"
+          [value]="profile.value().username"
           [class]="ui.field"
         />
         <p [class]="ui.help">El nombre de usuario no se puede cambiar.</p>
@@ -78,7 +78,7 @@
           id="profile-email"
           type="email"
           disabled
-          [value]="profile.value()?.email ?? ''"
+          [value]="profile.value().email ?? ''"
           [class]="ui.field"
         />
         <p [class]="ui.help">Para cambiarlo, contactá a un administrador.</p>
