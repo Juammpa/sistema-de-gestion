@@ -11,7 +11,7 @@ public class PurchaseTypeMapper {
     public PurchaseType toEntity(PurchaseTypeRequestDto request) {
 
         return PurchaseType.builder()
-                .name(request.getName())
+                .name(request.getName().trim())
                 .specie(request.getSpecie())
                 .isActive(true)
                 .build();

@@ -64,7 +64,7 @@ public class PurchaseTypeService implements IPurchaseTypeService {
 
         assertNameAvailable(request.getName(), type.getSpecie(), id);
 
-        type.setName(request.getName());
+        type.setName(request.getName().trim());
         log.info("Tipo de compra actualizado correctamente.");
 
         return mapper.toDto(repository.save(type));

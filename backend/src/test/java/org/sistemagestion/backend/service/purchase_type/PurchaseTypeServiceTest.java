@@ -71,7 +71,7 @@ class PurchaseTypeServiceTest {
             when(repository.save(any(PurchaseType.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // Act
-            PurchaseTypeResponseDto result = service.create(request("Ternero", Specie.BOVINE));
+            PurchaseTypeResponseDto result = service.create(request("  Ternero  ", Specie.BOVINE));
 
             // Assert
             assertThat(result.getName()).isEqualTo("Ternero");
@@ -112,7 +112,7 @@ class PurchaseTypeServiceTest {
             when(repository.save(existing)).thenReturn(existing);
 
             // Act
-            PurchaseTypeResponseDto result = service.update(1L, request("Novillo", Specie.BOVINE));
+            PurchaseTypeResponseDto result = service.update(1L, request("  Novillo  ", Specie.BOVINE));
 
             // Assert
             assertThat(result.getName()).isEqualTo("Novillo");
