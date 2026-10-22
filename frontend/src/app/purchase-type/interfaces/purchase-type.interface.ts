@@ -6,3 +6,8 @@ export interface PurchaseType {
   specie: SpecieValue;
   isActive: boolean;
 }
+
+export interface PurchaseTypeRequest {
+  name: string;
+  specie: SpecieValue;
+}

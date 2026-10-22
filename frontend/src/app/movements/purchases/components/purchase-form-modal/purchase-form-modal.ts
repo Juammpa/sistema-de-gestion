@@ -8,10 +8,11 @@ import { AppValidators } from '../../../../shared/validators/app-validators';
 import { PurchaseTypeService } from '../../../../purchase-type/services/purchase-type.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { purchaseTypesFor } from '../../../../purchase-type/utils/purchase-type.utils';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'purchase-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './purchase-form-modal.html',
 })
 export class PurchaseFormModal {

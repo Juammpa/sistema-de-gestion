@@ -105,7 +105,12 @@
           @if (purchaseTypes.hasValue() && purchaseTypeOptions().length === 0) {
             <p class="pt-0.5 text-xs text-slate-400">
               No hay tipos de compra para este proveedor. Cargalos en
-              <a routerLink="/ajustes" class="font-medium text-accent-400 underline">Ajustes</a>.
+              <a
+                routerLink="/ajustes"
+                [queryParams]="{ seccion: 'tipos-de-compra' }"
+                class="font-medium text-accent-400 underline"
+                >Ajustes</a
+              >
             </p>
           }
         </div>
