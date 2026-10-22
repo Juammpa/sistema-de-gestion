@@ -168,7 +168,7 @@ public class ExportDataService {
         return switch (movement) {
 
             case Purchase purchase -> new ExportData.SupplierRow(
-                    purchase.getDate(), ExportLabels.purchaseType(purchase.getPurchaseType()),
+                    purchase.getDate(), purchase.getPurchaseType().getName(),
                     purchase.getUnit(), purchase.getKilograms(), purchase.getPricePerKilo(),
                     purchase.getAmount(), null, purchase.getBalance(), false);
 

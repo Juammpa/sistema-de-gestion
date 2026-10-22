@@ -9,7 +9,7 @@ import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.SupplierMapper;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Supplier;
-import org.sistemagestion.backend.model.enums.PurchaseType;
+import org.sistemagestion.backend.model.enums.Specie;
 import org.sistemagestion.backend.model.enums.SupplierType;
 import org.sistemagestion.backend.repository.PurchaseRepository;
 import org.sistemagestion.backend.repository.SupplierRepository;
@@ -105,9 +105,9 @@ public class SupplierService implements ISupplierService{
 
         if (supplier.getSupplierType() == newType) return;
 
-        List<PurchaseType> incompatible = newType.incompatiblePurchaseTypes();
+            List<Specie> incompatible = newType.incompatibleSpecies();
 
-        if (!incompatible.isEmpty() && purchaseRepository.existsByCurrentAccountIdAndPurchaseTypeIn(supplier.getCurrentAccount().getId(), incompatible)) {
+        if (!incompatible.isEmpty() && purchaseRepository.existsByCurrentAccountIdAndPurchaseType_SpecieIn(supplier.getCurrentAccount().getId(), incompatible)) {
             throw new BusinessRuleException(String.format(
                     "No se puede cambiar el tipo a %s: el proveedor ya tiene compras registradas de otro tipo.",
                     newType.getLabel()

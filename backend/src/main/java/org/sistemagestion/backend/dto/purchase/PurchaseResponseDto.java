@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sistemagestion.backend.model.enums.PurchaseType;
 
 import java.time.LocalDate;
 
@@ -19,7 +18,8 @@ public class PurchaseResponseDto {
     private Long id;
     private Long currentAccountId;
     private LocalDate date;
-    private PurchaseType purchaseType;
+    private Long purchaseTypeId;
+    private String purchaseTypeName;
     private Integer unit;
     private BigDecimal kilograms;
     private BigDecimal pricePerKilo;

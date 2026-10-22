@@ -10,7 +10,6 @@ import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.model.PurchasePieceWeight;
-import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.model.enums.Specie;
 import org.sistemagestion.backend.repository.PurchasePieceWeightRepository;
 import org.sistemagestion.backend.repository.PurchaseRepository;
@@ -20,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -129,8 +125,9 @@ public class StockService implements IStockService {
                         purchase.id(),
                         number,
                         units,
-                        purchase.purchaseType(),
-                        purchase.purchaseType().getSpecie(),
+                        purchase.purchaseTypeId(),
+                        purchase.purchaseTypeName(),
+                        purchase.specie(),
                         distribution.kilograms().get(number - 1),
                         purchase.date(),
                         purchase.supplierId(),
@@ -159,24 +156,19 @@ public class StockService implements IStockService {
     // Los totales salen de las compras (no de sumas las piezas), asi no se acumula error de redondeo
     private StockSummaryDto summarize(List<StockPurchaseDto> purchases) {
 
-        // Un renglon por tipo de compra que tenga datos, en el orden del enum
-        List<StockSummaryDto.TypeTotals> byType = new ArrayList<>();
-
-        for (PurchaseType type: PurchaseType.values()) {
-            List<StockPurchaseDto> ofType = purchases.stream()
-                    .filter(purchase -> purchase.purchaseType() == type)
-                    .toList();
-
-            if (ofType.isEmpty()) {
-                continue;
-            }
-
-            byType.add(new StockSummaryDto.TypeTotals(
-                    type,
-                    ofType.stream().map(this::kilogramsOf).reduce(BigDecimal.ZERO, BigDecimal::add),
-                    ofType.stream().mapToInt(this::unitsOf).sum()
-            ));
-        }
+        // Un renglon por tipo de compra que tenga datos: primero bovinos, luego porcinos, por nombre
+        List<StockSummaryDto.TypeTotals> byType = purchases.stream()
+                .collect(Collectors.groupingBy(StockPurchaseDto::purchaseTypeId))
+                .values().stream()
+                    .map(ofType -> new StockSummaryDto.TypeTotals(
+                            ofType.get(0).purchaseTypeId(),
+                            ofType.get(0).purchaseTypeName(),
+                            ofType.get(0).specie(),
+                            ofType.stream().map(this::kilogramsOf).reduce(BigDecimal.ZERO, BigDecimal::add),
+                            ofType.stream().mapToInt(this::unitsOf).sum()))
+                .sorted(Comparator.comparing(StockSummaryDto.TypeTotals::specie)
+                        .thenComparing(StockSummaryDto.TypeTotals::purchaseTypeName,
+                                String.CASE_INSENSITIVE_ORDER)).toList();
 
         StockSummaryDto.SpecieTotals bovine = totalsOf(byType, Specie.BOVINE);
         StockSummaryDto.SpecieTotals porcine = totalsOf(byType, Specie.PORCINE);
@@ -194,7 +186,7 @@ public class StockService implements IStockService {
         int units = 0;
 
         for (StockSummaryDto.TypeTotals totals: byType) {
-            if (totals.purchaseType().getSpecie() == specie) {
+            if (totals.specie() == specie) {
                 kilograms = kilograms.add(totals.kilograms());
                 units += totals.units();
             }

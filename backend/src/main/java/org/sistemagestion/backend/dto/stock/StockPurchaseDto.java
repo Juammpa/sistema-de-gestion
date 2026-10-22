@@ -2,7 +2,7 @@ package org.sistemagestion.backend.dto.stock;
 
 import java.math.BigDecimal;
 
-import org.sistemagestion.backend.model.enums.PurchaseType;
+import org.sistemagestion.backend.model.enums.Specie;
 
 import java.time.LocalDate;
 
@@ -10,7 +10,9 @@ import java.time.LocalDate;
 public record StockPurchaseDto(
         Long id,
         LocalDate date,
-        PurchaseType purchaseType,
+        Long purchaseTypeId,
+        String purchaseTypeName,
+        Specie specie,
         Integer unit,
         BigDecimal kilograms,
         Long supplierId,

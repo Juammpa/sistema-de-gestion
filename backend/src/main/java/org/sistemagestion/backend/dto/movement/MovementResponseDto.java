@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.sistemagestion.backend.model.enums.MovementType;
 import org.sistemagestion.backend.model.enums.PaymentType;
-import org.sistemagestion.backend.model.enums.PurchaseType;
 
 import java.time.LocalDate;
 
@@ -33,7 +32,8 @@ public class MovementResponseDto {
     // Propio de Payment (null si type == SALE)
     private PaymentType paymentType;
 
-    // Propio de Purchase (null salvo que tyep = PURCHASE)
-    private PurchaseType purchaseType;
+    // Propio de Purchase (null salvo que type == PURCHASE)
+    private Long purchaseTypeId;
+    private String purchaseTypeName;
 
 }
