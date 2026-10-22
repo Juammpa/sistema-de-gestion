@@ -68,14 +68,14 @@
         <!-- Tipos de compra (solo si hay más de uno para elegir) -->
         @if (availableTypes().length > 1) {
           <div role="group" aria-label="Tipo de compra" class="flex flex-wrap gap-2">
-            @for (totals of availableTypes(); track totals.purchaseType) {
+            @for (totals of availableTypes(); track totals.purchaseTypeId) {
               <button
                 type="button"
-                [attr.aria-pressed]="activeType() === totals.purchaseType"
-                (click)="selectType(totals.purchaseType)"
+                [attr.aria-pressed]="activeType() === totals.purchaseTypeId"
+                (click)="selectType(totals.purchaseTypeId)"
                 class="inline-flex min-h-9 cursor-pointer touch-manipulation items-center gap-1.5 rounded-full border border-slate-700/70 bg-raised px-3 text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-accent-500/50 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:border-accent-500 aria-pressed:bg-accent-500/15 aria-pressed:text-accent-200"
               >
-                {{ typeLabel(totals.purchaseType) }}
+                {{ totals.purchaseTypeName }}
                 <span
                   class="rounded-full bg-slate-800/80 px-1.5 text-[11px] tabular-nums text-slate-400"
                 >

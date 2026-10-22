@@ -33,7 +33,8 @@ public class MovementMapper {
         if (movement instanceof Purchase purchase) {
             return builder
                     .type(MovementType.PURCHASE)
-                    .purchaseType(purchase.getPurchaseType())
+                    .purchaseTypeId(purchase.getPurchaseType().getId())
+                    .purchaseTypeName(purchase.getPurchaseType().getName())
                     .unit(purchase.getUnit())
                     .kilograms(purchase.getKilograms())
                     .pricePerKilo(purchase.getPricePerKilo())

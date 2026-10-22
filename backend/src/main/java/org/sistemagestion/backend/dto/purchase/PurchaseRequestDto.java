@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.validation.OnUpdate;
 
 import java.time.LocalDate;
@@ -19,7 +18,7 @@ import java.time.LocalDate;
 public class PurchaseRequestDto {
 
     @NotNull(message = "El tipo de compra es obligatorio.")
-    private PurchaseType purchaseType;
+    private Long purchaseTypeId;
 
     @NotNull(message = "Las unidades son obligatorias.")
     @Positive(message = "Las unidades deben ser positivas.")

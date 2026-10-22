@@ -22,15 +22,15 @@ public enum SupplierType {
         this.species = species;
     }
 
-    // Verifica si el proveedor puede vender el tipo de compra
-    public boolean canSell(PurchaseType purchaseType) {
-        return species.contains(purchaseType.getSpecie());
+    // Verifica si el proveedor puede vender esa especie
+    public boolean canSell(Specie specie) {
+        return species.contains(specie);
     }
 
-    // Tipos de compra que el proveedor NO puede vender
-    public List<PurchaseType> incompatiblePurchaseTypes() {
-        return Arrays.stream(PurchaseType.values())
-                .filter(type -> !canSell(type))
+    // Especies que el proveedor NO puede vender
+    public List<Specie> incompatibleSpecies() {
+        return Arrays.stream(Specie.values())
+                .filter(specie -> !canSell(specie))
                 .toList();
     }
 }

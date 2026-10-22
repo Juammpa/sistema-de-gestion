@@ -3,10 +3,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CashDateFilter } from '../../../cash/components/cash-date-filter/cash-date-filter';
 import { SpecieValue } from '../../../cut-meat/utils/specie.utils';
-import translatePurchaseType, {
-  PURCHASE_TYPE_SPECIE,
-  PurchaseTypeValue,
-} from '../../../movements/purchases/utils/purchase.utils';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
@@ -43,15 +39,13 @@ export default class StockPage {
 
   // Filtros de pantalla: se aplican sobre lo ya cargado, sin volver a pedir datos
   specie = signal<SpecieFilter>('ALL');
-  selectedType = signal<PurchaseTypeValue | null>(null);
+  selectedType = signal<number | null>(null);
 
   protected readonly specieOptions: { value: SpecieFilter; label: string }[] = [
     { value: 'ALL', label: 'Todos' },
     { value: 'BOVINE', label: 'Bovinos' },
     { value: 'PORCINE', label: 'Porcinos' },
   ];
-
-  protected readonly typeLabel = translatePurchaseType;
 
   stockResource = rxResource({
     params: () => ({ from: this.from(), to: this.to() }),
@@ -67,15 +61,13 @@ export default class StockPage {
     if (!stock) return [];
 
     const specie = this.specie();
-    return stock.summary.byType.filter(
-      (totals) => specie === 'ALL' || PURCHASE_TYPE_SPECIE[totals.purchaseType] === specie,
-    );
+    return stock.summary.byType.filter((totals) => specie === 'ALL' || totals.specie === specie);
   });
 
   // El tipo elegido solo vale si sigue disponible (al cambiar de especie o de fechas)
   activeType = computed(() => {
     const type = this.selectedType();
-    return this.availableTypes().some((totals) => totals.purchaseType === type) ? type : null;
+    return this.availableTypes().some((totals) => totals.purchaseTypeId === type) ? type : null;
   });
 
   visibleItems = computed(() => {
@@ -86,7 +78,7 @@ export default class StockPage {
     const type = this.activeType();
     return stock.items.filter(
       (item) =>
-        (specie === 'ALL' || item.specie === specie) && (!type || item.purchaseType === type),
+        (specie === 'ALL' || item.specie === specie) && (!type || item.purchaseTypeId === type),
     );
   });
 
@@ -118,7 +110,7 @@ export default class StockPage {
   });
 
   // Tocar el tipo elegido lo deselecciona
-  protected selectType(type: PurchaseTypeValue) {
+  protected selectType(type: number) {
     this.selectedType.update((current) => (current === type ? null : type));
   }
 }

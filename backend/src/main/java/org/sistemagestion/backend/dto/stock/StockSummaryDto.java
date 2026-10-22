@@ -2,7 +2,7 @@ package org.sistemagestion.backend.dto.stock;
 
 import java.math.BigDecimal;
 
-import org.sistemagestion.backend.model.enums.PurchaseType;
+import org.sistemagestion.backend.model.enums.Specie;
 
 import java.util.List;
 
@@ -16,5 +16,5 @@ public record StockSummaryDto(
 ) {
     public record SpecieTotals(BigDecimal kilograms, int units) {}
 
-    public record TypeTotals(PurchaseType purchaseType, BigDecimal kilograms, int units) {}
+    public record TypeTotals(Long purchaseTypeId, String purchaseTypeName, Specie specie, BigDecimal kilograms, int units) {}
 }

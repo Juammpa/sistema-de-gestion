@@ -1,22 +1,25 @@
-import { Component, computed, inject, input, OnInit, output } from '@angular/core';
-import translatePurchaseType, { purchaseTypeOptionsFor } from '../../utils/purchase.utils';
+import { Component, computed, effect, inject, input, output } from '@angular/core';
 import { PurchaseService } from '../../services/purchase.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PurchaseRequest } from '../../interfaces/purchase.interface';
 import { SupplierType } from '../../../../supplier/interfaces/supplier.interface';
 import { AppValidators } from '../../../../shared/validators/app-validators';
+import { PurchaseTypeService } from '../../../../purchase-type/services/purchase-type.service';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { purchaseTypesFor } from '../../../../purchase-type/utils/purchase-type.utils';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'purchase-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './purchase-form-modal.html',
 })
-export class PurchaseFormModal implements OnInit {
+export class PurchaseFormModal {
   private purchaseService = inject(PurchaseService);
+  private purchaseTypeService = inject(PurchaseTypeService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
-  translatePurchaseType = translatePurchaseType;
 
   // Inputs
   currentAccountId = input.required<number>();
@@ -26,23 +29,35 @@ export class PurchaseFormModal implements OnInit {
   cancel = output();
   saved = output();
 
-  // Arreglo de Tipos de Compra
-  purchaseTypesOptions = computed(() => purchaseTypeOptionsFor(this.supplierType()));
+  // Tipos de compra del usuario
+  purchaseTypes = rxResource({
+    stream: () => this.purchaseTypeService.getAll(),
+  });
+
+  // Lo que puede vender este proveedor
+  purchaseTypeOptions = computed(() =>
+    this.purchaseTypes.hasValue()
+      ? purchaseTypesFor(this.purchaseTypes.value(), this.supplierType())
+      : [],
+  );
 
   // Definimos nuestros formulario
   purchaseForm: FormGroup = this.fb.group({
-    purchaseType: [null as string | null, [Validators.required]],
+    purchaseTypeId: [null as number | null, [Validators.required]],
     unit: [1, [Validators.required, AppValidators.integer(1, 9_999)]],
     kilograms: ['', [Validators.required, AppValidators.amount(99_999.99)]],
     pricePerKilo: ['', [Validators.required, AppValidators.amount(9_999_999.99)]],
   });
 
-  ngOnInit() {
-    const options = this.purchaseTypesOptions();
-    if (options.length === 1)
-      this.purchaseForm.patchValue({
-        purchaseType: options[0].value,
-      });
+  constructor() {
+    // Si el proveedor solo admite un tipo, queda elegido
+    effect(() => {
+      const options = this.purchaseTypeOptions();
+      if (options.length === 1)
+        this.purchaseForm.patchValue({
+          purchaseTypeId: options[0].id,
+        });
+    });
   }
 
   close() {
@@ -56,9 +71,9 @@ export class PurchaseFormModal implements OnInit {
     }
 
     // Armamos el request explicitamente (los números llegan como texto: se convierten acá)
-    const { purchaseType, unit, kilograms, pricePerKilo } = this.purchaseForm.value;
+    const { purchaseTypeId, unit, kilograms, pricePerKilo } = this.purchaseForm.value;
     const request: PurchaseRequest = {
-      purchaseType,
+      purchaseTypeId,
       unit: this.formUtils.parseDecimal(unit)!,
       kilograms: this.formUtils.parseDecimal(kilograms)!,
       pricePerKilo: this.formUtils.parseDecimal(pricePerKilo)!,

@@ -17,7 +17,8 @@ export interface SaleMovement extends BaseMovement {
 
 export interface PurchaseMovement extends BaseMovement {
   type: 'PURCHASE';
-  purchaseType: string;
+  purchaseTypeId: number;
+  purchaseTypeName: string;
   unit: number;
   kilograms: number;
   pricePerKilo: number;

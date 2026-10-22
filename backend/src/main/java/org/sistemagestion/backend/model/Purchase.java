@@ -3,12 +3,9 @@ package org.sistemagestion.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.sistemagestion.backend.model.enums.PurchaseType;
 import org.sistemagestion.backend.model.enums.Specie;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "purchases")
@@ -22,7 +19,8 @@ public class Purchase extends Movement{
     @Enumerated(EnumType.STRING)
     private Specie specie;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "purchase_type_id", nullable = false)
     private PurchaseType purchaseType;
 
     private Integer unit;

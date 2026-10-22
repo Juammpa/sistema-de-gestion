@@ -2,7 +2,6 @@ import { Component, computed, inject, input, OnInit, output, signal } from '@ang
 import { StockService } from '../../services/stock.service';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { StockItem } from '../../interfaces/stock.interface';
-import translatePurchaseType from '../../../movements/purchases/utils/purchase.utils';
 import { DecimalPipe } from '@angular/common';
 
 // Se trabaja en centavos (enteros) para comparar sumas sin errores de punto flotante
@@ -37,7 +36,7 @@ export class StockWeightsModal implements OnInit {
   protected weights = signal<string[]>([]);
   protected saving = signal(false);
 
-  protected typeLabel = computed(() => translatePurchaseType(this.items()[0].purchaseType));
+  protected typeLabel = computed(() => this.items()[0].purchaseTypeName);
 
   protected supplierName = computed(() => this.items()[0].supplierName);
 

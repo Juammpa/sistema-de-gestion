@@ -1,7 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { StockItem } from '../../interfaces/stock.interface';
 import { SUPPLIER_TYPE_INFO } from '../../../supplier/utils/supplier-type.utils';
-import translatePurchaseType from '../../../movements/purchases/utils/purchase.utils';
 import { formatIsoDate } from '../../../shared/utils/date.utils';
 import { DecimalPipe } from '@angular/common';
 
@@ -25,7 +24,7 @@ export class StockItemCard {
   edit = output<StockItem>();
 
   protected specie = computed(() => SUPPLIER_TYPE_INFO[this.item().specie]);
-  protected typeLabel = computed(() => translatePurchaseType(this.item().purchaseType));
+  protected typeLabel = computed(() => this.item().purchaseTypeName);
   protected date = computed(() => formatIsoDate(this.item().date));
   protected cardClass = computed(() => BASE_CLASS + (this.item().editable ? EDITABLE_CLASS : ''));
 

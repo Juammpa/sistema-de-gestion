@@ -11,14 +11,14 @@
     <!-- Navegación lateral (en celular pasa a ser una fila con scroll) -->
     <nav
       aria-label="Secciones de ajustes"
-      class="grid shrink-0 grid-cols-4 gap-1 rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to p-2.5 md:sticky md:top-6 md:flex md:w-58 md:flex-col md:gap-0.5"
+      class="grid shrink-0 grid-cols-5 gap-1 rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to p-2.5 md:sticky md:top-6 md:flex md:w-58 md:flex-col md:gap-0.5"
     >
       @for (section of sections; track section.id) {
         <button
           type="button"
           (click)="selected.set(section.id)"
           [attr.aria-current]="selected() === section.id ? 'page' : null"
-          class="flex cursor-pointer flex-col items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-1 py-2.5 text-xs font-medium md:flex-row md:justify-start md:gap-2.5 md:px-3 md:text-left md:text-sm font-medium text-slate-400 transition-colors duration-150 hover:bg-slate-400/10 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 aria-[current=page]:bg-accent-500/15 aria-[current=page]:text-slate-50 md:w-full"
+          class="flex cursor-pointer flex-col items-center justify-center gap-1.5 text-center md:whitespace-nowrap rounded-xl px-1 py-2.5 text-xs md:flex-row md:justify-start md:gap-2.5 md:px-3 md:text-left md:text-sm font-medium text-slate-400 transition-colors duration-150 hover:bg-slate-400/10 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-400/70 aria-[current=page]:bg-accent-500/15 aria-[current=page]:text-slate-50 md:w-full"
         >
           <i [class]="section.icon" class="w-5 text-center" aria-hidden="true"></i>
           {{ section.label }}
@@ -33,6 +33,9 @@
       @switch (selected()) {
         @case ('profile') {
           <profile-settings />
+        }
+        @case ('purchaseTypes') {
+          <purchase-types-settings />
         }
         @case ('appearance') {
           <appearance-settings />
