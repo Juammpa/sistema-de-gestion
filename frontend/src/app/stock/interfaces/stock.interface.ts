@@ -1,12 +1,12 @@
 import { SpecieValue } from '../../cut-meat/utils/specie.utils';
-import { PurchaseTypeValue } from '../../movements/purchases/utils/purchase.utils';
 
 // Una pieza de stock: una unidad de compra
 export interface StockItem {
   purchaseId: number;
   unitNumber: number; // 1, 2, 3...
   totalUnits: number; // unidades de la compra (para mostrar "2 de 4")
-  purchaseType: PurchaseTypeValue;
+  purchaseTypeId: number;
+  purchaseTypeName: string;
   specie: SpecieValue;
   kilograms: number; // kilos de la compra / unidades
   date: string; // yyyy-MM-dd
@@ -22,7 +22,9 @@ export interface SpecieTotals {
 }
 
 export interface TypeTotals {
-  purchaseType: PurchaseTypeValue;
+  purchaseTypeId: number;
+  purchaseTypeName: string;
+  specie: SpecieValue;
   kilograms: number;
   units: number;
 }

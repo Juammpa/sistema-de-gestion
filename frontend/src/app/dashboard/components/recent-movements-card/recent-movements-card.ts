@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, LOCALE_ID } from '@angular/core';
 import translatePaymentType from '../../../movements/payments/utils/payment.utils';
-import translatePurchaseType from '../../../movements/purchases/utils/purchase.utils';
 import { formatIsoDate } from '../../../shared/utils/date.utils';
 import { DashboardMovementKind, RecentMovement } from '../../interfaces/dashboard.interface';
 import { formatCurrency } from '@angular/common';
@@ -62,9 +61,7 @@ export class RecentMovementsCard {
       ? ''
       : movement.kind === 'PAYMENT' || movement.kind === 'COLLECTION'
         ? translatePaymentType(movement.detail)
-        : movement.kind === 'PURCHASE'
-          ? translatePurchaseType(movement.detail)
-          : movement.detail;
+        : movement.detail;
 
     return [text, formatIsoDate(movement.date)].filter(Boolean).join(' · ');
   }

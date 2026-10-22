@@ -85,20 +85,20 @@
           <div class="group relative">
             <select
               id="edit-purchase-type"
-              formControlName="purchaseType"
-              [value]="purchaseForm.controls['purchaseType']"
-              [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'purchaseType')"
-              [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'purchaseType')"
-              [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'purchaseType')"
-              [class.animate-shake]="formUtils.isValidField(purchaseForm, 'purchaseType')"
+              formControlName="purchaseTypeId"
+              [value]="purchaseForm.controls['purchaseTypeId']"
+              [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'purchaseTypeId')"
+              [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'purchaseTypeId')"
+              [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'purchaseTypeId')"
+              [class.animate-shake]="formUtils.isValidField(purchaseForm, 'purchaseTypeId')"
               class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
             >
               <option [ngValue]="null" disabled class="bg-surface text-slate-400">
                 Seleccionar tipo...
               </option>
-              @for (option of purchaseTypeOptions(); track option.value) {
-                <option [ngValue]="option.value" class="bg-surface text-slate-200">
-                  {{ translatePurchaseType(option.value) }}
+              @for (option of purchaseTypeOptions(); track option.id) {
+                <option [ngValue]="option.id" class="bg-surface text-slate-200">
+                  {{ option.name }}{{ option.isActive ? '' : ' (eliminado)' }}
                 </option>
               }
             </select>
@@ -122,13 +122,13 @@
               </svg>
             </div>
           </div>
-          @if (formUtils.isValidField(purchaseForm, 'purchaseType')) {
+          @if (formUtils.isValidField(purchaseForm, 'purchaseTypeId')) {
             <span
               role="alert"
               class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
             >
               <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
-              {{ formUtils.getFieldError(purchaseForm, 'purchaseType') }}
+              {{ formUtils.getFieldError(purchaseForm, 'purchaseTypeId') }}
             </span>
           }
         </div>
@@ -277,9 +277,7 @@
     animate.leave="modal-host-leave"
     description="Eliminar compra"
     entityType="La compra"
-    [entityName]="
-      translatePurchaseType(purchase().purchaseType) + ' - ' + purchase().kilograms + ' kg'
-    "
+    [entityName]="purchase().purchaseTypeName + ' - ' + purchase().kilograms + ' kg'"
     [loading]="deleting()"
     (cancel)="showDeleteConfirm.set(false)"
     (confirm)="onDelete()"

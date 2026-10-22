@@ -1,7 +1,8 @@
 export interface Purchase {
   id: number;
   date: Date;
-  purchaseType: string;
+  purchaseTypeId: number;
+  purchaseTypeName: string;
   unit: number;
   kilograms: number;
   pricePerKilo: number;
@@ -10,7 +11,7 @@ export interface Purchase {
 }
 
 export interface PurchaseRequest {
-  purchaseType: string;
+  purchaseTypeId: number;
   currentAccountId: number;
   unit: number;
   kilograms: number;
