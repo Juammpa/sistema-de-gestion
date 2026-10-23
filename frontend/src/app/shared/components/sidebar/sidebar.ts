@@ -7,10 +7,11 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SidebarService } from './services/sidebar.service';
 import { MenuItem } from './interfaces/sidebar.interface';
 import { AuthService } from '../../../core/auth/auth.service';
+import { Logo } from '../logo/logo';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgTemplateOutlet, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [NgTemplateOutlet, RouterLink, RouterLinkActive, RouterOutlet, Logo],
   templateUrl: './sidebar.html',
 })
 export class Sidebar {

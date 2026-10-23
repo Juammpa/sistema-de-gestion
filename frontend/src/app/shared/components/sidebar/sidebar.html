@@ -21,22 +21,11 @@
     <div class="flex h-11 w-full items-center" [class]="collapsed() ? 'justify-center' : 'px-2.5'">
       @if (collapsed()) {
         <!-- Logo Colapsado: Cuadrado con gradiente azul e iniciales -->
-        <div
-          role="img"
-          aria-label="Sistema de Gestión"
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent-400/20 bg-accent-600 text-sm font-bold text-white"
-        >
-          SG
-        </div>
+        <app-logo alt="Sistema de Gestión" />
       } @else {
         <!-- Logo Expandido: Isotipo + Texto completo -->
         <div class="flex items-center gap-3">
-          <div
-            aria-hidden="true"
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent-400/20 bg-accent-600 text-sm font-bold text-white"
-          >
-            SG
-          </div>
+          <app-logo />
           <div class="flex flex-col">
             <span class="text-sm font-bold leading-tight tracking-tight text-slate-50">
               Sistema de Gestión
