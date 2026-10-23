@@ -39,20 +39,14 @@
 
 <!-- Días de la semana (decorativos: cada día ya tiene su fecha completa como etiqueta) -->
 <div class="grid grid-cols-7" aria-hidden="true">
-  @for (weekday of weekdays(); track $index) {
+  @for (weekday of weekdays; track $index) {
     <div class="grid h-8 place-items-center text-xs text-slate-400">{{ weekday }}</div>
   }
 </div>
 
 <!-- Días del mes -->
 <div class="-m-1 overflow-hidden p-1">
-  <div
-    #grid
-    role="grid"
-    [attr.aria-label]="monthLabel()"
-    (keydown)="onKeyDown($event)"
-    (mouseleave)="hover.set(null)"
-  >
+  <div #grid role="grid" [attr.aria-label]="monthLabel()" (keydown)="onKeyDown($event)">
     @for (slot of slots(); track slot.key) {
       <div [style.--cal-dir]="dir()" class="animate-calendar-slide motion-reduce:animate-none">
         @for (week of weeks(); track $index) {
@@ -72,7 +66,6 @@
                     [attr.aria-disabled]="cell.disabled || null"
                     [attr.aria-current]="cell.today ? 'date' : null"
                     (click)="pick(cell.date)"
-                    (mouseenter)="hover.set(cell.date)"
                     [class]="cell.buttonClass"
                   >
                     <span class="relative">{{ cell.day }}</span>

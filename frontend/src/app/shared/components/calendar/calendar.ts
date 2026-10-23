@@ -17,7 +17,6 @@ import {
   dayKey,
   daysInMonth,
   DayRange,
-  EMPTY_RANGE,
   isSameDay,
   isSameMonth,
   monthCells,
@@ -43,9 +42,12 @@ interface DayCell {
 const DAY_BASE =
   'group relative grid size-full cursor-pointer place-items-center rounded-lg text-sm tabular-nums outline-none transition-ui focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.95]';
 
+// Semana de lunes a domingo, en español (Argentina)
+const WEEK_STARTS_ON = 1;
+const LOCALE = 'es-AR';
+
 @Component({
   selector: 'calendar',
-  imports: [],
   templateUrl: './calendar.html',
   host: { class: 'block w-full max-w-xs select-none p-3' },
 })
@@ -54,34 +56,24 @@ export class Calendar {
   private readonly grid = viewChild.required<ElementRef<HTMLElement>>('grid');
 
   // Inputs
-  mode = input<'single' | 'range'>('single');
   defaultMonth = input<Date>();
   minDate = input<Date>();
   maxDate = input<Date>();
-  isDateDisabled = input<(date: Date) => boolean>();
-  weekStartsOn = input<0 | 1>(1);
-  locale = input('es-AR');
   // Rango que solo se dibuja (extremos y banda); no se puede editar desde acá. Sirve para que un
   // campo "Desde" o "Hasta" muestre el rango completo del filtro. Pisa a la selección al dibujar.
   highlight = input<DayRange | null>(null);
 
-  // Valor en modo "single" ([(value)]) y en modo "range" ([(range)])
+  // Día elegido ([(value)])
   value = model<Date | null>(null);
-  range = model<DayRange>(EMPTY_RANGE);
 
   private readonly today = startOfDay(new Date());
 
-  protected readonly selection = computed<DayRange>(() =>
-    this.mode() === 'range' ? this.range() : { from: this.value(), to: null },
-  );
-
   // Mes visible: arranca en la selección (o en `defaultMonth`/hoy) y sigue los cambios externos
   protected readonly view = linkedSignal(() =>
-    startOfMonth(this.selection().from ?? this.defaultMonth() ?? this.today),
+    startOfMonth(this.value() ?? this.defaultMonth() ?? this.today),
   );
   // Día que recibe el foco con Tab (roving tabindex)
-  private readonly focusDate = linkedSignal(() => this.selection().from ?? this.today);
-  protected readonly hover = signal<Date | null>(null);
+  private readonly focusDate = linkedSignal(() => this.value() ?? this.today);
   // Sentido del deslizamiento al cambiar de mes: 1 = hacia adelante, -1 = hacia atrás
   protected readonly dir = signal(1);
 
@@ -111,43 +103,38 @@ export class Calendar {
     return !max || new Date(view.getFullYear(), view.getMonth() + 1, 1) <= max;
   });
 
-  private readonly monthFormat = computed(
-    () => new Intl.DateTimeFormat(this.locale(), { month: 'long', year: 'numeric' }),
-  );
-  private readonly dayFormat = computed(
-    () => new Intl.DateTimeFormat(this.locale(), { dateStyle: 'full' }),
-  );
-  protected readonly monthLabel = computed(() => this.monthFormat().format(this.view()));
+  private readonly monthFormat = new Intl.DateTimeFormat(LOCALE, {
+    month: 'long',
+    year: 'numeric',
+  });
+  private readonly dayFormat = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'full' });
+  protected readonly monthLabel = computed(() => this.monthFormat.format(this.view()));
 
-  protected readonly weekdays = computed(() => {
-    const format = new Intl.DateTimeFormat(this.locale(), { weekday: 'narrow' });
+  protected readonly weekdays = (() => {
+    const format = new Intl.DateTimeFormat(LOCALE, { weekday: 'narrow' });
     // El 1/8/2021 fue domingo
     return Array.from({ length: 7 }, (_, i) =>
-      format.format(new Date(2021, 7, 1 + ((this.weekStartsOn() + i) % 7))),
+      format.format(new Date(2021, 7, 1 + ((WEEK_STARTS_ON + i) % 7))),
     );
-  });
+  })();
 
   protected readonly weeks = computed<(DayCell | null)[][]>(() => {
     const view = this.view();
     const highlight = this.highlight();
-    const { from, to } = highlight ?? this.selection();
-    const isRange = this.mode() === 'range' || !!highlight;
-    // La banda sigue al mouse solo cuando se está eligiendo un rango de verdad
-    const hover = this.mode() === 'range' ? this.hover() : null;
-    // Mientras se elige el fin del rango, la banda sigue al mouse
-    const end = isRange && from ? (to ?? (hover && hover > from ? hover : null)) : null;
+    // Con `highlight` se dibuja ese rango; si no, solo el día elegido
+    const { from, to } = highlight ?? { from: this.value(), to: null };
+    const end = highlight && from ? to : null;
     const tabDate = isSameMonth(this.focusDate(), view) ? this.focusDate() : startOfMonth(view);
     const total = daysInMonth(view);
-    const cells = monthCells(view, this.weekStartsOn());
+    const cells = monthCells(view, WEEK_STARTS_ON);
 
     return Array.from({ length: 6 }, (_, row) =>
       cells.slice(row * 7, row * 7 + 7).map((date, col) => {
         if (!date) return null;
         const isStart = isSameDay(date, from);
-        const isEnd = !isStart && isRange && isSameDay(date, to);
+        const isEnd = !isStart && isSameDay(date, to);
         const picked = isStart || isEnd;
-        const inBand =
-          isRange && !!from && !!end && !isSameDay(from, end) && date >= from && date <= end;
+        const inBand = !!from && !!end && !isSameDay(from, end) && date >= from && date <= end;
         const disabled = this.disabled(date);
 
         const roundLeft = inBand && (isStart || col === 0 || date.getDate() === 1);
@@ -157,7 +144,7 @@ export class Calendar {
         return {
           date,
           key: dayKey(date),
-          label: this.dayFormat().format(date),
+          label: this.dayFormat.format(date),
           day: date.getDate(),
           disabled,
           today: isSameDay(date, this.today),
@@ -188,21 +175,14 @@ export class Calendar {
   protected pick(date: Date) {
     if (this.disabled(date)) return;
     this.focusDate.set(date);
-    if (this.mode() === 'single') {
-      this.value.set(date);
-      return;
-    }
-    const { from, to } = this.range();
-    // Primer clic, tercer clic o fecha anterior al inicio: empieza un rango nuevo
-    if (!from || to || date < from) this.range.set({ from: date, to: null });
-    else this.range.set({ from, to: date });
+    this.value.set(date);
   }
 
   protected onKeyDown(event: KeyboardEvent) {
     const el = (event.target as HTMLElement).closest<HTMLElement>('[data-date]');
     if (!el?.dataset['date']) return;
     const current = parseDayKey(el.dataset['date']);
-    const col = (current.getDay() - this.weekStartsOn() + 7) % 7;
+    const col = (current.getDay() - WEEK_STARTS_ON + 7) % 7;
 
     let next: Date | null = null;
     switch (event.key) {
@@ -252,7 +232,7 @@ export class Calendar {
   private disabled(date: Date) {
     const min = this.min();
     const max = this.max();
-    return (!!min && date < min) || (!!max && date > max) || !!this.isDateDisabled()?.(date);
+    return (!!min && date < min) || (!!max && date > max);
   }
 
   // Espera a que Angular pinte el mes nuevo antes de mover el foco al día

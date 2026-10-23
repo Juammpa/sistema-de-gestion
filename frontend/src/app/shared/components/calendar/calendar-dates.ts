@@ -1,7 +1,5 @@
 export type DayRange = { from: Date | null; to: Date | null };
 
-export const EMPTY_RANGE: DayRange = { from: null, to: null };
-
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
 export const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
