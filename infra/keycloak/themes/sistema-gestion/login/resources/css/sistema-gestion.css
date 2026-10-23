@@ -28,7 +28,6 @@
     --sg-field-gap: 20px; /* Separación vertical entre campos */
     --sg-title-size: 1.75rem; /* 28px */
     --sg-mono-size: 52px; /* Proporción óptica equilibrada */
-    --sg-mono-font: 1.25rem; /* 20px */
     --sg-outer-footer: block; /* Identidad */
     --sg-logo-image: url("../img/logo.png");
     --sg-font:
@@ -442,7 +441,6 @@ h1#kc-page-title {
         26px
     ); /* aire antes del primer campo, del botón y del pie */
     --sg-mono-size: clamp(36px, 7vh, 52px);
-    --sg-mono-font: clamp(0.95rem, 2.6vh, 1.25rem);
     --sg-title-size: clamp(1.375rem, 3.6vh, 1.75rem);
 }
 .pf-v5-c-login .pf-v5-c-login__main-header {
