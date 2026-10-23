@@ -86,7 +86,7 @@
         <div
           role="dialog"
           aria-label="Filtrar por fecha"
-          class="absolute inset-x-0 top-full z-30 mt-2 space-y-4 rounded-xl border border-slate-700/70 bg-panel-to p-4 shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:inset-x-auto sm:right-0 sm:w-80"
+          class="absolute inset-x-0 top-full z-30 mt-2 space-y-4 rounded-xl border border-slate-700/70 bg-panel-to p-4 shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:inset-x-auto sm:right-0 sm:w-88"
         >
           <!-- Atajos -->
           <div role="group" aria-label="Atajos de fecha" class="flex flex-wrap gap-2">
@@ -102,29 +102,33 @@
           </div>
 
           <!-- Rango personalizado -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div class="min-w-0 space-y-1.5">
               <label for="movements-date-from" class="block text-xs font-medium text-slate-300">
                 Desde
               </label>
-              <input
-                id="movements-date-from"
-                type="date"
-                [value]="draftFrom()"
-                (change)="onDraftFromChange($event)"
-                class="h-10 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-2.5 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+              <date-field
+                inputId="movements-date-from"
+                size="compact"
+                placeholder="Sin límite"
+                [clearable]="true"
+                [rangeFrom]="draftFrom()"
+                [rangeTo]="draftTo()"
+                [(value)]="draftFrom"
               />
             </div>
             <div class="min-w-0 space-y-1.5">
               <label for="movements-date-to" class="block text-xs font-medium text-slate-300">
                 Hasta
               </label>
-              <input
-                id="movements-date-to"
-                type="date"
-                [value]="draftTo()"
-                (change)="onDraftToChange($event)"
-                class="h-10 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-2.5 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+              <date-field
+                inputId="movements-date-to"
+                size="compact"
+                placeholder="Sin límite"
+                [clearable]="true"
+                [rangeFrom]="draftFrom()"
+                [rangeTo]="draftTo()"
+                [(value)]="draftTo"
               />
             </div>
           </div>

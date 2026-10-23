@@ -1,0 +1,96 @@
+<!-- Encabezado: mes anterior / mes visible / mes siguiente -->
+<div class="mb-2 flex h-11 items-center gap-1 sm:h-8">
+  <button
+    type="button"
+    aria-label="Mes anterior"
+    title="Mes anterior"
+    [disabled]="!canPrev()"
+    (click)="go(-1)"
+    class="grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg text-slate-400 outline-none transition-ui hover:bg-raised hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:pointer-events-none disabled:opacity-30 motion-safe:active:scale-[0.95] sm:size-8"
+  >
+    <i aria-hidden="true" class="fa-solid fa-chevron-left text-xs"></i>
+  </button>
+
+  <div
+    aria-live="polite"
+    class="relative h-5 flex-1 overflow-hidden text-center text-sm font-medium text-slate-100"
+  >
+    @for (slot of slots(); track slot.key) {
+      <span
+        [style.--cal-dir]="dir()"
+        class="absolute inset-0 animate-calendar-slide first-letter:uppercase motion-reduce:animate-none"
+      >
+        {{ monthLabel() }}
+      </span>
+    }
+  </div>
+
+  <button
+    type="button"
+    aria-label="Mes siguiente"
+    title="Mes siguiente"
+    [disabled]="!canNext()"
+    (click)="go(1)"
+    class="grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg text-slate-400 outline-none transition-ui hover:bg-raised hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:pointer-events-none disabled:opacity-30 motion-safe:active:scale-[0.95] sm:size-8"
+  >
+    <i aria-hidden="true" class="fa-solid fa-chevron-right text-xs"></i>
+  </button>
+</div>
+
+<!-- Días de la semana (decorativos: cada día ya tiene su fecha completa como etiqueta) -->
+<div class="grid grid-cols-7" aria-hidden="true">
+  @for (weekday of weekdays(); track $index) {
+    <div class="grid h-8 place-items-center text-xs text-slate-400">{{ weekday }}</div>
+  }
+</div>
+
+<!-- Días del mes -->
+<div class="-m-1 overflow-hidden p-1">
+  <div
+    #grid
+    role="grid"
+    [attr.aria-label]="monthLabel()"
+    (keydown)="onKeyDown($event)"
+    (mouseleave)="hover.set(null)"
+  >
+    @for (slot of slots(); track slot.key) {
+      <div [style.--cal-dir]="dir()" class="animate-calendar-slide motion-reduce:animate-none">
+        @for (week of weeks(); track $index) {
+          <div role="row" class="grid grid-cols-7">
+            @for (cell of week; track $index) {
+              @if (cell) {
+                <div
+                  role="gridcell"
+                  [attr.aria-selected]="cell.picked || cell.inBand"
+                  [class]="cell.cellClass"
+                >
+                  <button
+                    type="button"
+                    [attr.data-date]="cell.key"
+                    [tabindex]="cell.tabbable ? 0 : -1"
+                    [attr.aria-label]="cell.label"
+                    [attr.aria-disabled]="cell.disabled || null"
+                    [attr.aria-current]="cell.today ? 'date' : null"
+                    (click)="pick(cell.date)"
+                    (mouseenter)="hover.set(cell.date)"
+                    [class]="cell.buttonClass"
+                  >
+                    <span class="relative">{{ cell.day }}</span>
+                    @if (cell.today && !cell.picked) {
+                      <span
+                        aria-hidden="true"
+                        class="absolute bottom-1 size-1 rounded-full bg-slate-400"
+                      ></span>
+                    }
+                  </button>
+                </div>
+              } @else {
+                <div role="gridcell" class="aspect-square"></div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

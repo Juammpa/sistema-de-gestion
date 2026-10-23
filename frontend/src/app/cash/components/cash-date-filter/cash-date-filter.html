@@ -15,12 +15,12 @@
         <label for="cash-from" class="block text-sm font-medium text-slate-300 sm:shrink-0">
           Desde
         </label>
-        <input
-          id="cash-from"
-          type="date"
-          [value]="from()"
-          (change)="onFromChange($event)"
-          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-3 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
+        <date-field
+          inputId="cash-from"
+          size="compact"
+          [rangeFrom]="from()"
+          [rangeTo]="to()"
+          [(value)]="from"
         />
       </div>
       <div
@@ -29,12 +29,12 @@
         <label for="cash-to" class="block text-sm font-medium text-slate-300 sm:shrink-0">
           Hasta
         </label>
-        <input
-          id="cash-to"
-          type="date"
-          [value]="to()"
-          (change)="onToChange($event)"
-          class="h-11 w-full cursor-pointer rounded-lg border border-slate-700/70 bg-canvas px-3 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 motion-reduce:transition-none sm:h-9 sm:text-sm"
+        <date-field
+          inputId="cash-to"
+          size="compact"
+          [rangeFrom]="from()"
+          [rangeTo]="to()"
+          [(value)]="to"
         />
       </div>
     </div>

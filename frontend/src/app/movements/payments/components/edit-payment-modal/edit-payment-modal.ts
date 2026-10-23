@@ -17,12 +17,13 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 import { CashService } from '../../../../cash/services/cash.service';
 import { CurrencyPipe } from '@angular/common';
+import { DateField } from '../../../../shared/components/date-field/date-field';
 import { toIsoDate } from '../../../../shared/utils/date.utils';
 import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'edit-payment-modal',
-  imports: [ReactiveFormsModule, DeleteModal, CurrencyPipe],
+  imports: [ReactiveFormsModule, DeleteModal, DateField, CurrencyPipe],
   templateUrl: './edit-payment-modal.html',
 })
 export class EditPaymentModal implements OnInit {

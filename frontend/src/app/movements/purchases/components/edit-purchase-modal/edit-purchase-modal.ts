@@ -5,6 +5,7 @@ import { FormUtils } from '../../../../shared/utils/form-utils';
 import { Purchase, PurchaseRequest } from '../../interfaces/purchase.interface';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import { SupplierType } from '../../../../supplier/interfaces/supplier.interface';
+import { DateField } from '../../../../shared/components/date-field/date-field';
 import { toIsoDate } from '../../../../shared/utils/date.utils';
 import { AppValidators } from '../../../../shared/validators/app-validators';
 import { PurchaseTypeService } from '../../../../purchase-type/services/purchase-type.service';
@@ -13,7 +14,7 @@ import { purchaseTypesFor } from '../../../../purchase-type/utils/purchase-type.
 
 @Component({
   selector: 'edit-purchase-modal',
-  imports: [ReactiveFormsModule, DeleteModal],
+  imports: [ReactiveFormsModule, DeleteModal, DateField],
   templateUrl: './edit-purchase-modal.html',
 })
 export class EditPurchaseModal implements OnInit {
