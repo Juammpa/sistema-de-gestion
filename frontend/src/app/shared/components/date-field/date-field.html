@@ -1,0 +1,53 @@
+<button
+  #trigger
+  type="button"
+  [attr.id]="inputId()"
+  [disabled]="disabled()"
+  aria-haspopup="dialog"
+  [attr.aria-expanded]="open()"
+  [attr.aria-invalid]="invalid() || null"
+  (click)="toggle()"
+  (blur)="touch()"
+  [class]="triggerClass()"
+  [class.!border-red-500/80]="invalid()"
+  [class.!ring-red-500/20]="invalid()"
+  [class.animate-shake]="invalid()"
+>
+  <i aria-hidden="true" class="fa-regular fa-calendar shrink-0 text-slate-400"></i>
+  <span class="truncate tabular-nums" [class.text-slate-400]="!value()">
+    {{ label() || placeholder() }}
+  </span>
+</button>
+
+@if (clearable() && value() && !disabled()) {
+  <button
+    type="button"
+    aria-label="Borrar fecha"
+    title="Borrar fecha"
+    (click)="clear()"
+    class="absolute right-1 top-1/2 grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-md text-slate-400 outline-none transition-ui hover:bg-raised hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none"
+  >
+    <i aria-hidden="true" class="fa-solid fa-xmark text-sm"></i>
+  </button>
+}
+
+@if (open()) {
+  <!-- popover="manual": se dibuja en la capa superior del navegador, así el overflow de un
+       modal o panel no lo recorta ni le agrega scroll. Se posiciona con place(). -->
+  <div
+    #popover
+    popover="manual"
+    role="dialog"
+    aria-label="Elegir fecha"
+    class="inset-auto m-0 w-80 max-w-[calc(100vw-1.5rem)] animate-fadeIn overflow-visible rounded-xl border border-slate-700/70 bg-panel-to p-0 text-slate-100 shadow-2xl shadow-black/60 ring-1 ring-white/10"
+  >
+    <calendar
+      [value]="selectedDate()"
+      (valueChange)="pick($event)"
+      [minDate]="minDate()"
+      [maxDate]="maxDate()"
+      [highlight]="highlight()"
+      [defaultMonth]="defaultMonth()"
+    />
+  </div>
+}

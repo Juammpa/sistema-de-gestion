@@ -28,10 +28,8 @@
     --sg-field-gap: 20px; /* Separación vertical entre campos */
     --sg-title-size: 1.75rem; /* 28px */
     --sg-mono-size: 52px; /* Proporción óptica equilibrada */
-    --sg-mono-font: 1.25rem; /* 20px */
     --sg-outer-footer: block; /* Identidad */
-    --sg-monogram: "SG";
-    --sg-logo-image: none; /* Para logo oficial: url("../img/logo.svg") */
+    --sg-logo-image: url("../img/logo.png");
     --sg-font:
         "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Helvetica Neue", Arial, sans-serif; /* Variables globales de PatternFly v5 */
@@ -97,25 +95,14 @@
     letter-spacing: -0.01em;
     text-transform: none;
     text-align: center;
-} /* Monograma SG con sombra suave y esquinas suavizadas */
+} /* Logo de la App */
 #kc-header-wrapper::before {
-    content: "SG";
-    content: var(--sg-monogram) / "";
-    display: grid;
-    place-items: center;
+    content: "";
+    display: block;
     flex: none;
     width: var(--sg-mono-size);
     height: var(--sg-mono-size);
-    font-size: var(--sg-mono-font);
-    border-radius: 14px;
-    background:
-        var(--sg-logo-image) center / contain no-repeat,
-        var(--sg-accent);
-    color: #fff;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.5px;
-    box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+    background: var(--sg-logo-image) center / contain no-repeat;
 }
 #kc-header-wrapper::after {
     content: "CARNICERÍAS";
@@ -454,7 +441,6 @@ h1#kc-page-title {
         26px
     ); /* aire antes del primer campo, del botón y del pie */
     --sg-mono-size: clamp(36px, 7vh, 52px);
-    --sg-mono-font: clamp(0.95rem, 2.6vh, 1.25rem);
     --sg-title-size: clamp(1.375rem, 3.6vh, 1.75rem);
 }
 .pf-v5-c-login .pf-v5-c-login__main-header {

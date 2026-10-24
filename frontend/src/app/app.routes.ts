@@ -1,13 +1,14 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './shared/pages/home-page/home-page';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomePage,
+    loadComponent: () => import('./shared/pages/home-page/home-page').then((m) => m.HomePage),
   },
   {
     path: 'home',
+    canActivate: [authGuard],
     loadChildren: () => import('./shared/shared.routes'),
   },
   {

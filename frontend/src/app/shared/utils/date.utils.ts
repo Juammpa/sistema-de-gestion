@@ -11,6 +11,16 @@ export function formatIsoDate(iso: string): string {
   return `${day}/${month}/${year}`;
 }
 
+// "2026-09-24" --> Date local a las 00:00 (null si el texto vacío o no es una fecha válida)
+export function parseIsoDate(iso: string | null | undefined): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? '');
+  if (!match) return null;
+  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  const date = new Date(year, month - 1, day);
+  // Rechaza fechas que JS "corrige" solo (por ejemplo 2026-02-31)
+  return date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+}
+
 // Fecha de hace 'days' dias
 export function daysAgo(days: number): Date {
   const date = new Date();

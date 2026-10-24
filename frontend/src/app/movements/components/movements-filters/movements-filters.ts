@@ -1,11 +1,12 @@
 import { Component, computed, ElementRef, inject, input, model, signal } from '@angular/core';
 import { MovementFilterOption, MovementType } from '../../interfaces/movement.interface';
 import { DateRange } from '../../../shared/interfaces/date-range.interface';
+import { DateField } from '../../../shared/components/date-field/date-field';
 import { formatIsoDate, toIsoDate } from '../../../shared/utils/date.utils';
 
 @Component({
   selector: 'movements-filters',
-  imports: [],
+  imports: [DateField],
   templateUrl: './movements-filters.html',
   host: {
     // Cierra el panel de fechas al hacer click afuera o al apretar Escape
@@ -69,17 +70,11 @@ export class MovementsFilters {
   }
 
   onDocumentClick(event: MouseEvent) {
-    if (this.panelOpen() && !this.host.nativeElement.contains(event.target as Node)) {
+    // composedPath() y no contains(target): al elegir un día del calendario, ese botón ya salió
+    // del DOM cuando llega este evento, y el panel se cerraría por error
+    if (this.panelOpen() && !event.composedPath().includes(this.host.nativeElement)) {
       this.closePanel();
     }
-  }
-
-  onDraftFromChange(event: Event) {
-    this.draftFrom.set((event.target as HTMLInputElement).value);
-  }
-
-  onDraftToChange(event: Event) {
-    this.draftTo.set((event.target as HTMLInputElement).value);
   }
 
   // Aplica el borrador (un lado vacio significa sin limite)

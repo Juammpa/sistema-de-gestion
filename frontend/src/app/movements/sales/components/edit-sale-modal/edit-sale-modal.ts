@@ -7,12 +7,13 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { Sale, SaleRequest } from '../../interfaces/sales.interface';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import { TitleCasePipe } from '@angular/common';
+import { DateField } from '../../../../shared/components/date-field/date-field';
 import { toIsoDate } from '../../../../shared/utils/date.utils';
 import { AppValidators } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'edit-sale-modal',
-  imports: [ReactiveFormsModule, DeleteModal, TitleCasePipe],
+  imports: [ReactiveFormsModule, DeleteModal, DateField, TitleCasePipe],
   templateUrl: './edit-sale-modal.html',
 })
 export class EditSaleModal implements OnInit {

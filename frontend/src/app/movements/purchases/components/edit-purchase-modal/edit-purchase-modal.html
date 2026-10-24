@@ -54,16 +54,11 @@
         <label for="edit-purchase-date" class="block text-sm font-medium text-slate-200">
           Fecha <span aria-hidden="true" class="text-accent-400">*</span>
         </label>
-        <input
-          id="edit-purchase-date"
-          type="date"
-          [attr.max]="today"
+        <date-field
+          inputId="edit-purchase-date"
           formControlName="date"
-          [attr.aria-invalid]="formUtils.isValidField(purchaseForm, 'date')"
-          [class.!border-red-500/80]="formUtils.isValidField(purchaseForm, 'date')"
-          [class.!ring-red-500/20]="formUtils.isValidField(purchaseForm, 'date')"
-          [class.animate-shake]="formUtils.isValidField(purchaseForm, 'date')"
-          class="w-full cursor-pointer rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+          [max]="today"
+          [invalid]="formUtils.isValidField(purchaseForm, 'date')"
         />
         @if (formUtils.isValidField(purchaseForm, 'date')) {
           <span

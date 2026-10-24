@@ -25,6 +25,15 @@
   --animate-rise: rise 260ms var(--ease-out) backwards;
   /* Barras de progreso: crecen desde la izquierda al montarse (combinar con `origin-left`) */
   --animate-bar: bar-grow 450ms var(--ease-out) backwards;
+  /* Calendario: el mes nuevo entra deslizando desde el lado indicado por `--cal-dir` (1 o -1) */
+  --animate-calendar-slide: calendar-slide 260ms var(--ease-out) backwards;
+
+  @keyframes calendar-slide {
+    from {
+      opacity: 0;
+      transform: translateX(calc(var(--cal-dir, 1) * 1.5rem));
+    }
+  }
 
   @keyframes rise {
     from {
