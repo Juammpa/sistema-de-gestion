@@ -1,21 +1,199 @@
-<section class="flex min-h-dvh items-center bg-canvas">
-  <div class="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6">
-    <app-logo [size]="44" />
+<!-- Marca el tope de la página: cuando sale de la vista, el encabezado se vuelve opaco -->
+<div #sentinel aria-hidden="true" class="absolute inset-x-0 top-0 h-5"></div>
 
-    <h1 class="mt-8 text-balance text-3xl font-bold tracking-tight text-slate-50 sm:text-4xl">
-      Las cuentas de tus carnicerías, al día
-    </h1>
+<!-- Fondo decorativo -->
+<div aria-hidden="true" class="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+  <div class="bg-grid absolute inset-0 opacity-60"></div>
+  <hero-particles class="absolute inset-0 opacity-70" />
+  <div
+    class="aurora aurora-blue absolute -top-32 left-1/4 size-[550px] motion-safe:animate-pulse"
+  ></div>
+  <div class="aurora aurora-cyan absolute -right-32 top-1/3 size-[600px]"></div>
+  <div class="aurora aurora-indigo absolute -bottom-20 left-1/3 size-[500px]"></div>
+</div>
 
-    <p class="mt-4 max-w-prose text-pretty text-base leading-relaxed text-slate-300 sm:text-lg">
-      Cargá ventas, compras y pagos, y mirá en cualquier momento cuánto te deben tus clientes y
-      cuánto le debés a tus proveedores.
-    </p>
+<!-- Encabezado -->
+<header class="header fixed inset-x-0 top-0 z-50" [class.header-scrolled]="scrolled()">
+  <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <a routerLink="/" class="flex items-center gap-3" aria-label="Sistema de Gestión, Carnicerías">
+      <img src="logo_blanco.png" alt="" width="40" height="40" class="size-10 rounded-xl" />
+      <span class="flex flex-col leading-tight">
+        <span class="flex items-center gap-2 text-base font-bold tracking-tight text-white">
+          Sistema de Gestión
+          <span class="chip-gold rounded-full px-2 py-0.5 text-xs font-medium">Carnicerías</span>
+        </span>
+        <span class="text-xs tracking-wider text-(color:--muted)">Control cárnico integral</span>
+      </span>
+    </a>
+
+    <nav
+      aria-label="Secciones de la página"
+      class="hidden items-center gap-8 text-sm font-medium text-(color:--soft) md:flex"
+    >
+      <a href="#como-funciona" class="nav-link">Cómo funciona</a>
+      <a href="#modulos" class="nav-link">Módulos</a>
+    </nav>
 
     <a
-      class="mt-8 inline-flex min-h-11 items-center justify-center rounded-xl bg-accent-600 px-6 py-3 text-base font-semibold text-white transition-ui duration-150 hover:bg-accent-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none motion-safe:active:scale-[0.97]"
-      routerLink="home"
+      routerLink="/home"
+      class="btn-primary inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-semibold"
     >
-      Entrar al panel
+      Empezar
     </a>
   </div>
-</section>
+</header>
+
+<main class="relative z-10">
+  <!-- Portada -->
+  <section class="mx-auto max-w-7xl px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pb-28 lg:pt-28">
+    <div class="mx-auto flex max-w-4xl flex-col items-center text-center">
+      <p
+        class="glass mb-8 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-(color:--sky-soft) sm:text-sm"
+      >
+        <i class="fa-solid fa-wand-magic-sparkles text-(color:--gold)" aria-hidden="true"></i>
+        Software de gestión para carnicerías
+      </p>
+
+      <h1
+        class="mb-6 text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl"
+      >
+        El control total de tu <span class="gradient-text">negocio cárnico</span>, simple y en
+        tiempo real
+      </h1>
+
+      <p class="mb-10 max-w-3xl text-pretty text-lg leading-relaxed text-(color:--soft) sm:text-xl">
+        Cargá ventas, compras y pagos, y mirá en cualquier momento cuánto te deben tus clientes y
+        cuánto le debés a tus proveedores.
+      </p>
+
+      <div class="flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row">
+        <a
+          routerLink="/home"
+          class="btn-primary group inline-flex w-full items-center justify-center gap-3 rounded-xl px-8 py-4 text-base sm:w-auto"
+        >
+          Empezar
+          <i
+            class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"
+            aria-hidden="true"
+          ></i>
+        </a>
+        <a
+          href="#como-funciona"
+          class="btn-ghost glass inline-flex w-full items-center justify-center rounded-xl px-6 py-4 text-base font-semibold text-(color:--soft) hover:text-white sm:w-auto"
+        >
+          Ver cómo funciona
+        </a>
+      </div>
+    </div>
+
+    <!-- Captura del panel -->
+    <div class="perspective relative mx-auto mt-14 max-w-6xl lg:mt-20">
+      <div class="mockup-glow absolute inset-0 -z-10 scale-95"></div>
+
+      <div
+        class="glass float-slow absolute -left-12 top-1/4 z-30 hidden max-w-xs items-center gap-3 rounded-2xl p-4 xl:flex"
+      >
+        <span
+          class="icon-chip tone-green flex size-12 shrink-0 items-center justify-center rounded-xl"
+        >
+          <i class="fa-solid fa-dollar-sign text-lg" aria-hidden="true"></i>
+        </span>
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-(color:--green)">
+            Cuentas corrientes
+          </p>
+          <p class="text-sm font-bold leading-tight text-white">Saldos siempre al día</p>
+          <p class="mt-0.5 text-xs text-(color:--muted)">Lo que te deben y lo que debés</p>
+        </div>
+      </div>
+
+      <div
+        class="glass float-delayed absolute -right-12 bottom-1/4 z-30 hidden max-w-xs items-center gap-3 rounded-2xl p-4 xl:flex"
+      >
+        <span class="icon-chip flex size-12 shrink-0 items-center justify-center rounded-xl">
+          <i class="fa-solid fa-database text-lg" aria-hidden="true"></i>
+        </span>
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-(color:--sky)">Stock</p>
+          <p class="text-sm font-bold leading-tight text-white">Piezas por tipo de compra</p>
+          <p class="mt-0.5 text-xs text-(color:--muted)">Kilos y unidades del período</p>
+        </div>
+      </div>
+
+      <div class="mockup mockup-frame rounded-2xl p-2 sm:p-3">
+        <div
+          class="flex items-center gap-2 rounded-t-xl border-b border-(color:--line) bg-(--surface) px-4 py-2.5"
+          aria-hidden="true"
+        >
+          <span class="size-3 rounded-full bg-rose-500/80"></span>
+          <span class="size-3 rounded-full bg-amber-500/80"></span>
+          <span class="size-3 rounded-full bg-emerald-500/80"></span>
+          <span class="ml-3 hidden text-xs text-(color:--muted) sm:inline">Panel de inicio</span>
+        </div>
+        <img
+          src="hero-dashboard.png"
+          alt="Panel de inicio del sistema, con el resumen de ventas, compras y saldos"
+          width="1600"
+          height="900"
+          fetchpriority="high"
+          class="block h-auto w-full rounded-b-xl"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo funciona -->
+  <section id="como-funciona" class="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8">
+    <h2 class="text-center text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+      Cómo funciona
+    </h2>
+    <p class="mx-auto mt-3 max-w-2xl text-center text-(color:--muted)">
+      En tres pasos, sin planillas ni cuentas de memoria.
+    </p>
+
+    <ol class="mt-12 grid gap-6 md:grid-cols-3">
+      @for (step of steps; track step.title; let i = $index) {
+        <li class="card rounded-2xl p-6">
+          <span class="icon-chip flex size-12 items-center justify-center rounded-xl">
+            <i [class]="step.icon" aria-hidden="true"></i>
+          </span>
+          <p class="mt-5 text-xs font-semibold uppercase tracking-widest text-(color:--sky)">
+            Paso {{ i + 1 }}
+          </p>
+          <h3 class="mt-1 text-lg font-bold text-white">{{ step.title }}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-(color:--soft)">{{ step.text }}</p>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <!-- Módulos -->
+  <section id="modulos" class="mx-auto max-w-7xl scroll-mt-24 px-4 pb-24 sm:px-6 lg:px-8">
+    <h2 class="text-center text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+      Todo en un solo lugar
+    </h2>
+    <p class="mx-auto mt-3 max-w-2xl text-center text-(color:--muted)">
+      Para qué sirve cada sección del panel.
+    </p>
+
+    <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (module of modules; track module.name) {
+        <li class="card flex gap-4 rounded-2xl p-5">
+          <span class="icon-chip flex size-11 shrink-0 items-center justify-center rounded-xl">
+            <i [class]="module.icon" aria-hidden="true"></i>
+          </span>
+          <div>
+            <h3 class="font-bold text-white">{{ module.name }}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-(color:--soft)">{{ module.text }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+</main>
+
+<footer
+  class="relative z-10 border-t border-(color:--line) py-8 text-center text-sm text-(color:--muted)"
+>
+  Sistema de Gestión · Carnicerías
+</footer>
