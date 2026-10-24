@@ -1,8 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import Keycloak from 'keycloak-js';
 
-// Unica puerta de entrada a la identidad del usuario.
-// La app arranca con onLoad 'login-required', asi que aca siempre hay una sesion iniciada.
+// Unica puerta de entrada a la identidad del usuario
+// Solo se usa dentro del panel (/home), que esta protegido por authGuard: ahi siempre hay sesion
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly keycloak = inject(Keycloak);

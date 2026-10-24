@@ -65,7 +65,9 @@ export const appConfig: ApplicationConfig = {
     provideKeycloak({
       config: environment.keycloak,
       initOptions: {
-        onLoad: 'login-required',
+        // Detecta en silencio si ya hay una sesion, sin obligar a iniciarla (la portada es publica)
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
         pkceMethod: 'S256',
       },
       features: [
