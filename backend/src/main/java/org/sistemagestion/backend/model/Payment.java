@@ -17,7 +17,7 @@ public class Payment extends Movement{
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
-    // Cheque que este movimiento rechaza (solo en pagos CHECK_REJECTON)
+    // Cheque que este movimiento rechaza (solo en pagos CHECK_REJECTION)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rejected_payment_id")
     private Payment rejectedPayment;
