@@ -7,6 +7,8 @@ export interface Payment {
   mirror: boolean;
   supplierId: number | null;
   supplierName: string | null;
+  rejected?: boolean; // Solo en cheques: ya tiene un rechazo
+  rejectedPaymentId?: number | null; // Solo en rechazos: el cheque rechazado
   originClientName?: string | null;
   originButcherShopName?: string | null;
 }

@@ -47,6 +47,7 @@
     </div>
     <!-- ====== BODY (form) ====== -->
     <form [formGroup]="paymentForm" (ngSubmit)="onSave()" class="space-y-5 px-5 py-6 sm:px-7">
+      <!-- INFO: Pago espejo -->
       @if (payment().mirror) {
         <p
           role="status"
@@ -55,6 +56,25 @@
           <i aria-hidden="true" class="fa-solid fa-link mt-0.5 shrink-0 text-amber-300"></i>
           Este pago se generó automáticamente a partir del pago de un cliente. Para modificarlo,
           edita el pago original.
+        </p>
+      }
+      <!-- INFO: Cheque rechazado -->
+      @if (isRejection()) {
+        <p
+          role="status"
+          class="flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-xs leading-relaxed text-rose-200 sm:text-sm"
+        >
+          <i aria-hidden="true" class="fa-solid fa-ban mt-0.5 shrink-0 text-rose-300"></i>
+          Este movimiento registra el rechazo de un cheque y suma su monto a la deuda. Si fue un
+          error, eliminalo.
+        </p>
+      } @else if (payment().rejected) {
+        <p
+          role="status"
+          class="flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-xs leading-relaxed text-rose-200 sm:text-sm"
+        >
+          <i aria-hidden="true" class="fa-solid fa-ban mt-0.5 shrink-0 text-rose-300"></i>
+          Este cheque fue rechazado. Para modificarlo o borrarlo, primero eliminá el rechazo.
         </p>
       }
 
@@ -239,19 +259,58 @@
           }
         </div>
       }
+      @if (confirmingReject()) {
+        <div
+          class="space-y-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3.5 text-sm text-amber-100"
+        >
+          <p>
+            Se registrará un movimiento nuevo que suma
+            {{ payment().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }} a la deuda.
+            ¿Confirmás el rechazo?
+          </p>
+          <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              (click)="confirmingReject.set(false)"
+              [disabled]="rejecting()"
+              class="cursor-pointer rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 py-2.5 text-sm font-semibold text-slate-300 transition-ui hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Volver
+            </button>
+            <button
+              type="button"
+              (click)="onReject()"
+              [disabled]="rejecting()"
+              class="cursor-pointer rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition-ui enabled:hover:bg-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/80 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Sí, rechazar cheque
+            </button>
+          </div>
+        </div>
+      }
       <!-- ====== FOOTER ====== -->
       <!-- Eliminar a la izquierda, Cancelar/Guardar a la derecha -->
       <div
         class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
       >
         <!-- Botón Eliminar con confirmación -->
-        @if (!payment().mirror) {
+        @if (!payment().mirror && !payment().rejected) {
           <button
             type="button"
             (click)="showDeleteConfirm.set(true)"
             class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-300 transition-ui duration-150 hover:border-red-400/60 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 motion-safe:active:scale-[0.97] sm:w-auto"
           >
             <i aria-hidden="true" class="fa-solid fa-trash-can text-xs"></i> <span>Eliminar</span>
+          </button>
+        }
+        @if (canReject() && !confirmingReject()) {
+          <button
+            type="button"
+            (click)="confirmingReject.set(true)"
+            class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-sm font-semibold text-amber-200 transition-ui duration-150 hover:border-amber-400/60 hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 motion-safe:active:scale-[0.97] sm:w-auto"
+          >
+            <i aria-hidden="true" class="fa-solid fa-ban text-xs"></i>
+            <span>Rechazar cheque</span>
           </button>
         }
         <!-- Botones Cancelar y Guardar -->
@@ -265,7 +324,7 @@
           >
             Cancelar
           </button>
-          @if (!payment().mirror) {
+          @if (!readOnly()) {
             <button
               type="submit"
               [disabled]="paymentForm.invalid"

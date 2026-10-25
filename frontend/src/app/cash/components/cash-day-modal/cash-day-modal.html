@@ -80,8 +80,14 @@
                 <p class="truncate text-xs text-slate-400">{{ payment.butcherShopName }}</p>
               </div>
             </div>
-            <span class="shrink-0 font-mono text-sm font-semibold tabular-nums text-slate-100">
-              +{{ payment.amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+            <span
+              class="shrink-0 font-mono text-sm font-semibold tabular-nums"
+              [class]="
+                payment.paymentType === 'CHECK_REJECTION' ? 'text-rose-300' : 'text-slate-100'
+              "
+            >
+              {{ payment.paymentType === 'CHECK_REJECTION' ? '-' : '+'
+              }}{{ payment.amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
             </span>
           </li>
         }
