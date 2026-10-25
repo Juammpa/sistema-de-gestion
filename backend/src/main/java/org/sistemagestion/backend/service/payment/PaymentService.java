@@ -65,8 +65,12 @@ public class PaymentService implements IPaymentService{
     @Transactional(readOnly = true)
     public PaymentResponseDto getPaymentById(Long id) {
         return paymentRepository.findById(id)
-                .map(payment -> mapper.toDto(payment,findOriginShop(payment)))
-                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
+                .map(payment -> {
+                    PaymentResponseDto dto = mapper.toDto(payment, findOriginShop(payment));
+                    dto.setRejected(paymentRepository.existsByRejectedPaymentId(payment.getId()));
+                    return dto;
+                }).orElseThrow(() -> new ResourceNotFoundException("Payment","id",id));
+
     }
 
     @Override
