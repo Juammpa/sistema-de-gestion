@@ -43,4 +43,10 @@ public class PaymentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/rejection")
+    public ResponseEntity<PaymentResponseDto> rejectCheck(@PathVariable Long id) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.rejectCheck(id));
+    }
+
 }

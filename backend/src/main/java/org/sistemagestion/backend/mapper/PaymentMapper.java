@@ -4,6 +4,7 @@ import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
 import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.model.*;
+import org.sistemagestion.backend.model.enums.PaymentType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -43,6 +44,7 @@ public class PaymentMapper {
                 .mirror(payment.getOriginPayment() != null)
                 .supplierId(supplier != null ? supplier.getId() : null)
                 .supplierName(supplier != null ? supplier.getCompanyName() : null)
+                .rejectedPaymentId(payment.getRejectedPayment() != null ? payment.getRejectedPayment().getId() : null)
                 .originClientName(originShop != null ?  fullName(originShop.getClient()): null)
                 .originButcherShopName(originShop != null ? originShop.getName() : null)
                 .build();
@@ -51,5 +53,21 @@ public class PaymentMapper {
     // "Apellido Nombre", como en el listado de clientes y en la caja
     private String fullName(Client client) {
         return String.format("%s %s", client.getLastName(), client.getName());
+    }
+
+    // El rechazo de un cheque: movimiento nuevo, mismo monto, con la fecha de hoy
+    public Payment toCheckRejection(Payment check) {
+
+        CurrentAccount account = check.getCurrentAccount();
+        BigDecimal amount = check.getAmount();
+
+        return Payment.builder()
+                .paymentType(PaymentType.CHECK_REJECTION)
+                .amount(amount)
+                .date(LocalDate.now())
+                .currentAccount(account)
+                .rejectedPayment(check)
+                .balance(Decimals.moneyOrZero(account.getCurrentBalance()).add(amount))
+                .build();
     }
 }
