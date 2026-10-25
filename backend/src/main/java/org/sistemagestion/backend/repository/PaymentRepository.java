@@ -17,4 +17,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // Pagos de una cuenta corriente (paginado, del mas reciente al mas antiguo, dentro de un rango)
     Slice<Payment> findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(Long currentAccountId, LocalDate from, LocalDate to, Pageable pageable);
 
+    // Indica si el cheque ya tiene un rechazo registrado
+    boolean existsByRejectedPaymentId(Long rejectedPaymentId);
 }

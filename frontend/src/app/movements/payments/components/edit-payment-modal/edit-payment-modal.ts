@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
-import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
+import { PAYMENT_TYPE_OPTIONS, PaymentTypeValue } from '../../utils/payment.utils';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import translatePaymentType from '../../utils/payment.utils';
 import { Payment, PaymentRequest } from '../../interfaces/payment.interface';
@@ -38,16 +38,29 @@ export class EditPaymentModal implements OnInit {
   // Tope del selector de fecha: no se puede elegir un dia futuro.
   today = toIsoDate(new Date());
 
+  isRejection = computed(() => this.payment().paymentType === 'CHECK_REJECTION');
+
   // Inputs
   payment = input.required<Payment>();
   allowSupplierTransfer = input<boolean>(false);
   showCashBalance = input<boolean>(false); // true solo en la pagina de proveedor
 
-  paymentTypeOptions = computed(() =>
-    PAYMENT_TYPE_OPTIONS.filter(
+  paymentTypeOptions = computed(() => {
+    const options = PAYMENT_TYPE_OPTIONS.filter(
       (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
-    ),
-  );
+    );
+
+    // El rechazo no se elige a mano, pero se muestra al abrir uno
+    return this.isRejection()
+      ? [
+          ...options,
+          {
+            value: 'CHECK_REJECTION' as PaymentTypeValue,
+            label: translatePaymentType('CHECK_REJECTION'),
+          },
+        ]
+      : options;
+  });
 
   cashBalance = rxResource({
     params: () => this.showCashBalance(),
@@ -132,8 +145,8 @@ export class EditPaymentModal implements OnInit {
       amount: current.amount,
     });
 
-    // Un pago espejo (generado automaticamente) es de solo lectura
-    if (current.mirror) {
+    // Solo lectura: pago espejo (generado automaticamente), cheque rechazado o su rechazo
+    if (this.readOnly()) {
       this.paymentForm.disable();
     }
   }
@@ -141,6 +154,19 @@ export class EditPaymentModal implements OnInit {
   // Señales
   showDeleteConfirm = signal<boolean>(false);
   deleting = signal<boolean>(false);
+  confirmingReject = signal<boolean>(false);
+  rejecting = signal<boolean>(false);
+
+  // Solo los cheques de clientes que todavia no fueron rechazados
+  canReject = computed(
+    () =>
+      this.allowSupplierTransfer() &&
+      this.payment().paymentType === 'CHECK' &&
+      !this.payment().rejected,
+  );
+
+  // Solo lectura: pago espejo, cheque ya rechazado o el rechazo mismo
+  readOnly = computed(() => this.payment().mirror || this.payment().rejected || this.isRejection());
 
   onSave() {
     if (this.paymentForm.invalid) {
@@ -175,6 +201,18 @@ export class EditPaymentModal implements OnInit {
         this.close();
       },
       error: () => this.deleting.set(false), // El aviso lo muestra el interceptor
+    });
+  }
+
+  onReject() {
+    this.rejecting.set(true);
+
+    this.paymentService.rejectCheck(this.payment().id).subscribe({
+      next: () => {
+        this.saved.emit();
+        this.close();
+      },
+      error: () => this.rejecting.set(false), // El aviso lo muestra el interceptor
     });
   }
 }

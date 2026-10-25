@@ -41,7 +41,8 @@ public interface CashRepository extends Repository<Payment, Long> {
 
     // Saldo de arrastre: todoo lo cobrado a clientes antes de una fecha (menos transf. a proveedor)
     @Query("""
-            select sum(p.amount)
+            select sum(case when p.paymentType = org.sistemagestion.backend.model.enums.PaymentType.CHECK_REJECTION
+                                                   then -p.amount else p.amount end)
             from Payment p
             where p.paymentType <> :excluded and p.date < :date
               and exists (select 1 from ButcherShop bs where bs.currentAccount = p.currentAccount)

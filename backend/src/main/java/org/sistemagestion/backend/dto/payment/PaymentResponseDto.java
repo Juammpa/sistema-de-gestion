@@ -26,6 +26,12 @@ public class PaymentResponseDto {
     private Long supplierId;
     private String supplierName;
 
+    // Solo en rechazos de cheque: ID del cheque rechazado
+    private Long rejectedPaymentId;
+
+    // Solo en cheques: ya tiene un rechazo registrado
+    private boolean rejected;
+
     // Solo en pagos espejo: cliente y sucursal que hicieron el pago original
     private String originClientName;
     private String originButcherShopName;

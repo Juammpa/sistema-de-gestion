@@ -15,6 +15,7 @@ final class ExportLabels {
             case CHECK -> "Cheque";
             case IIBB -> "IIBB";
             case SUPPLIER_TRANSFER -> "Transferencia a proveedor";
+            case CHECK_REJECTION -> "Cheque rechazado";
         };
     }
 }

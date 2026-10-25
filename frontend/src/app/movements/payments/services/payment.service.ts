@@ -29,4 +29,9 @@ export class PaymentService {
   deletePaymentById(id: number) {
     return this.http.delete(`${environment.apiUrl}/payment/${id}`);
   }
+
+  // Registra el rechazo de un cheque (suma el monto de vuelta a la deuda)
+  rejectCheck(id: number) {
+    return this.http.post<Payment>(`${environment.apiUrl}/payment/${id}/rejection`, null);
+  }
 }

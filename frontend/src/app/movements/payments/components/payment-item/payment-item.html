@@ -7,13 +7,21 @@
   class="whitespace-nowrap px-4 py-3.5 font-sans max-md:col-start-1 max-md:row-start-1 max-md:p-0"
 >
   <span
-    class="inline-flex shrink-0 items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium leading-none text-emerald-400"
+    class="inline-flex shrink-0 items-center rounded-md border px-2.5 py-1 text-xs font-medium leading-none"
+    [class]="
+      isRejection()
+        ? 'border-rose-500/30 bg-rose-500/10 text-rose-400'
+        : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+    "
   >
-    Pago
+    {{ isRejection() ? 'Rechazo' : 'Pago' }}
   </span>
 </td>
 <td class="px-4 py-3.5 font-sans max-md:col-span-2 max-md:row-start-2 max-md:p-0">
-  <div class="flex items-center gap-1.5 font-medium text-emerald-300">
+  <div
+    class="flex items-center gap-1.5 font-medium"
+    [class]="isRejection() ? 'text-rose-300' : 'text-emerald-300'"
+  >
     <svg
       aria-hidden="true"
       class="h-3.5 w-3.5 shrink-0"
@@ -36,7 +44,8 @@
 <td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400 max-md:hidden">—</td>
 <td class="whitespace-nowrap px-4 py-3.5 text-right text-slate-400 max-md:hidden">—</td>
 <td
-  class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-emerald-400 max-md:col-start-3 max-md:row-start-1 max-md:row-span-2 max-md:p-0 max-md:text-base"
+  class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-semibold tabular-nums max-md:col-start-3 max-md:row-start-1 max-md:row-span-2 max-md:p-0 max-md:text-base"
+  [class]="isRejection() ? 'text-rose-400' : 'text-emerald-400'"
 >
   {{ payment().amount | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
 </td>

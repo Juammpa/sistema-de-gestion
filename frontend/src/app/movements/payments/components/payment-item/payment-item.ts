@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { PaymentMovement } from '../../../interfaces/movement.interface';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import translatePaymentType from '../../utils/payment.utils';
@@ -11,4 +11,6 @@ import translatePaymentType from '../../utils/payment.utils';
 export class PaymentItem {
   translatePaymentType = translatePaymentType;
   payment = input.required<PaymentMovement>();
+
+  isRejection = computed(() => this.payment().paymentType === 'CHECK_REJECTION');
 }

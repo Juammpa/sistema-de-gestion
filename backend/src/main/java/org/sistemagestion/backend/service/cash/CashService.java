@@ -63,11 +63,11 @@ public class CashService implements ICashService{
             List<CashWithdrawalDto> withdrawals = withdrawalsByDate.getOrDefault(date, List.of());
 
             // Obtenemos el total
-            BigDecimal total = sum(payments.stream().map(CashPaymentDto::amount));
+            BigDecimal total = sum(payments.stream().map(this::signedAmount));
             // Obtenemos el total de pagos recibidos (no tenemos en cuenta 'Transferencia a proveedor')
             BigDecimal cash = sum(payments.stream()
                     .filter(payment -> payment.paymentType() != PaymentType.SUPPLIER_TRANSFER)
-                    .map(CashPaymentDto::amount));
+                    .map(this::signedAmount));
             BigDecimal withdrawn = sum(withdrawals.stream().map(CashWithdrawalDto::amount));
 
             closingBalance = closingBalance.add(cash).subtract(withdrawn);
@@ -98,6 +98,15 @@ public class CashService implements ICashService{
 
     private BigDecimal sum(Stream<BigDecimal> amounts) {
         return amounts.filter(Objects::nonNull).reduce(Decimals.MONEY_ZERO, BigDecimal::add);
+    }
+
+    // Un cheque rechazado resta: revierte el cobro que se habia sumado a la caja
+    private BigDecimal signedAmount(CashPaymentDto payment) {
+        BigDecimal amount = Decimals.moneyOrZero(payment.amount());
+
+        return payment.paymentType() == PaymentType.CHECK_REJECTION
+                ? amount.negate()
+                : amount;
     }
 
     // Valida que un pago en efectivo a un proveedor no supere la caja disponible

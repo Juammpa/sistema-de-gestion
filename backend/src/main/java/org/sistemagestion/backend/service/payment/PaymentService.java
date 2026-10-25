@@ -5,12 +5,14 @@ import org.sistemagestion.backend.common.Decimals;
 import lombok.extern.slf4j.Slf4j;
 import org.sistemagestion.backend.dto.payment.PaymentRequestDto;
 import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PaymentMapper;
 import org.sistemagestion.backend.model.ButcherShop;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.model.Supplier;
+import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
@@ -38,6 +40,8 @@ public class PaymentService implements IPaymentService{
     @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto request) {
 
+        assertManualType(request.getPaymentType());
+
        CurrentAccount currentAccount = currentAccountRepository.findById(request.getCurrentAccountId())
                .orElseThrow(() -> new ResourceNotFoundException("CurrentAccount","id",request.getCurrentAccountId()));
 
@@ -61,8 +65,12 @@ public class PaymentService implements IPaymentService{
     @Transactional(readOnly = true)
     public PaymentResponseDto getPaymentById(Long id) {
         return paymentRepository.findById(id)
-                .map(payment -> mapper.toDto(payment,findOriginShop(payment)))
-                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
+                .map(payment -> {
+                    PaymentResponseDto dto = mapper.toDto(payment, findOriginShop(payment));
+                    dto.setRejected(paymentRepository.existsByRejectedPaymentId(payment.getId()));
+                    return dto;
+                }).orElseThrow(() -> new ResourceNotFoundException("Payment","id",id));
+
     }
 
     @Override
@@ -74,6 +82,9 @@ public class PaymentService implements IPaymentService{
 
         accountGuard.assertOwnerActive(payment.getCurrentAccount());
         paymentMirrorService.assertEditable(payment);
+        assertManualType(request.getPaymentType());
+        assertNotRejected(payment);
+
         Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), payment.getCurrentAccount());
         cashService.assertSufficientBalance(payment.getCurrentAccount(), request.getPaymentType(), request.getAmount(), payment);
 
@@ -98,6 +109,11 @@ public class PaymentService implements IPaymentService{
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment","id", id));
 
+        // El cheque rechazado no se borra, pero el rechazo si (es la forma de deshacerlo)
+        if (payment.getPaymentType() != PaymentType.CHECK_REJECTION) {
+            assertNotRejected(payment);
+        }
+
         paymentMirrorService.assertEditable(payment);
 
         // Actualizamos el balance de la cuenta
@@ -111,6 +127,35 @@ public class PaymentService implements IPaymentService{
         log.info("Pago eliminado corectamente. ID: {}", payment.getId());
     }
 
+    @Override
+    @Transactional
+    public PaymentResponseDto rejectCheck(Long id) {
+
+        Payment check = paymentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
+        CurrentAccount account = check.getCurrentAccount();
+
+        accountGuard.assertOwnerActive(account);
+
+        if (check.getPaymentType() != PaymentType.CHECK) {
+            throw new BusinessRuleException("Solo se puede rechazar un pago realizado con cheque.");
+        }
+
+        if (!butcherShopRepository.existsByCurrentAccountId(account.getId())) {
+            throw new BusinessRuleException("Solo se pueden rechazar cheques de clientes.");
+        }
+
+        if (paymentRepository.existsByRejectedPaymentId(id)) {
+            throw new BusinessRuleException("Este cheque ya fue rechazado.");
+        }
+
+        Payment rejection = paymentRepository.save(mapper.toCheckRejection(check));
+        balanceRecalculationService.recalculate(account);
+
+        log.info("Cheque rechazado correctamente. Cheque ID: {}, rechazo ID: {}", id, rejection.getId());
+        return mapper.toDto(rejection);
+    }
+
     // Sucursal del cliente que hizo el pago original (null si el pago no es espejo)
     private ButcherShop findOriginShop(Payment payment) {
         Payment origin = payment.getOriginPayment();
@@ -119,4 +164,24 @@ public class PaymentService implements IPaymentService{
         return butcherShopRepository.findByCurrentAccountId(origin.getCurrentAccount().getId())
                 .orElse(null);
     }
+
+    // CHECK_REJECTION solo lo genera el sistema al rechazar un cheque, nunca se carga a mano
+    private void assertManualType(PaymentType type) {
+        if (type == PaymentType.CHECK_REJECTION) {
+            throw new BusinessRuleException("Para rechazar un cheque usá la opción \"Rechazar cheque\" del pago.");
+        }
+    }
+
+    // Un cheque rechazado o su rechazo no se modifican: para corregir, se elimina el rechazo
+    private void assertNotRejected(Payment payment) {
+        if (payment.getPaymentType() == PaymentType.CHECK_REJECTION) {
+            throw new BusinessRuleException("Un rechazo de cheque no se puede modificar. Eliminalo si fue un error.");
+        }
+
+        if (paymentRepository.existsByRejectedPaymentId(payment.getId())) {
+            throw new BusinessRuleException("Este cheque fue rechazado. Eliminá primero el rechazo para modificarlo o borrarlo.");
+        }
+    }
+
+
 }

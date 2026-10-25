@@ -12,4 +12,5 @@ public interface IPaymentService {
     PaymentResponseDto updatePayment(Long id, PaymentRequestDto request);
     void deletePaymentById(Long id);
 
+    PaymentResponseDto rejectCheck(Long id);
 }

@@ -128,6 +128,14 @@ public class ExportDataService {
                     sale.getUnit(), sale.getKilograms(), sale.getPricePerKilo(),
                     null, sale.getAmount(), sale.getBalance(), false);
 
+            // El rechazo de un cheque vuelve a sumar a la deuda: va en "Monto total", como una venta
+            case Payment payment when payment.getPaymentType() == PaymentType.CHECK_REJECTION -> new ExportData.ClientRow(
+                    payment.getDate(),
+                    ExportLabels.paymentType(payment.getPaymentType()),
+                    null, null, null, null,
+                    null, payment.getAmount(),
+                    payment.getBalance(), false);
+
             case Payment payment -> new ExportData.ClientRow(
                     payment.getDate(), clientPaymentLabel(payment),
                     null, null, null, null,
