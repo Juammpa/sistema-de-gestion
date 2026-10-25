@@ -5,6 +5,7 @@ import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.model.CurrentAccount;
 import org.sistemagestion.backend.model.Movement;
 import org.sistemagestion.backend.model.Payment;
+import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,11 @@ public class BalanceRecalculationService {
         BigDecimal runningBalance = Decimals.MONEY_ZERO;
         for (Movement movement : movements) {
             BigDecimal amount = Decimals.moneyOrZero(movement.getAmount());
-            BigDecimal signedAmount = movement instanceof Payment ? amount.negate() : amount;
+
+            // Todoo pago resta, salvo el rechazado de un cheque: ese vuelve a sumar a la deuda
+            boolean reducesBalance = movement instanceof Payment payment && payment.getPaymentType() != PaymentType.CHECK_REJECTION;
+
+            BigDecimal signedAmount = reducesBalance ? amount.negate() : amount;
 
             runningBalance = runningBalance.add(signedAmount);
             movement.setBalance(runningBalance);

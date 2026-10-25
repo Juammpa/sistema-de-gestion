@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.dashboard.*;
 import org.sistemagestion.backend.model.*;
+import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.DashboardRepository;
 import org.sistemagestion.backend.repository.MovementRepository;
@@ -118,6 +119,14 @@ public class DashboardService implements IDashboardService{
         return new RecentMovementDto(
                 movement.getId(), movement.getDate(),
                 movement instanceof Purchase ? DashboardMovementKind.PURCHASE : DashboardMovementKind.PAYMENT,
-                supplierName, detail, movement.getAmount());
+                supplierName, detail, signedAmount(movement));
+    }
+
+    // Un cheque rechazado se muestra como cobro negativo
+    private BigDecimal signedAmount(Movement movement) {
+        boolean rejection = movement instanceof Payment payment && payment.getPaymentType() == PaymentType.CHECK_REJECTION;
+        return rejection
+                ? Decimals.moneyOrZero(movement.getAmount()).negate()
+                : movement.getAmount();
     }
 }

@@ -39,12 +39,14 @@ public interface DashboardRepository extends Repository<Payment, Long> {
     // Pagos de cuentas de clientes (cobros) de sucursales y clientes activos
     @Query("""
             select new org.sistemagestion.backend.dto.dashboard.MonthlyTotalDto(
-                year(p.date), month(p.date), sum(p.amount))
+                year(p.date), month(p.date),
+                sum(case when p.paymentType = org.sistemagestion.backend.model.enums.PaymentType.CHECK_REJECTION
+                    then -p.amount else p.amount end))
             from Payment p
             where p.date between :from and :to
-              and exists (select 1 from ButcherShop bs
-                          where bs.currentAccount = p.currentAccount
-                            and bs.isActive = true and bs.client.isActive = true)
+            and exists (select 1 from ButcherShop bs
+                    where bs.currentAccount = p.currentAccount
+                    and bs.isActive = true and bs.client.isActive = true)
             group by year(p.date), month(p.date)
             """)
     List<MonthlyTotalDto> collectionsByMonth(@Param("from") LocalDate from, @Param("to") LocalDate to);
