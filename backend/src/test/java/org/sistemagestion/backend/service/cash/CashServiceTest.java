@@ -9,6 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.sistemagestion.backend.dto.cash.CashDayDto;
 import org.sistemagestion.backend.dto.cash.CashPaymentDto;
+import org.sistemagestion.backend.exception.BusinessRuleException;
+import org.sistemagestion.backend.model.CurrentAccount;
+import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.CashRepository;
 import org.sistemagestion.backend.repository.SupplierRepository;
@@ -17,7 +20,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -42,7 +46,7 @@ class CashServiceTest {
 
         when(cashRepository.sumClientPaymentsBefore(PaymentType.SUPPLIER_TRANSFER, start))
                 .thenReturn(new BigDecimal("1000.00"));
-        when(cashRepository.sumSupplierPaymentsBefore(PaymentType.CASH, start))
+        when(cashRepository.sumSupplierPaymentsBefore(start))
                 .thenReturn(BigDecimal.ZERO);
     }
 
@@ -82,7 +86,7 @@ class CashServiceTest {
                     clientPayment(1L, collectedOn, PaymentType.CHECK, "500.00"),
                     clientPayment(2L, rejectedOn, PaymentType.CHECK_REJECTION, "500.00")
             ));
-            when(cashRepository.findSupplierPayments(PaymentType.CASH, collectedOn, rejectedOn)).thenReturn(List.of());
+            when(cashRepository.findSupplierPayments(collectedOn, rejectedOn)).thenReturn(List.of());
 
             // Act
             List<CashDayDto> days = service.getCashDays(collectedOn, rejectedOn);
@@ -98,6 +102,88 @@ class CashServiceTest {
             assertThat(rejectionDay.closingBalance()).isEqualByComparingTo("1000.00");
         }
 
+    }
+
+    @Nested
+    @DisplayName("assertSufficientBalance()")
+    class AssertSufficientBalanceTests {
+
+        // ====== Helpers ======
+        private CurrentAccount supplierAccount() {
+            CurrentAccount account = new CurrentAccount();
+            account.setId(7L);
+            return account;
+        }
+
+        private void givenCashOf10000() {
+
+            when(cashRepository.sumClientPayments(PaymentType.SUPPLIER_TRANSFER))
+                    .thenReturn(new BigDecimal("10000.00"));
+            when(cashRepository.sumSupplierPayments()).thenReturn(BigDecimal.ZERO);
+        }
+
+        @Test
+        @DisplayName("Rechaza un pago a un proveedor mayor a la caja, sin importar el metodo")
+        void assertSufficientBalanceRejectsAmountAboveCash() {
+
+            // Arrange
+            CurrentAccount account = supplierAccount();
+            when(supplierRepository.existsByCurrentAccountId(7L)).thenReturn(true);
+            givenCashOf10000();
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.assertSufficientBalance(account, new BigDecimal("10000.01"), null))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("Saldo de caja insuficiente");
+
+        }
+
+        @Test
+        @DisplayName("Permite pagar exactamente lo que hay en la caja")
+        void assertSufficientBalanceAllowsTheFullCash() {
+
+            // Arrange
+            CurrentAccount account = supplierAccount();
+            when(supplierRepository.existsByCurrentAccountId(7L)).thenReturn(true);
+            givenCashOf10000();
+
+            // Act + Assert
+            assertThatCode(() -> service.assertSufficientBalance(account, new BigDecimal("10000.00"), null))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("Al editar, el pago que se modifica no se descuenta dos veces")
+        void assertSufficientBalanceAddsBackTheEditedPayment() {
+
+            // Arrange: ya salieron $4.000 (el pago que se edita), asi que la caja marca $6.000
+            CurrentAccount account = supplierAccount();
+            Payment existing = Payment.builder().amount(new BigDecimal("4000.00")).build();
+
+            when(supplierRepository.existsByCurrentAccountId(7L)).thenReturn(true);
+            when(cashRepository.sumClientPayments(PaymentType.SUPPLIER_TRANSFER)).thenReturn(new BigDecimal("10000.00"));
+            when(cashRepository.sumSupplierPayments()).thenReturn(new BigDecimal("4000.00"));
+
+            // Act + Assert: puede subirlo hasta los $10.000 originales
+            assertThatCode(() -> service.assertSufficientBalance(account, new BigDecimal("10000.00"), existing))
+                    .doesNotThrowAnyException();
+
+        }
+
+        @Test
+        @DisplayName("No valida la caja en la cuenta de un cliente")
+        void assertSufficientBalanceIgnoresNonSupplierAccounts() {
+
+            // Arrange
+            CurrentAccount account = supplierAccount();
+            when(supplierRepository.existsByCurrentAccountId(7L)).thenReturn(false);
+
+            // Act + Assert
+            assertThatCode(() -> service.assertSufficientBalance(account, new BigDecimal("999999.00"),null))
+                    .doesNotThrowAnyException();
+
+            verifyNoInteractions(cashRepository);
+        }
     }
 
 

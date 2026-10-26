@@ -56,11 +56,9 @@ export class PaymentFormModal {
     stream: ({ params }) => (params ? this.supplierService.getAllSuppliers() : of([])),
   });
 
-  // Un pago en efectivo a un proveedor no puede superar el efectivo disponible en caja
+  // Un pago a un proveedor no puede superar lo disponible en caja, sea cual sea el metodo
   private withinCashBalance: ValidatorFn = (control) => {
-    const isCashWithdrawal =
-      this.showCashBalance() && this.paymentForm?.controls['paymentType'].value === 'CASH';
-    if (!isCashWithdrawal || !this.cashBalance.hasValue()) return null;
+    if (!this.showCashBalance() || !this.cashBalance.hasValue()) return null;
 
     const available = this.cashBalance.value();
     const amount = this.formUtils.parseDecimal(control.value);
@@ -91,9 +89,6 @@ export class PaymentFormModal {
         supplierControl.setValue(null);
       }
       supplierControl.updateValueAndValidity();
-
-      // El tope de caja solo aplica al efectivo: al cambiar de tipo hay que revalidar el monto
-      this.paymentForm.controls['amount'].updateValueAndValidity();
     });
 
     // Cuando termina de cargar el saldo de caja, tambien se revalida el monto
