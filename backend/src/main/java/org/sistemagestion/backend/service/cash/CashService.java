@@ -48,7 +48,7 @@ public class CashService implements ICashService{
                         .collect(Collectors.groupingBy(CashPaymentDto::date));
 
         Map<LocalDate, List<CashWithdrawalDto>> withdrawalsByDate =
-                cashRepository.findSupplierPayments(PaymentType.CASH, start, end).stream()
+                cashRepository.findSupplierPayments(start, end).stream()
                         .collect(Collectors.groupingBy(CashWithdrawalDto::date));
 
         // Solo los dias con movimientos, en orden cronologico para acumular la caja
@@ -83,7 +83,7 @@ public class CashService implements ICashService{
     @Transactional(readOnly = true)
     public BigDecimal getCurrentBalance() {
         BigDecimal cashIn = Decimals.moneyOrZero(cashRepository.sumClientPayments(PaymentType.SUPPLIER_TRANSFER));
-        BigDecimal cashOut = Decimals.moneyOrZero(cashRepository.sumSupplierPayments(PaymentType.CASH));
+        BigDecimal cashOut = Decimals.moneyOrZero(cashRepository.sumSupplierPayments());
 
         return cashIn.subtract(cashOut);
     }
@@ -91,7 +91,7 @@ public class CashService implements ICashService{
     // Efectivo acumulado hasta el dia anterior al rango (la caja arranca en cero)
     private BigDecimal openingBalance(LocalDate start) {
         BigDecimal cashIn = Decimals.moneyOrZero(cashRepository.sumClientPaymentsBefore(PaymentType.SUPPLIER_TRANSFER, start));
-        BigDecimal cashOut = Decimals.moneyOrZero(cashRepository.sumSupplierPaymentsBefore(PaymentType.CASH, start));
+        BigDecimal cashOut = Decimals.moneyOrZero(cashRepository.sumSupplierPaymentsBefore(start));
 
         return cashIn.subtract(cashOut);
     }
@@ -109,24 +109,26 @@ public class CashService implements ICashService{
                 : amount;
     }
 
-    // Valida que un pago en efectivo a un proveedor no supere la caja disponible
+    // Valida que un pago a un proveedor no supere la caja disponible
     // 'existing' es el pago antes de editarlo (null si es un alta), para no descontarlo dos veces
-    public void assertSufficientBalance(CurrentAccount account, PaymentType newType, BigDecimal newAmount, Payment existing) {
+    public void assertSufficientBalance(CurrentAccount account, BigDecimal newAmount, Payment existing) {
 
-        if (newType != PaymentType.CASH || !supplierRepository.existsByCurrentAccountId(account.getId())) {
+        if (!supplierRepository.existsByCurrentAccountId(account.getId())) {
             return;
         }
 
-        boolean wasCashWithdrawal = existing != null && existing.getPaymentType() == PaymentType.CASH;
-        BigDecimal previousAmount = wasCashWithdrawal ? Decimals.moneyOrZero(existing.getAmount()) : Decimals.MONEY_ZERO;
+        BigDecimal previousAmount = existing != null
+                ? Decimals.moneyOrZero(existing.getAmount())
+                : Decimals.MONEY_ZERO;
+
         BigDecimal available = getCurrentBalance().add(previousAmount);
 
         if (newAmount.compareTo(available) > 0) {
             throw new BusinessRuleException(String.format(
                     Locale.forLanguageTag("es-AR"),
-                    "Saldo de caja insuficiente: disponible $%.2f, solicitado $%.2f", available, newAmount));
+                    "Saldo de caja insuficiente: disponible $%.2f, solicitado $%.2f", available, newAmount
+            ));
         }
-
     }
 
 }

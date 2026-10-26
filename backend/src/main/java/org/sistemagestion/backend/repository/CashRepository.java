@@ -28,16 +28,16 @@ public interface CashRepository extends Repository<Payment, Long> {
             """)
     List<CashPaymentDto> findClientPayments(@Param("from")LocalDate from, @Param("to") LocalDate to);
 
-    // Pagos en efectivo hechos a proveedores en el rango (extracciones)
+    // Pagos hechos a proveedores en el rango (salidas de caja), sin los pagos espejos
     @Query("""
             select new org.sistemagestion.backend.dto.cash.CashWithdrawalDto(
                 p.id, p.date, p.amount, sup.companyName)
             from Payment p
             join Supplier sup on sup.currentAccount = p.currentAccount
-            where p.paymentType = :type and p.date between :from and :to
+            where p.originPayment is null and p.date between :from and :to
             order by p.date, p.id
             """)
-    List<CashWithdrawalDto> findSupplierPayments(@Param("type")PaymentType type, @Param("from") LocalDate from, @Param("to") LocalDate to);
+    List<CashWithdrawalDto> findSupplierPayments(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
     // Saldo de arrastre: todoo lo cobrado a clientes antes de una fecha (menos transf. a proveedor)
     @Query("""
@@ -49,30 +49,31 @@ public interface CashRepository extends Repository<Payment, Long> {
             """)
     BigDecimal sumClientPaymentsBefore(@Param("excluded") PaymentType excluded, @Param("date") LocalDate date);
 
-    // Saldo de arrastre: efectivo pagado a proveedores antes de una fecha
+    // Saldo de arrastre: lo pagado a proveedores antes de una fecha (sin pagos espejos)
     @Query("""
             select sum(p.amount)
             from Payment p
-            where p.paymentType = :type and p.date < :date
+            where p.originPayment is null and p.date < :date
               and exists (select 1 from Supplier sup where sup.currentAccount = p.currentAccount)
             """)
-    BigDecimal sumSupplierPaymentsBefore(@Param("type") PaymentType type, @Param("date") LocalDate date);
+    BigDecimal sumSupplierPaymentsBefore(@Param("date") LocalDate date);
 
     // Total historico que entro a la caja por cobros a clientes (todoo menos SUPPLIER_TRANSFER)
     @Query("""
-        select sum(p.amount)
+        select sum(case when p.paymentType = org.sistemagestion.backend.model.enums.PaymentType.CHECK_REJECTION
+                        then -p.amount else p.amount end)
         from Payment p
         where p.paymentType <> :excluded
           and exists (select 1 from ButcherShop bs where bs.currentAccount = p.currentAccount)
         """)
     BigDecimal sumClientPayments(@Param("excluded") PaymentType excluded);
 
-    // Total historico pagado en efectivo a proveedores
+    // Total historico pagado a proveedores (sin pagos espejos)
     @Query("""
         select sum(p.amount)
         from Payment p
-        where p.paymentType = :type
+        where p.originPayment is null
           and exists (select 1 from Supplier sup where sup.currentAccount = p.currentAccount)
         """)
-    BigDecimal sumSupplierPayments(@Param("type") PaymentType type);
+    BigDecimal sumSupplierPayments();
 }

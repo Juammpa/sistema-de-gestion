@@ -48,7 +48,7 @@ public class PaymentService implements IPaymentService{
        accountGuard.assertOwnerActive(currentAccount);
 
        Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), currentAccount);
-       cashService.assertSufficientBalance(currentAccount, request.getPaymentType(), request.getAmount(), null);
+       cashService.assertSufficientBalance(currentAccount,  request.getAmount(), null);
 
        Payment payment = mapper.toPayment(request, currentAccount);
        payment.setSupplier(supplier);
@@ -86,7 +86,7 @@ public class PaymentService implements IPaymentService{
         assertNotRejected(payment);
 
         Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), payment.getCurrentAccount());
-        cashService.assertSufficientBalance(payment.getCurrentAccount(), request.getPaymentType(), request.getAmount(), payment);
+        cashService.assertSufficientBalance(payment.getCurrentAccount(), request.getAmount(), payment);
 
         payment.setDate(request.getDate());
         payment.setPaymentType(request.getPaymentType());
