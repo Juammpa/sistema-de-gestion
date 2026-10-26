@@ -206,9 +206,7 @@
               class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-8 pr-3.5 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
             />
           </div>
-          @if (
-            showCashBalance() && paymentForm.value.paymentType === 'CASH' && cashBalance.hasValue()
-          ) {
+          @if (showCashBalance() && cashBalance.hasValue()) {
             <p aria-live="polite" class="pt-1 text-xs tabular-nums text-slate-400">
               Disponible en caja:
               {{
