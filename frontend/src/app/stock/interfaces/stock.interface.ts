@@ -14,6 +14,7 @@ export interface StockItem {
   supplierName: string;
   editable: boolean; // la compra tiene mas de una unidad: se puede repartir el peso
   adjusted: boolean; // el peso fue ajustado a mano
+  cuts: StockCut[]; // cortes sacados de esta pieza (vacio si no tiene)
 }
 
 export interface SpecieTotals {
@@ -41,4 +42,18 @@ export interface StockSummary {
 export interface StockResponse {
   summary: StockSummary;
   items: StockItem[];
+}
+
+// Una unidad de corte sacada de una pieza
+export interface StockCut {
+  id: number;
+  cutMeatId: number;
+  cutMeatName: string;
+  kilograms: number;
+}
+
+// Un corte tal como se envia al guardar los cortes de una pieza
+export interface StockCutRequest {
+  cutMeatId: number;
+  kilograms: number;
 }

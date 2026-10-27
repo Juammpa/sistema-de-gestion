@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { StockResponse } from '../interfaces/stock.interface';
+import { StockCutRequest, StockResponse } from '../interfaces/stock.interface';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -19,5 +19,13 @@ export class StockService {
     return this.http.put<void>(`${environment.apiUrl}/stock/purchase/${purchaseId}/weights`, {
       kilograms,
     });
+  }
+
+  // Reemplaza los cortes de una pieza (lista vacia = pieza sin cortes)
+  updatePieceCuts(purchaseId: number, pieceNumber: number, cuts: StockCutRequest[]) {
+    return this.http.put<void>(
+      `${environment.apiUrl}/stock/purchase/${purchaseId}/pieces/${pieceNumber}/cuts`,
+      { cuts },
+    );
   }
 }

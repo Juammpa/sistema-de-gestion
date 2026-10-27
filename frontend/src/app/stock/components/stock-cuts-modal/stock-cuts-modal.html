@@ -1,0 +1,228 @@
+<!-- Backdrop: cierra al hacer click fuera del panel -->
+<div
+  (click)="close()"
+  (document:keydown.escape)="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md modal-backdrop"
+>
+  <!-- Panel: stopPropagation evita que el click interno llegue al backdrop -->
+  <div
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="stock-cuts-title"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/80 ring-1 ring-white/10"
+  >
+    <!-- ====== HEADER ====== -->
+    <div
+      class="flex items-start justify-between gap-4 border-b border-slate-800/80 px-5 py-5 sm:px-7"
+    >
+      <div class="flex min-w-0 items-center gap-3.5">
+        <span
+          aria-hidden="true"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent-500/25 bg-accent-500/15 text-accent-300"
+        >
+          <i class="fa-solid fa-scissors text-base"></i>
+        </span>
+        <div class="min-w-0 space-y-0.5">
+          <h2
+            id="stock-cuts-title"
+            class="text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
+          >
+            Cortes de la pieza
+          </h2>
+          <p class="truncate text-sm text-slate-400">
+            {{ item().purchaseTypeName }}
+            @if (item().totalUnits > 1) {
+              · Pieza {{ item().unitNumber }} de {{ item().totalUnits }}
+            }
+            · {{ item().supplierName }}
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="-mr-1 -mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-slate-700/60 hover:bg-slate-800/70 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
+        title="Cerrar modal"
+        aria-label="Cerrar modal"
+      >
+        <i aria-hidden="true" class="fa-solid fa-xmark block text-base"></i>
+      </button>
+    </div>
+
+    <!-- ====== BODY ====== -->
+    <form (submit)="$event.preventDefault(); onSave()" class="space-y-5 px-5 py-6 sm:px-7">
+      <p class="text-sm text-slate-400">
+        Dividí los
+        <span class="font-semibold text-slate-200"
+          >{{ pieceCents() / 100 | number: '1.2-2' }} kg</span
+        >
+        de esta pieza en cortes. Podés cargar el mismo corte más de una vez; lo que no uses queda
+        como merma.
+      </p>
+
+      @if (cutMeats.error()) {
+        <p role="alert" class="flex items-center gap-1.5 text-xs font-medium text-red-400">
+          <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+          No se pudieron cargar los cortes de carne
+        </p>
+      } @else if (cutMeats.hasValue() && availableCutMeats().length === 0) {
+        <p role="status" class="text-xs font-medium text-amber-300">
+          No hay cortes activos de esta especie. Creá uno en la sección Cortes.
+        </p>
+      }
+
+      <!-- Un renglón por corte (track $index: así el campo no pierde el foco al escribir) -->
+      <div class="space-y-3">
+        @for (row of rows(); track $index) {
+          <div>
+            <div class="flex items-start gap-2">
+              <div class="group relative min-w-0 flex-1">
+                <label [attr.for]="'stock-cut-select-' + $index" class="sr-only">
+                  Corte {{ $index + 1 }}
+                </label>
+                <select
+                  [id]="'stock-cut-select-' + $index"
+                  (change)="setCut($index, $event)"
+                  [attr.aria-invalid]="isUnavailable(row) || null"
+                  class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-9 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+                >
+                  <option
+                    value=""
+                    disabled
+                    [selected]="row.cutMeatId === null"
+                    class="bg-surface text-slate-400"
+                  >
+                    Seleccionar corte...
+                  </option>
+                  @for (cutMeat of availableCutMeats(); track cutMeat.id) {
+                    <option
+                      [value]="cutMeat.id"
+                      [selected]="cutMeat.id === row.cutMeatId"
+                      class="bg-surface text-slate-200"
+                    >
+                      {{ cutMeat.cutMeatName | titlecase }}
+                    </option>
+                  }
+                </select>
+                <i
+                  aria-hidden="true"
+                  class="fa-solid fa-chevron-down pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 transition-colors group-focus-within:text-accent-400"
+                ></i>
+              </div>
+
+              <div class="group relative w-28 shrink-0">
+                <label [attr.for]="'stock-cut-kg-' + $index" class="sr-only">
+                  Peso del corte {{ $index + 1 }}
+                </label>
+                <input
+                  [id]="'stock-cut-kg-' + $index"
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  [value]="row.kilograms"
+                  (input)="setKilograms($index, $event)"
+                  class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-9 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+                />
+                <span
+                  aria-hidden="true"
+                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 transition-colors group-focus-within:text-accent-400"
+                >
+                  kg
+                </span>
+              </div>
+
+              <button
+                type="button"
+                (click)="removeRow($index)"
+                class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 motion-safe:active:scale-[0.97] sm:size-11.5"
+                title="Quitar corte"
+                [attr.aria-label]="'Quitar corte ' + ($index + 1)"
+              >
+                <i aria-hidden="true" class="fa-solid fa-trash text-sm"></i>
+              </button>
+            </div>
+
+            @if (isUnavailable(row)) {
+              <p role="alert" class="pt-1 text-xs font-medium text-red-400">
+                Este corte ya no está disponible: elegí otro o quitalo.
+              </p>
+            }
+          </div>
+        } @empty {
+          <p
+            class="rounded-xl border border-dashed border-slate-700/70 px-4 py-5 text-center text-sm text-slate-400"
+          >
+            Esta pieza no tiene cortes. Agregá el primero.
+          </p>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="addRow()"
+        class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-slate-700/70 bg-transparent px-5 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-safe:active:scale-[0.97]"
+      >
+        <i aria-hidden="true" class="fa-solid fa-plus text-xs"></i>
+        <span>Agregar corte</span>
+      </button>
+
+      <!-- Suma en vivo -->
+      <div
+        role="status"
+        aria-live="polite"
+        [class]="
+          'flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-xl border px-4 py-3 text-sm transition-colors duration-150 motion-reduce:transition-none ' +
+          summaryClass()
+        "
+      >
+        <p class="flex items-center gap-2 font-medium">
+          <i
+            aria-hidden="true"
+            [class]="
+              isValid()
+                ? 'fa-solid fa-circle-check text-xs'
+                : 'fa-solid fa-triangle-exclamation text-xs'
+            "
+          ></i>
+          @if (hasInvalid()) {
+            Elegí un corte y un peso mayor a 0 en cada renglón
+          } @else if (remainingCents() < 0) {
+            Los cortes se pasan {{ -remainingCents() / 100 | number: '1.2-2' }} kg del peso de la
+            pieza
+          } @else if (rows().length === 0) {
+            La pieza queda sin cortes
+          } @else if (remainingCents() === 0) {
+            Se usa toda la pieza
+          } @else {
+            Merma: {{ remainingCents() / 100 | number: '1.2-2' }} kg
+          }
+        </p>
+        <p class="font-mono font-semibold tabular-nums">
+          {{ sumCents() / 100 | number: '1.2-2' }} / {{ pieceCents() / 100 | number: '1.2-2' }} kg
+        </p>
+      </div>
+
+      <!-- ====== FOOTER ====== -->
+      <div
+        class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:items-center sm:justify-end"
+      >
+        <button
+          type="button"
+          (click)="close()"
+          class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-5 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 motion-safe:active:scale-[0.97] sm:w-auto"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="!canSave()"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
+        >
+          <i aria-hidden="true" class="fa-solid fa-check text-xs"></i>
+          <span>{{ saving() ? 'Guardando…' : 'Guardar cambios' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

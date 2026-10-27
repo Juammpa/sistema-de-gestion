@@ -12,6 +12,8 @@ import { StockService } from '../../services/stock.service';
 import { StockItemCard } from '../../components/stock-item/stock-item';
 import { SUPPLIER_TYPE_INFO } from '../../../supplier/utils/supplier-type.utils';
 import { StockWeightsModal } from '../../components/stock-weights-modal/stock-weights-modal';
+import { StockItem } from '../../interfaces/stock.interface';
+import { StockCutsModal } from '../../components/stock-cuts-modal/stock-cuts-modal';
 
 type SpecieFilter = 'ALL' | SpecieValue;
 
@@ -26,6 +28,7 @@ type SpecieFilter = 'ALL' | SpecieValue;
     StockHeader,
     StockItemCard,
     StockWeightsModal,
+    StockCutsModal,
   ],
   templateUrl: './stock-page.html',
   host: { class: 'flex min-h-0 flex-1 flex-col' },
@@ -97,6 +100,30 @@ export default class StockPage {
 
   protected onWeightsSaved() {
     this.editingPurchaseId.set(null);
+    this.stockResource.reload();
+  }
+
+  // Pieza cuyos cortes se estan editando (null = modal cerrado)
+  // Se guarda la identidad de la pieza (compra + numero) y no el objeto, para que el modal siempre vea los datos mas recientes del stock
+  protected editingCutsKey = signal<{ purchaseId: number; unitNumber: number } | null>(null);
+
+  protected editingCutsPiece = computed(() => {
+    const key = this.editingCutsKey();
+    if (!key) return null;
+
+    return (
+      this.stock()?.items.find(
+        (item) => item.purchaseId === key.purchaseId && item.unitNumber === key.unitNumber,
+      ) ?? null
+    );
+  });
+
+  protected openCuts(item: StockItem) {
+    this.editingCutsKey.set({ purchaseId: item.purchaseId, unitNumber: item.unitNumber });
+  }
+
+  protected onCutsSaved() {
+    this.editingCutsKey.set(null);
     this.stockResource.reload();
   }
 
