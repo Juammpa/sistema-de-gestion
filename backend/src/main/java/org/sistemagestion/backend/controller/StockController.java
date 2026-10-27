@@ -2,6 +2,7 @@ package org.sistemagestion.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.stock.StockCutsRequestDto;
 import org.sistemagestion.backend.dto.stock.StockResponseDto;
 import org.sistemagestion.backend.dto.stock.StockWeightsRequestDto;
 import org.sistemagestion.backend.service.stock.IStockService;
@@ -30,6 +31,13 @@ public class StockController {
     public ResponseEntity<Void> updatePieceWeights(@PathVariable Long purchaseId, @Valid @RequestBody StockWeightsRequestDto request) {
 
         stockService.updatePieceWeights(purchaseId, request.kilograms());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/purchase/{purchaseId}/pieces/{pieceNumber}/cuts")
+    public ResponseEntity<Void> updatePieceCuts(@PathVariable Long purchaseId, @PathVariable int pieceNumber, @Valid @RequestBody StockCutsRequestDto request) {
+
+        stockService.updatePieceCuts(purchaseId, pieceNumber, request.cuts());
         return ResponseEntity.noContent().build();
     }
 

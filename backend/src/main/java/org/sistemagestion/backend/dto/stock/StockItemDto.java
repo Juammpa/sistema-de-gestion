@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.sistemagestion.backend.model.enums.Specie;
 
 import java.time.LocalDate;
+import java.util.List;
 
 // Una pieza de stock: una unidad de compra
 public record StockItemDto(
@@ -19,5 +20,11 @@ public record StockItemDto(
         Long supplierId,
         String supplierName,
         boolean editable,   // la compra tiene mas de una unidad, se puede repartir el peso
-        boolean adjusted    // el peso fue ajustado a mano
-) {}
+        boolean adjusted,    // el peso fue ajustado a mano
+        List<Cut> cuts      // cortes sacadose de esta pieza (vacio si no tiene)
+) {
+
+    // Una unidad de corte de la pieza
+    public record Cut(Long id, Long cutMeatId, String cutMeatName, BigDecimal kilograms) {}
+
+}

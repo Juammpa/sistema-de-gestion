@@ -93,7 +93,13 @@
       <div class="mx-3 max-w-3xl pb-4 md:mx-auto">
         <ul class="space-y-2">
           @for (item of visibleItems(); track item.purchaseId + '-' + item.unitNumber) {
-            <li><stock-item [item]="item" (edit)="editingPurchaseId.set($event.purchaseId)" /></li>
+            <li>
+              <stock-item
+                [item]="item"
+                (edit)="editingPurchaseId.set($event.purchaseId)"
+                (editCuts)="openCuts($event)"
+              />
+            </li>
           } @empty {
             <li>
               <empty-state
@@ -114,5 +120,14 @@
     [items]="editingPieces()"
     (cancel)="editingPurchaseId.set(null)"
     (saved)="onWeightsSaved()"
+  />
+}
+
+@if (editingCutsPiece(); as piece) {
+  <stock-cuts-modal
+    animate.leave="modal-host-leave"
+    [item]="piece"
+    (cancel)="editingCutsKey.set(null)"
+    (saved)="onCutsSaved()"
   />
 }

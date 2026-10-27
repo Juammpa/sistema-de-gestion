@@ -36,6 +36,7 @@ class PurchaseServiceTest {
     @Mock private CurrentAccountRepository currentAccountRepository;
     @Mock private SupplierRepository supplierRepository;
     @Mock private PurchaseTypeRepository purchaseTypeRepository;
+    @Mock private StockCutRepository stockCutRepository;
     @Mock private BalanceRecalculationService balanceRecalculationService;
     @Mock private AccountGuard accountGuard;
     @Mock private PurchaseMapper purchaseMapper;
@@ -51,6 +52,26 @@ class PurchaseServiceTest {
                 .name("Ternero")
                 .specie(Specie.BOVINE)
                 .isActive(active)
+                .build();
+    }
+
+    private Purchase existingPurchase(PurchaseType type) {
+        return Purchase.builder()
+                .id(1L)
+                .currentAccount(mock(CurrentAccount.class))
+                .purchaseType(type)
+                .unit(1)
+                .kilograms(new BigDecimal("100.00"))
+                .build();
+    }
+
+    private PurchaseRequestDto updateRequest(Long typeId, String kilograms, String pricePerKilo) {
+        return PurchaseRequestDto.builder()
+                .purchaseTypeId(typeId)
+                .unit(1)
+                .kilograms(new BigDecimal(kilograms))
+                .pricePerKilo(new BigDecimal(pricePerKilo))
+                .date(LocalDate.now())
                 .build();
     }
 
@@ -135,6 +156,113 @@ class PurchaseServiceTest {
             verify(purchaseRepository).saveAndFlush(purchase);
         }
 
+        @Test
+        @DisplayName("Debe rechazar cambiar los kilos de una compra que ya tiene cortes")
+        void updatePurchaseShouldRejectChangingKilogramsWhenItHasCuts() {
+
+            // Arrange
+            PurchaseType bovine = type(5L, true);
+            Purchase purchase = existingPurchase(bovine);
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+            when(purchaseTypeRepository.findById(5L)).thenReturn(Optional.of(bovine));
+            when(stockCutRepository.existsByPurchaseId(1L)).thenReturn(true);
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePurchase(1L, updateRequest(5L, "120.00", "10.00")))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("tiene cortes");
+
+            verify(purchaseRepository, never()).saveAndFlush(any());
+            verifyNoInteractions(pieceWeightRepository);
+        }
+
+        @Test
+        @DisplayName("Debe rechazar cambiar a otra especie una compra que ya tiene cortes")
+        void updatePurchaseShouldRejectChangingTheSpecieWhenItHasCuts() {
+
+            // Arrange: la compra es bovina y el tipo nuevo es porcino
+            PurchaseType bovine = type(5L, true);
+            PurchaseType porcine = PurchaseType.builder()
+                    .id(6L).name("Cerdo").specie(Specie.PORCINE).isActive(true).build();
+            Purchase purchase = existingPurchase(bovine);
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+            when(purchaseTypeRepository.findById(6L)).thenReturn(Optional.of(porcine));
+            when(stockCutRepository.existsByPurchaseId(1L)).thenReturn(true);
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePurchase(1L, updateRequest(6L, "100.00", "10.00")))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("tiene cortes");
+
+            verify(purchaseRepository, never()).saveAndFlush(any());
+        }
+
+        @Test
+        @DisplayName("Debe permitir cambiar el precio de una compra con cortes")
+        void updatePurchaseShouldAllowChangingThePriceWhenItHasCuts() {
+
+            // Arrange: mismos kilos, unidades y especie; solo cambia el precio
+            PurchaseType bovine = type(5L, true);
+            Purchase purchase = existingPurchase(bovine);
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+            when(purchaseTypeRepository.findById(5L)).thenReturn(Optional.of(bovine));
+            when(purchaseRepository.saveAndFlush(purchase)).thenReturn(purchase);
+            // Tiene cortes, pero la regla no debe consultarse porque nada de lo que los afecta cambia
+            lenient().when(stockCutRepository.existsByPurchaseId(1L)).thenReturn(true);
+
+            // Act
+            service.updatePurchase(1L, updateRequest(5L, "100.00", "25.00"));
+
+            // Assert
+            verify(purchaseRepository).saveAndFlush(purchase);
+        }
+
+
+    }
+
+    @Nested
+    @DisplayName("deletePurchaseById()")
+    class DeletePurchaseTests {
+
+        @Test
+        @DisplayName("Debe rechazar eliminar una compra que tiene cortes")
+        void deletePurchaseShouldRejectWhenItHasCuts() {
+
+            // Arrange
+            Purchase purchase = existingPurchase(type(5L, true));
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+            when(stockCutRepository.existsByPurchaseId(1L)).thenReturn(true);
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.deletePurchaseById(1L))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("tiene cortes");
+
+            verify(purchaseRepository, never()).delete(any());
+            verifyNoInteractions(pieceWeightRepository);
+        }
+
+        @Test
+        @DisplayName("Debe eliminar la compra y sus pesos ajustados cuando no tiene cortes")
+        void deletePurchaseShouldDeleteWhenItHasNoCuts() {
+
+            // Arrange
+            Purchase purchase = existingPurchase(type(5L, true));
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+
+            // Act
+            service.deletePurchaseById(1L);
+
+            // Assert
+            verify(pieceWeightRepository).deleteByPurchaseId(1L);
+            verify(purchaseRepository).delete(purchase);
+            verify(balanceRecalculationService).recalculate(purchase.getCurrentAccount());
+        }
     }
 
 }

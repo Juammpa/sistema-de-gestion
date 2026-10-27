@@ -2,24 +2,22 @@ package org.sistemagestion.backend.service.stock;
 
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.common.Decimals;
-import org.sistemagestion.backend.dto.stock.StockItemDto;
-import org.sistemagestion.backend.dto.stock.StockPurchaseDto;
-import org.sistemagestion.backend.dto.stock.StockResponseDto;
-import org.sistemagestion.backend.dto.stock.StockSummaryDto;
+import org.sistemagestion.backend.dto.stock.*;
 import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
+import org.sistemagestion.backend.model.CutMeat;
 import org.sistemagestion.backend.model.Purchase;
 import org.sistemagestion.backend.model.PurchasePieceWeight;
+import org.sistemagestion.backend.model.StockCut;
 import org.sistemagestion.backend.model.enums.Specie;
-import org.sistemagestion.backend.repository.PurchasePieceWeightRepository;
-import org.sistemagestion.backend.repository.PurchaseRepository;
-import org.sistemagestion.backend.repository.StockRepository;
+import org.sistemagestion.backend.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +29,8 @@ public class StockService implements IStockService {
     private final StockRepository stockRepository;
     private final PurchasePieceWeightRepository pieceWeightRepository;
     private final PurchaseRepository purchaseRepository;
+    private final CutMeatRepository cutMeatRepository;
+    private final StockCutRepository stockCutRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -86,6 +86,8 @@ public class StockService implements IStockService {
                     formatKilograms(sum), formatKilograms(total)));
         }
 
+        assertCutsFit(purchaseId, weights);
+
         // Se reemplaza el reparto completo: primero se borra el anterior (si lo habia)
         pieceWeightRepository.deleteByPurchaseId(purchaseId);
 
@@ -106,12 +108,109 @@ public class StockService implements IStockService {
         pieceWeightRepository.saveAll(rows);
     }
 
+    @Override
+    @Transactional
+    public void updatePieceCuts(Long purchaseId, int pieceNumber, List<StockCutsRequestDto.Cut> cuts) {
+
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase", "id", purchaseId ));
+
+        int units = purchase.getUnit() != null && purchase.getUnit() > 0
+                ? purchase.getUnit()
+                : 1;
+
+        if (pieceNumber < 1 || pieceNumber > units) {
+            throw new BusinessRuleException(String.format(
+                    "La compra tiene %d unidades: la pieza %d no existe.", units, pieceNumber
+            ));
+        }
+
+        List<Long> cutMeatIds = cuts.stream()
+                .map(StockCutsRequestDto.Cut::cutMeatId)
+                .distinct()
+                .toList();
+
+        Map<Long, CutMeat> cutMeats = cutMeatRepository.findAllById(cutMeatIds).stream()
+                .collect(Collectors.toMap(CutMeat::getId, Function.identity()));
+
+        for (Long cutMeatId: cutMeatIds) {
+            CutMeat cutMeat = cutMeats.get(cutMeatId);
+
+            if (cutMeat == null) {
+                throw new ResourceNotFoundException("CutMeat","id", cutMeatId);
+            }
+
+            if (!Boolean.TRUE.equals(cutMeat.getIsActive())) {
+                throw new BusinessRuleException(String.format("El corte «%s» no está disponible.", cutMeat.getCutMeatName()));
+            }
+
+            if (cutMeat.getSpecie() != purchase.getPurchaseType().getSpecie()) {
+                throw new BusinessRuleException(String.format(
+                        "El corte «%s» no corresponde a la especie de la compra.", cutMeat.getCutMeatName()
+                ));
+            }
+        }
+
+        // Peso de la pieza: el ajuste manual (si lo hay) o el reparto parejo
+        List<PurchasePieceWeight> savedWeights = pieceWeightRepository.findByPurchaseIdOrderByPieceNumber(purchaseId);
+        BigDecimal pieceKilograms = PieceWeights.resolve(units, purchase.getKilograms(), savedWeights).kilograms().get(pieceNumber -1);
+
+        BigDecimal sum = cuts.stream()
+                .map(cut -> Decimals.pieceKg(cut.kilograms()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Puede sumar menos: la diferencia es la merma
+        if (sum.compareTo(pieceKilograms) > 0) {
+            throw new BusinessRuleException(String.format(
+                    "Los cortes suman %s kg y la pieza pesa %s kg.",
+                    formatKilograms(sum), formatKilograms(pieceKilograms)
+            ));
+        }
+
+        // Se reemplazan todos los cortes de la pieza
+        stockCutRepository.deleteByPurchaseIdAndPieceNumber(purchaseId, pieceNumber);
+
+        List<StockCut> rows = cuts.stream()
+                .map(cut -> StockCut.builder()
+                        .purchase(purchase)
+                        .pieceNumber(pieceNumber)
+                        .cutMeat(cutMeats.get(cut.cutMeatId()))
+                        .kilograms(Decimals.pieceKg(cut.kilograms()))
+                        .build())
+                .toList();
+
+        stockCutRepository.saveAll(rows);
+    }
+
+    // Los cortes ya cargados en cada pieza tienen que seguir entrando en su peso nuevo
+    private void assertCutsFit(Long purchaseId, List<BigDecimal> weights) {
+
+        Map<Integer, BigDecimal> cutKilogramsByPiece = stockCutRepository.findByPurchaseId(purchaseId).stream()
+                .collect(Collectors.groupingBy(
+                        StockCut::getPieceNumber,
+                        Collectors.reducing(BigDecimal.ZERO, StockCut::getKilograms, BigDecimal::add)
+                ));
+
+        for (int index = 0; index < weights.size(); index++) {
+            BigDecimal cutKilograms = cutKilogramsByPiece.getOrDefault(index+1, BigDecimal.ZERO);
+
+            if (cutKilograms.compareTo(weights.get(index)) > 0) {
+                throw new BusinessRuleException(String.format(
+                        "La pieza %d tiene cortes por %s kg y no puede pesar menos (%s kg).",
+                        index + 1, formatKilograms(cutKilograms), formatKilograms(weights.get(index))
+                ));
+            }
+        }
+
+    }
+
     // Cada compra se parte en tantas piezas como unidades tenga. El peso sale del ajuste
     // guardado (si lo hay) o de repartir los kilos en partes iguales.
     // Mantiene el orden de la consulta: compra mas reciente primero
     private List<StockItemDto> splitIntoItems(List<StockPurchaseDto> purchases) {
 
         Map<Long, List<PurchasePieceWeight>> savedByPurchase = loadSavedWeights(purchases);
+        Map<Long, Map<Integer, List<StockItemDto.Cut>>> cutsByPurchase = loadCuts(purchases);
         List<StockItemDto> items = new ArrayList<>();
 
         for (StockPurchaseDto purchase: purchases) {
@@ -133,7 +232,9 @@ public class StockService implements IStockService {
                         purchase.supplierId(),
                         purchase.supplierName(),
                         units > 1,
-                        distribution.adjusted()));
+                        distribution.adjusted(),
+                        cutsByPurchase.getOrDefault(purchase.id(), Map.of()).getOrDefault(number, List.of())
+                        ));
             }
         }
 
@@ -152,6 +253,34 @@ public class StockService implements IStockService {
         return pieceWeightRepository.findByPurchaseIdIn(purchaseIds).stream()
                 .collect(Collectors.groupingBy(weight -> weight.getPurchase().getId()));
     }
+
+    // Cortes de todas las compras del rango, agrupados por compra y por pieza, con una sola consulta
+    private Map<Long, Map<Integer, List<StockItemDto.Cut>>> loadCuts(List<StockPurchaseDto> purchases) {
+
+        if (purchases.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> purchaseIds = purchases.stream().map(StockPurchaseDto::id).toList();
+
+        return stockCutRepository.findByPurchaseIdIn(purchaseIds).stream()
+                .collect(Collectors.groupingBy(
+                        cut -> cut.getPurchase().getId(),
+                        Collectors.groupingBy(
+                                StockCut::getPieceNumber,
+                                Collectors.mapping(this::toCutDto, Collectors.toList()))
+                ));
+
+    }
+
+    private StockItemDto.Cut toCutDto(StockCut cut) {
+        return new StockItemDto.Cut(
+                cut.getId(),
+                cut.getCutMeat().getId(),
+                cut.getCutMeat().getCutMeatName(),
+                cut.getKilograms());
+    }
+
 
     // Los totales salen de las compras (no de sumas las piezas), asi no se acumula error de redondeo
     private StockSummaryDto summarize(List<StockPurchaseDto> purchases) {

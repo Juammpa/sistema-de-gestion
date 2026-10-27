@@ -1,56 +1,91 @@
-<article
-  [class]="cardClass()"
-  [attr.role]="item().editable ? 'button' : null"
-  [attr.tabindex]="item().editable ? 0 : null"
-  [attr.title]="item().editable ? 'Ajustar pesos de la compra' : null"
-  (click)="onActivate()"
-  (keydown.enter)="onActivate()"
-  (keydown.space)="$event.preventDefault(); onActivate()"
->
-  <!-- Especie -->
-  <span
-    aria-hidden="true"
-    [class]="
-      'flex size-10 shrink-0 items-center justify-center rounded-xl border text-base ' +
-      specie().badge
-    "
-  >
-    <i [class]="specie().icon"></i>
-  </span>
+<article [class]="cardClass">
+  <div class="flex items-center gap-3">
+    <!-- Especie -->
+    <span
+      aria-hidden="true"
+      [class]="
+        'flex size-10 shrink-0 items-center justify-center rounded-xl border text-base ' +
+        specie().badge
+      "
+    >
+      <i [class]="specie().icon"></i>
+    </span>
 
-  <!-- Tipo, número de pieza y proveedor -->
-  <div class="min-w-0 flex-1">
-    <div class="flex min-w-0 items-center gap-2">
-      <h3 class="truncate text-sm font-semibold text-slate-100 sm:text-base" [title]="typeLabel()">
-        {{ typeLabel() }}
-      </h3>
-      @if (item().adjusted) {
-        <span
-          class="shrink-0 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 text-[11px] font-medium leading-none text-accent-300"
+    <!-- Tipo, número de pieza y proveedor -->
+    <div class="min-w-0 flex-1">
+      <div class="flex min-w-0 items-center gap-2">
+        <h3
+          class="truncate text-sm font-semibold text-slate-100 sm:text-base"
+          [title]="typeLabel()"
         >
-          Ajustado
-        </span>
-      }
+          {{ typeLabel() }}
+        </h3>
+        @if (item().adjusted) {
+          <span
+            class="shrink-0 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 text-[11px] font-medium leading-none text-accent-300"
+          >
+            Ajustado
+          </span>
+        }
+      </div>
+      <p class="truncate text-xs text-slate-400 sm:text-sm" [title]="item().supplierName">
+        @if (item().totalUnits > 1) {
+          Pieza {{ item().unitNumber }} de {{ item().totalUnits }} ·
+        }
+        {{ item().supplierName }}
+      </p>
     </div>
-    <p class="truncate text-xs text-slate-400 sm:text-sm" [title]="item().supplierName">
-      @if (item().totalUnits > 1) {
-        Pieza {{ item().unitNumber }} de {{ item().totalUnits }} ·
+
+    <!-- Peso y fecha de ingreso -->
+    <div class="shrink-0 text-right">
+      <p class="font-mono text-base font-bold tabular-nums text-slate-50 sm:text-lg">
+        {{ item().kilograms | number: '1.0-2' }}
+        <span class="font-sans text-xs font-medium text-slate-400">kg</span>
+      </p>
+      <p class="text-xs text-slate-400">{{ date() }}</p>
+    </div>
+
+    <!-- Acciones -->
+    <div class="flex shrink-0 items-center gap-1">
+      @if (item().editable) {
+        <button
+          type="button"
+          [class]="actionClass"
+          title="Ajustar pesos de la compra"
+          aria-label="Ajustar pesos de la compra"
+          (click)="edit.emit(item())"
+        >
+          <i aria-hidden="true" class="fa-solid fa-pen text-xs"></i>
+        </button>
       }
-      {{ item().supplierName }}
-    </p>
+      <button
+        type="button"
+        [class]="actionClass"
+        title="Cortes de la pieza"
+        aria-label="Cortes de la pieza"
+        (click)="editCuts.emit(item())"
+      >
+        <i aria-hidden="true" class="fa-solid fa-scissors text-xs"></i>
+      </button>
+    </div>
   </div>
 
-  <!-- Peso y fecha de ingreso -->
-  <div class="shrink-0 text-right">
-    <p class="font-mono text-base font-bold tabular-nums text-slate-50 sm:text-lg">
-      {{ item().kilograms | number: '1.0-2' }}
-      <span class="font-sans text-xs font-medium text-slate-400">kg</span>
-    </p>
-    <p class="text-xs text-slate-400">{{ date() }}</p>
-  </div>
-
-  <!-- Indicio de que se puede editar -->
-  @if (item().editable) {
-    <i aria-hidden="true" class="fa-solid fa-pen shrink-0 text-xs text-slate-500"></i>
+  <!-- Cortes sacados de esta pieza -->
+  @if (item().cuts.length > 0) {
+    <ul
+      class="mt-3 flex flex-wrap gap-1.5 border-t border-line pt-3"
+      aria-label="Cortes de esta pieza"
+    >
+      @for (cut of item().cuts; track cut.id) {
+        <li
+          class="inline-flex items-center gap-1.5 rounded-md border border-slate-700/70 bg-raised px-2 py-1 text-xs text-slate-300"
+        >
+          <span class="font-medium">{{ cut.cutMeatName | titlecase }}</span>
+          <span class="font-mono tabular-nums text-slate-400">
+            {{ cut.kilograms | number: '1.0-2' }} kg
+          </span>
+        </li>
+      }
+    </ul>
   }
 </article>

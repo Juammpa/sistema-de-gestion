@@ -3,12 +3,7 @@ import { StockService } from '../../services/stock.service';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { StockItem } from '../../interfaces/stock.interface';
 import { DecimalPipe } from '@angular/common';
-
-// Se trabaja en centavos (enteros) para comparar sumas sin errores de punto flotante
-const toCents = (kilograms: number) => Math.round(kilograms * 100);
-
-// Como decimal, como lo escribe el usuario
-const formatKilograms = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
+import { formatKilograms, toCents } from '../../utils/kilograms.utils';
 
 // Acepta coma o punto decimal: null si no es un numero
 function parseKilograms(text: string): number | null {

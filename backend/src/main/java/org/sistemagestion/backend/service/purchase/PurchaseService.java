@@ -29,6 +29,7 @@ public class PurchaseService implements IPurchaseService {
     private final PurchasePieceWeightRepository pieceWeightRepository;
     private final CurrentAccountRepository currentAccountRepository;
     private final SupplierRepository supplierRepository;
+    private final StockCutRepository stockCutRepository;
     private final BalanceRecalculationService balanceRecalculationService;
     private final AccountGuard accountGuard;
     private final PurchaseMapper mapper;
@@ -75,6 +76,15 @@ public class PurchaseService implements IPurchaseService {
         boolean distributionChanged = !Decimals.sameValue(purchase.getKilograms(), request.getKilograms()) ||
                 !Objects.equals(purchase.getUnit(), request.getUnit());
 
+        boolean specieChanged = purchase.getPurchaseType().getSpecie() != purchaseType.getSpecie();
+
+        // Los cortes cuelgan de las piezas y de la especie: cambiarlas los dejaria inconsistentes
+        if ((distributionChanged || specieChanged) && stockCutRepository.existsByPurchaseId(id)) {
+            throw new BusinessRuleException(
+                    "La compra tiene cortes: quitalos del stock antes de cambiar sus kilos, unidades o especie."
+            );
+        }
+
         purchase.setDate(request.getDate());
         purchase.setPurchaseType(purchaseType);
         purchase.setSpecie(purchaseType.getSpecie());
@@ -101,6 +111,12 @@ public class PurchaseService implements IPurchaseService {
 
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", id));
+
+        if (stockCutRepository.existsByPurchaseId(id)) {
+            throw new BusinessRuleException(
+                    "La compra tiene cortes: quitalos del stock antes de eliminarla."
+            );
+        }
 
         // Actualizamos el balance de la cuenta
         CurrentAccount currentAccount = purchase.getCurrentAccount();
