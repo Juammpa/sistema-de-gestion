@@ -24,7 +24,7 @@ public record StockItemDto(
         List<Cut> cuts      // cortes sacadose de esta pieza (vacio si no tiene)
 ) {
 
-    // Una unidad de corte de la pieza
-    public record Cut(Long id, Long cutMeatId, String cutMeatName, BigDecimal kilograms) {}
+    // Una unidad de corte de la pieza (vendidad = ya pertenece a una venta y no se puede tocar)
+    public record Cut(Long id, Long cutMeatId, String cutMeatName, BigDecimal kilograms, boolean sold) {}
 
 }

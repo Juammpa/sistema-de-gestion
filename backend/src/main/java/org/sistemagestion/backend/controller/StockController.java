@@ -2,6 +2,7 @@ package org.sistemagestion.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.sistemagestion.backend.dto.stock.AvailableCutDto;
 import org.sistemagestion.backend.dto.stock.StockCutsRequestDto;
 import org.sistemagestion.backend.dto.stock.StockResponseDto;
 import org.sistemagestion.backend.dto.stock.StockWeightsRequestDto;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/stock")
@@ -41,4 +43,9 @@ public class StockController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/cuts/available")
+    public ResponseEntity<List<AvailableCutDto>> getAvailableCuts() {
+
+        return ResponseEntity.ok(stockService.getAvailableCuts());
+    }
 }

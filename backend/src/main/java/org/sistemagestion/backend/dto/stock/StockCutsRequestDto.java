@@ -15,6 +15,9 @@ public record StockCutsRequestDto(
 ) {
 
     public record Cut(
+        // Solo viaja en las unidades que ya existen; sin id es una unidad nueva
+        Long id,
+
         @NotNull(message = "El corte es obligatorio.")
         Long cutMeatId,
 

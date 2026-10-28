@@ -1,5 +1,6 @@
 package org.sistemagestion.backend.service.stock;
 
+import org.sistemagestion.backend.dto.stock.AvailableCutDto;
 import org.sistemagestion.backend.dto.stock.StockCutsRequestDto;
 import org.sistemagestion.backend.dto.stock.StockResponseDto;
 
@@ -17,4 +18,7 @@ public interface IStockService {
 
     // Reemplaza los cortes de una pieza (la suma no puede superar el peso de la pieza)
     void updatePieceCuts(Long purchaseId, int pieceNumber, List<StockCutsRequestDto.Cut> cuts);
+
+    // Unidades de corte sin vender (de la mas antigua a la mas nueva), para armar una venta
+    List<AvailableCutDto> getAvailableCuts();
 }

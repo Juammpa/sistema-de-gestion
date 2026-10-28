@@ -60,7 +60,27 @@ class StockServiceTest {
     }
 
     private StockCutsRequestDto.Cut cut(long cutMeatId, String kilograms) {
-        return new StockCutsRequestDto.Cut(cutMeatId, new BigDecimal(kilograms));
+        return new StockCutsRequestDto.Cut(null, cutMeatId, new BigDecimal(kilograms));
+    }
+
+    // Una unidad que ya existe en la pieza: viaja con su id
+    private StockCutsRequestDto.Cut existingCut(long id, long cutMeatId, String kilograms) {
+        return new StockCutsRequestDto.Cut(id, cutMeatId, new BigDecimal(kilograms));
+    }
+
+    private StockCut stockCut(long id, Purchase purchase, int pieceNumber, CutMeat cutMeat, String kilograms, Sale sale) {
+        return StockCut.builder().id(id).purchase(purchase).pieceNumber(pieceNumber).cutMeat(cutMeat).kilograms(new BigDecimal(kilograms)).sale(sale).build();
+    }
+
+    // Una unidad de Asado de 30 kg en la pieza 1, ya vendida
+    private StockCut soldUnit(Purchase purchase) {
+        return stockCut(100L, purchase, 1, cutMeat(1L, "Asado", Specie.BOVINE, true), "30.00", Sale.builder().id(50L).build());
+    }
+
+    // Con las reglas fallidas no se debe escribir nada: ni borrar ni guardar
+    private void verifyNothingWasWritten() {
+        verify(stockCutRepository, never()).deleteAll(anyList());
+        verify(stockCutRepository, never()).saveAll(anyList());
     }
 
     // Una compra de 2 unidades y 200kg (100kg cada pieza) con los cortes Asado y Rueda activos
@@ -75,27 +95,23 @@ class StockServiceTest {
     class UpdatePieceCutsTests {
 
         @Test
-        @DisplayName("Reemplaza los cortes de la pieza por los nuevos")
-        void updatePieceCutsReplacesTheCutsOfThePiece() {
+        @DisplayName("Guarda los cortes nuevos de la pieza")
+        void updatePieceCutsSavesNewCuts() {
 
             // Arrange
             Purchase purchase = givenBovinePurchaseWithCuts();
             when(cutMeatRepository.findAllById(List.of(1L, 2L))).thenReturn(List.of(
                     cutMeat(1L, "Asado", Specie.BOVINE, true),
-                    cutMeat(2L, "Rueda", Specie.BOVINE, true)
-            ));
+                    cutMeat(2L, "Rueda", Specie.BOVINE, true)));
 
             // Act
             service.updatePieceCuts(1L, 1, List.of(cut(1L, "30.00"), cut(2L, "15.00")));
 
-            // Assert: primero se borran los cortes anteriores y despues se guardan los nuevos
-            InOrder order = inOrder(stockCutRepository);
-
-            order.verify(stockCutRepository).deleteByPurchaseIdAndPieceNumber(1L, 1);
-            order.verify(stockCutRepository).saveAll(rowsCaptor.capture());
+            // Assert
+            verify(stockCutRepository).deleteAll(List.of());
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
 
             List<StockCut> rows = rowsCaptor.getValue();
-
             assertThat(rows).hasSize(2);
             assertThat(rows).allSatisfy(row -> {
                 assertThat(row.getPurchase()).isSameAs(purchase);
@@ -106,20 +122,46 @@ class StockServiceTest {
         }
 
         @Test
+        @DisplayName("Aplica altas, cambios y bajas de las unidades de la pieza")
+        void updatePieceCutsAppliesAdditionsChangesAndRemovals() {
+
+            // Arrange: la pieza tiene Asado 30 (id 100) y Rueda 15 (id 101)
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            CutMeat asado = cutMeat(1L, "Asado", Specie.BOVINE, true);
+            StockCut asadoUnit = stockCut(100L, purchase, 1, asado, "30.00", null);
+            StockCut ruedaUnit = stockCut(101L, purchase, 1, cutMeat(2L, "Rueda", Specie.BOVINE, true), "15.00", null);
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(asadoUnit, ruedaUnit));
+            when(cutMeatRepository.findAllById(List.of(1L))).thenReturn(List.of(asado));
+
+            // Act: el Asado pasa a 32 kg, se agrega otro Asado de 8 kg y se quita la Rueda
+            service.updatePieceCuts(1L, 1, List.of(existingCut(100L, 1L, "32.00"), cut(1L, "8.00")));
+
+            // Assert
+            verify(stockCutRepository).deleteAll(List.of(ruedaUnit));
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
+
+            List<StockCut> rows = rowsCaptor.getValue();
+            assertThat(rows).hasSize(2);
+            assertThat(rows.get(0)).isSameAs(asadoUnit);
+            assertThat(rows.get(0).getKilograms()).isEqualByComparingTo("32.00");
+            assertThat(rows.get(1).getId()).isNull();
+            assertThat(rows.get(1).getKilograms()).isEqualByComparingTo("8.00");
+        }
+
+        @Test
         @DisplayName("Permite varias unidades del mismo corte en una pieza")
         void updatePieceCutsAllowsTheSameCutMoreThanOnce() {
 
             // Arrange
             givenBovinePurchaseWithCuts();
             when(cutMeatRepository.findAllById(List.of(1L))).thenReturn(List.of(
-                    cutMeat(1L, "Asado", Specie.BOVINE, true)
-            ));
+                    cutMeat(1L, "Asado", Specie.BOVINE, true)));
 
             // Act: dos unidades de Asado con distinto peso
             service.updatePieceCuts(1L, 1, List.of(cut(1L, "8.00"), cut(1L, "9.50")));
 
             // Assert
-            inOrder(stockCutRepository).verify(stockCutRepository).saveAll(rowsCaptor.capture());
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
             assertThat(rowsCaptor.getValue()).hasSize(2);
             assertThat(rowsCaptor.getValue().get(0).getKilograms()).isEqualByComparingTo("8.00");
             assertThat(rowsCaptor.getValue().get(1).getKilograms()).isEqualByComparingTo("9.50");
@@ -132,64 +174,61 @@ class StockServiceTest {
             // Arrange
             givenBovinePurchaseWithCuts();
             when(cutMeatRepository.findAllById(List.of(1L))).thenReturn(List.of(
-                    cutMeat(1L, "Asado", Specie.BOVINE, true)
-            ));
+                    cutMeat(1L, "Asado", Specie.BOVINE, true)));
 
             // Act
             service.updatePieceCuts(1L, 1, List.of(cut(1L, "40.00")));
 
             // Assert
-            inOrder(stockCutRepository).verify(stockCutRepository).saveAll(rowsCaptor.capture());
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
             assertThat(rowsCaptor.getValue()).hasSize(1);
         }
 
         @Test
         @DisplayName("Acepta que los cortes sumen exactamente el peso de la pieza")
-        void updatePieceCutsAcceptExactlyThePieceWeight() {
+        void updatePieceCutsAcceptsExactlyThePieceWeight() {
 
             // Arrange
             givenBovinePurchaseWithCuts();
             when(cutMeatRepository.findAllById(List.of(1L, 2L))).thenReturn(List.of(
                     cutMeat(1L, "Asado", Specie.BOVINE, true),
-                    cutMeat(2L, "Rueda", Specie.BOVINE, true)
-            ));
+                    cutMeat(2L, "Rueda", Specie.BOVINE, true)));
 
-            // Act: 60 + 40 = 100kg, el peso de la pieza
+            // Act: 60 + 40 = 100 kg, el peso de la pieza
             service.updatePieceCuts(1L, 1, List.of(cut(1L, "60.00"), cut(2L, "40.00")));
 
             // Assert
-            inOrder(stockCutRepository).verify(stockCutRepository).saveAll(rowsCaptor.capture());
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
             assertThat(rowsCaptor.getValue()).hasSize(2);
         }
 
         @Test
-        @DisplayName("Una lista vacia deja la pieza sin cortes")
-        void updatePieceCutsWithEmptyListRemovesTheCuts() {
+        @DisplayName("Una lista vacía quita las unidades que no están vendidas")
+        void updatePieceCutsWithEmptyListRemovesTheUnsoldCuts() {
 
             // Arrange
-            givenBovinePurchaseWithCuts();
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            StockCut unit = stockCut(100L, purchase, 1, cutMeat(1L, "Asado", Specie.BOVINE, true), "30.00", null);
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(unit));
 
             // Act
             service.updatePieceCuts(1L, 1, List.of());
 
             // Assert
-            InOrder order = inOrder(stockCutRepository);
-
-            order.verify(stockCutRepository).deleteByPurchaseIdAndPieceNumber(1L, 1);
-            order.verify(stockCutRepository).saveAll(rowsCaptor.capture());
+            verify(stockCutRepository).deleteAll(List.of(unit));
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
             assertThat(rowsCaptor.getValue()).isEmpty();
         }
 
         @Test
-        @DisplayName("Rechaza cortes que suman mas que la pieza y no toca los existentes")
+        @DisplayName("Rechaza cortes que suman más que la pieza y no escribe nada")
         void updatePieceCutsRejectsCutsHeavierThanThePiece() {
 
             // Arrange
             givenBovinePurchaseWithCuts();
             when(cutMeatRepository.findAllById(List.of(1L, 2L))).thenReturn(List.of(
                     cutMeat(1L, "Asado", Specie.BOVINE, true),
-                    cutMeat(2L, "Rueda", Specie.BOVINE, true)
-            ));
+                    cutMeat(2L, "Rueda", Specie.BOVINE, true)));
 
             // Act + Assert: 60 + 50 = 110 kg y la pieza pesa 100 kg
             assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of(cut(1L, "60.00"), cut(2L, "50.00"))))
@@ -197,14 +236,14 @@ class StockServiceTest {
                     .hasMessageContaining("110,00")
                     .hasMessageContaining("100,00");
 
-            verifyNoInteractions(stockCutRepository);
+            verifyNothingWasWritten();
         }
 
         @Test
         @DisplayName("Usa el peso ajustado de la pieza y no el reparto parejo")
         void updatePieceCutsUsesTheAdjustedPieceWeight() {
 
-            // Arrange: piezas ajustadas a 170 y 30 kg (suman los 200 kg de la compra; el reparto parejo seria 100 y 100)
+            // Arrange: piezas ajustadas a 170 y 30 kg (suman los 200 kg de la compra; el reparto parejo sería 100 y 100)
             Purchase purchase = givenBovinePurchaseWithCuts();
             when(pieceWeightRepository.findByPurchaseIdOrderByPieceNumber(1L)).thenReturn(List.of(
                     PurchasePieceWeight.builder().purchase(purchase).pieceNumber(1).kilograms(new BigDecimal("170.00")).build(),
@@ -216,6 +255,8 @@ class StockServiceTest {
             assertThatThrownBy(() -> service.updatePieceCuts(1L, 2, List.of(cut(1L, "40.00"))))
                     .isInstanceOf(BusinessRuleException.class)
                     .hasMessageContaining("30,00");
+
+            verifyNothingWasWritten();
         }
 
         @Test
@@ -232,7 +273,7 @@ class StockServiceTest {
             assertThatThrownBy(() -> service.updatePieceCuts(1L, 0, List.of()))
                     .isInstanceOf(BusinessRuleException.class);
 
-            verifyNoInteractions(stockCutRepository);
+            verifyNothingWasWritten();
         }
 
         @Test
@@ -246,7 +287,7 @@ class StockServiceTest {
             assertThatThrownBy(() -> service.updatePieceCuts(99L, 1, List.of()))
                     .isInstanceOf(ResourceNotFoundException.class);
 
-            verifyNoInteractions(stockCutRepository);
+            verifyNothingWasWritten();
         }
 
         @Test
@@ -261,7 +302,7 @@ class StockServiceTest {
             assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of(cut(7L, "10.00"))))
                     .isInstanceOf(ResourceNotFoundException.class);
 
-            verifyNoInteractions(stockCutRepository);
+            verifyNothingWasWritten();
         }
 
         @Test
@@ -278,7 +319,7 @@ class StockServiceTest {
                     .isInstanceOf(BusinessRuleException.class)
                     .hasMessageContaining("no está disponible");
 
-            verifyNoInteractions(stockCutRepository);
+            verifyNothingWasWritten();
         }
 
         @Test
@@ -295,7 +336,128 @@ class StockServiceTest {
                     .isInstanceOf(BusinessRuleException.class)
                     .hasMessageContaining("no corresponde a la especie");
 
-            verifyNoInteractions(stockCutRepository);
+            verifyNothingWasWritten();
+        }
+
+        @Test
+        @DisplayName("Conserva las unidades vendidas sin tocarlas y guarda solo las demás")
+        void updatePieceCutsKeepsTheSoldUnitsUntouched() {
+
+            // Arrange: la pieza tiene un Asado de 30 kg vendido
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            StockCut sold = soldUnit(purchase);
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(sold));
+            when(cutMeatRepository.findAllById(List.of(2L))).thenReturn(List.of(
+                    cutMeat(2L, "Rueda", Specie.BOVINE, true)));
+
+            // Act: el pedido trae la unidad vendida idéntica y una Rueda nueva
+            service.updatePieceCuts(1L, 1, List.of(existingCut(100L, 1L, "30.00"), cut(2L, "15.00")));
+
+            // Assert: solo se guarda la Rueda; la unidad vendida no se borra ni se vuelve a guardar
+            verify(stockCutRepository).deleteAll(List.of());
+            verify(stockCutRepository).saveAll(rowsCaptor.capture());
+            assertThat(rowsCaptor.getValue()).hasSize(1);
+            assertThat(rowsCaptor.getValue().get(0).getKilograms()).isEqualByComparingTo("15.00");
+            assertThat(sold.isSold()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Rechaza quitar una unidad vendida")
+        void updatePieceCutsRejectsRemovingASoldUnit() {
+
+            // Arrange
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(soldUnit(purchase)));
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of()))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("ya fue vendida");
+
+            verifyNothingWasWritten();
+        }
+
+        @Test
+        @DisplayName("Rechaza cambiar el peso de una unidad vendida")
+        void updatePieceCutsRejectsChangingTheWeightOfASoldUnit() {
+
+            // Arrange
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(soldUnit(purchase)));
+
+            // Act + Assert: la unidad vendida pesaba 30 kg
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of(existingCut(100L, 1L, "25.00"))))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("ya fue vendida");
+
+            verifyNothingWasWritten();
+        }
+
+        @Test
+        @DisplayName("Rechaza cambiar el corte de una unidad vendida")
+        void updatePieceCutsRejectsChangingTheCutOfASoldUnit() {
+
+            // Arrange
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(soldUnit(purchase)));
+
+            // Act + Assert: la unidad vendida es de Asado (id 1) y se intenta pasar a Rueda (id 2)
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of(existingCut(100L, 2L, "30.00"))))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("ya fue vendida");
+
+            verifyNothingWasWritten();
+        }
+
+        @Test
+        @DisplayName("Las unidades vendidas cuentan para el peso máximo de la pieza")
+        void updatePieceCutsCountsTheSoldUnitsTowardTheMaximum() {
+
+            // Arrange: ya hay 30 kg vendidos y se intenta agregar 80 kg más en una pieza de 100
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(soldUnit(purchase)));
+            when(cutMeatRepository.findAllById(List.of(2L))).thenReturn(List.of(
+                    cutMeat(2L, "Rueda", Specie.BOVINE, true)));
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of(existingCut(100L, 1L, "30.00"), cut(2L, "80.00"))))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("110,00");
+
+            verifyNothingWasWritten();
+        }
+
+        @Test
+        @DisplayName("Rechaza un id que no es de una unidad de esta pieza")
+        void updatePieceCutsRejectsAnIdThatDoesNotBelongToThePiece() {
+
+            // Arrange
+            givenBovinePurchaseWithCuts();
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1, List.of(existingCut(999L, 1L, "10.00"))))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("no pertenece a esta pieza");
+
+            verifyNothingWasWritten();
+        }
+
+        @Test
+        @DisplayName("Rechaza repetir el id de una misma unidad")
+        void updatePieceCutsRejectsARepeatedId() {
+
+            // Arrange
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            StockCut unit = stockCut(100L, purchase, 1, cutMeat(1L, "Asado", Specie.BOVINE, true), "30.00", null);
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(unit));
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1,
+                    List.of(existingCut(100L, 1L, "10.00"), existingCut(100L, 1L, "10.00"))))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("no pertenece a esta pieza");
+
+            verifyNothingWasWritten();
         }
     }
 
