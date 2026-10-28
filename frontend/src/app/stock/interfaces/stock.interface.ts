@@ -50,10 +50,26 @@ export interface StockCut {
   cutMeatId: number;
   cutMeatName: string;
   kilograms: number;
+  sold: boolean; // si ya se vendió, no se puede editar
 }
 
 // Un corte tal como se envia al guardar los cortes de una pieza
 export interface StockCutRequest {
+  id?: number; // sin id = unidad nueva
   cutMeatId: number;
   kilograms: number;
+}
+
+// Una unidad de corte sin vender: se puede elegir al armar una venta
+export interface AvailableCut {
+  id: number;
+  cutMeatId: number;
+  cutMeatName: string;
+  kilograms: number;
+  purchaseId: number;
+  pieceNumber: number;
+  purchaseUnits: number; // unidades de la compra (para mostrar "pieza 2 de 4")
+  purchaseDate: string; // yyyy-MM-dd
+  purchaseTypeName: string;
+  supplierName: string;
 }

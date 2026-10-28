@@ -17,8 +17,10 @@ function parseKilograms(text: string): number | null {
 
 // Una fila del formulario: lo que el usuario eligio y escribio
 interface CutRow {
+  id: number | null; // null = unidad nueva
   cutMeatId: number | null;
   kilograms: string;
+  sold: boolean;
 }
 
 @Component({
@@ -84,8 +86,10 @@ export class StockCutsModal implements OnInit {
   ngOnInit() {
     this.rows.set(
       this.item().cuts.map((cut) => ({
+        id: cut.id,
         cutMeatId: cut.cutMeatId,
         kilograms: formatKilograms(toCents(cut.kilograms)),
+        sold: cut.sold,
       })),
     );
   }
@@ -93,6 +97,7 @@ export class StockCutsModal implements OnInit {
   // El corte de la fila ya no se puede usar (eliminado o de otra especie)
   protected isUnavailable(row: CutRow) {
     return (
+      !row.sold &&
       row.cutMeatId !== null &&
       this.cutMeats.hasValue() &&
       !this.availableCutMeats().some((cutMeat) => cutMeat.id === row.cutMeatId)
@@ -104,7 +109,10 @@ export class StockCutsModal implements OnInit {
   }
 
   protected addRow() {
-    this.rows.update((list) => [...list, { cutMeatId: null, kilograms: '' }]);
+    this.rows.update((list) => [
+      ...list,
+      { id: null, cutMeatId: null, kilograms: '', sold: false },
+    ]);
   }
 
   protected removeRow(index: number) {
@@ -126,11 +134,20 @@ export class StockCutsModal implements OnInit {
     );
   }
 
+  protected isInList(row: CutRow) {
+    return this.availableCutMeats().some((cutMeat) => cutMeat.id === row.cutMeatId);
+  }
+
+  protected soldCutName(row: CutRow) {
+    return this.item().cuts.find((cut) => cut.id === row.id)?.cutMeatName ?? '';
+  }
+
   protected onSave() {
     if (!this.canSave()) return;
 
     this.saving.set(true);
     const cuts = this.rows().map((row) => ({
+      id: row.id ?? undefined,
       cutMeatId: row.cutMeatId!,
       kilograms: toCents(parseKilograms(row.kilograms) ?? 0) / 100,
     }));

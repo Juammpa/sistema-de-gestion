@@ -84,8 +84,9 @@
                 <select
                   [id]="'stock-cut-select-' + $index"
                   (change)="setCut($index, $event)"
+                  [disabled]="row.sold"
                   [attr.aria-invalid]="isUnavailable(row) || null"
-                  class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-9 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+                  class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-9 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
                 >
                   <option
                     value=""
@@ -95,6 +96,11 @@
                   >
                     Seleccionar corte...
                   </option>
+                  @if (row.sold && !isInList(row)) {
+                    <option [value]="row.cutMeatId" selected class="bg-surface text-slate-200">
+                      {{ soldCutName(row) | titlecase }}
+                    </option>
+                  }
                   @for (cutMeat of availableCutMeats(); track cutMeat.id) {
                     <option
                       [value]="cutMeat.id"
@@ -121,8 +127,9 @@
                   inputmode="decimal"
                   autocomplete="off"
                   [value]="row.kilograms"
+                  [readOnly]="row.sold"
                   (input)="setKilograms($index, $event)"
-                  class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-9 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
+                  class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-9 text-base tabular-nums text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm read-only:cursor-not-allowed read-only:opacity-60"
                 />
                 <span
                   aria-hidden="true"
@@ -132,15 +139,25 @@
                 </span>
               </div>
 
-              <button
-                type="button"
-                (click)="removeRow($index)"
-                class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 motion-safe:active:scale-[0.97] sm:size-11.5"
-                title="Quitar corte"
-                [attr.aria-label]="'Quitar corte ' + ($index + 1)"
-              >
-                <i aria-hidden="true" class="fa-solid fa-trash text-sm"></i>
-              </button>
+              @if (row.sold) {
+                <span
+                  class="flex size-11 shrink-0 items-center justify-center text-emerald-300 sm:size-11.5"
+                  title="Unidad vendida: no se puede editar ni quitar"
+                >
+                  <i aria-hidden="true" class="fa-solid fa-lock text-sm"></i>
+                  <span class="sr-only">Unidad vendida: no se puede editar ni quitar</span>
+                </span>
+              } @else {
+                <button
+                  type="button"
+                  (click)="removeRow($index)"
+                  class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent text-slate-400 transition-ui duration-150 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 motion-safe:active:scale-[0.97] sm:size-11.5"
+                  title="Quitar corte"
+                  [attr.aria-label]="'Quitar corte ' + ($index + 1)"
+                >
+                  <i aria-hidden="true" class="fa-solid fa-trash text-sm"></i>
+                </button>
+              }
             </div>
 
             @if (isUnavailable(row)) {

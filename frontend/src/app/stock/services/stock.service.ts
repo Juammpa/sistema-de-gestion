@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { StockCutRequest, StockResponse } from '../interfaces/stock.interface';
+import { AvailableCut, StockCutRequest, StockResponse } from '../interfaces/stock.interface';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -27,5 +27,10 @@ export class StockService {
       `${environment.apiUrl}/stock/purchase/${purchaseId}/pieces/${pieceNumber}/cuts`,
       { cuts },
     );
+  }
+
+  // Unidades sin vender de cortes activos, de la mas antigua a la mas nueva (FIFO)
+  getAvailableCuts() {
+    return this.http.get<AvailableCut[]>(`${environment.apiUrl}/stock/cuts/available`);
   }
 }
