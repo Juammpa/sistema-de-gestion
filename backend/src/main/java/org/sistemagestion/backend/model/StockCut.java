@@ -42,4 +42,13 @@ public class StockCut {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal kilograms;
 
+    // Venta a la que pertenece la unidad (null = disponible)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sale_id")
+    private Sale sale;
+
+    public boolean isSold() {
+        return sale != null;
+    }
+
 }

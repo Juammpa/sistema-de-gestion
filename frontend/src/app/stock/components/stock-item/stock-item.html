@@ -78,10 +78,19 @@
     >
       @for (cut of item().cuts; track cut.id) {
         <li
-          class="inline-flex items-center gap-1.5 rounded-md border border-slate-700/70 bg-raised px-2 py-1 text-xs text-slate-300"
+          class="inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs"
+          [class]="
+            cut.sold
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+              : 'border-slate-700/70 bg-raised text-slate-300'
+          "
         >
+          @if (cut.sold) {
+            <i aria-hidden="true" class="fa-solid fa-lock text-[10px]"></i>
+            <span class="sr-only">Vendido:</span>
+          }
           <span class="font-medium">{{ cut.cutMeatName | titlecase }}</span>
-          <span class="font-mono tabular-nums text-slate-400">
+          <span class="font-mono tabular-nums opacity-80">
             {{ cut.kilograms | number: '1.0-2' }} kg
           </span>
         </li>

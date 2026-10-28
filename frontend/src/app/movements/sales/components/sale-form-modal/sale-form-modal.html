@@ -47,141 +47,83 @@
     </div>
     <!-- ====== BODY (form) ====== -->
     <form [formGroup]="saleForm" (ngSubmit)="onSave()" class="space-y-5 px-5 py-6 sm:px-7">
-      <!-- Grid: Tipo de Corte y Unidades -->
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <!-- Tipo Corte -->
-        <div class="space-y-1.5">
-          <label for="sale-cut-meat" class="block text-sm font-medium text-slate-200">
-            Tipo de Corte <span aria-hidden="true" class="text-accent-400">*</span>
-          </label>
-          <div class="group relative">
-            <select
-              id="sale-cut-meat"
-              formControlName="cutMeatId"
-              [attr.aria-invalid]="formUtils.isValidField(saleForm, 'cutMeatId')"
-              [class.!border-red-500/80]="formUtils.isValidField(saleForm, 'cutMeatId')"
-              [class.!ring-red-500/20]="formUtils.isValidField(saleForm, 'cutMeatId')"
-              [class.animate-shake]="formUtils.isValidField(saleForm, 'cutMeatId')"
-              class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
-            >
-              <option [ngValue]="null" disabled class="bg-surface text-slate-400">
-                Seleccionar corte...
-              </option>
-              @for (cutMeat of activeCutMeats(); track cutMeat.id) {
-                <option [ngValue]="cutMeat.id" class="bg-surface text-slate-200">
-                  {{ cutMeat.cutMeatName | titlecase }}
-                </option>
-              } @empty {
-                <option [ngValue]="null" disabled class="bg-surface text-slate-400">
-                  No hay cortes disponibles
-                </option>
-              }
-            </select>
-            <!-- Chevron decorativo -->
-            <div
-              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-accent-400"
-            >
-              <svg
-                aria-hidden="true"
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-          @if (cutMeatOptions.error()) {
-            <span
-              role="alert"
-              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
-            >
-              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
-              No se pudieron cargar los cortes de carne
-            </span>
-          } @else if (formUtils.isValidField(saleForm, 'cutMeatId')) {
-            <span
-              role="alert"
-              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
-            >
-              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
-              {{ formUtils.getFieldError(saleForm, 'cutMeatId') }}
-            </span>
-          }
-        </div>
-        <!-- Unidades -->
-        <div class="space-y-1.5">
-          <label for="sale-unit" class="block text-sm font-medium text-slate-200">
-            Unidades <span aria-hidden="true" class="text-accent-400">*</span>
-          </label>
-          <input
-            id="sale-unit"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            [value]="saleForm.controls['unit']"
-            formControlName="unit"
-            placeholder="Ej. 1"
-            [attr.aria-invalid]="formUtils.isValidField(saleForm, 'unit')"
-            [class.!border-red-500/80]="formUtils.isValidField(saleForm, 'unit')"
-            [class.!ring-red-500/20]="formUtils.isValidField(saleForm, 'unit')"
-            [class.animate-shake]="formUtils.isValidField(saleForm, 'unit')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas px-3.5 py-3 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
-          />
-          @if (formUtils.isValidField(saleForm, 'unit')) {
-            <span
-              role="alert"
-              class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
-            >
-              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
-              {{ formUtils.getFieldError(saleForm, 'unit') }}
-            </span>
-          }
-        </div>
-      </div>
-      <!-- Kilogramos -->
-      <div class="space-y-1.5 sm:w-1/2">
-        <label for="sale-kilograms" class="block text-sm font-medium text-slate-200">
-          Kilogramos <span aria-hidden="true" class="text-accent-400">*</span>
+      <!-- Tipo Corte: solo los que tienen stock disponible -->
+      <div class="space-y-1.5">
+        <label for="sale-cut-meat" class="block text-sm font-medium text-slate-200">
+          Tipo de Corte <span aria-hidden="true" class="text-accent-400">*</span>
         </label>
         <div class="group relative">
-          <input
-            id="sale-kilograms"
-            type="tel"
-            inputmode="decimal"
-            autocomplete="off"
-            [value]="saleForm.controls['kilograms']"
-            formControlName="kilograms"
-            placeholder="Ej. 100"
-            [attr.aria-invalid]="formUtils.isValidField(saleForm, 'kilograms')"
-            [class.!border-red-500/80]="formUtils.isValidField(saleForm, 'kilograms')"
-            [class.!ring-red-500/20]="formUtils.isValidField(saleForm, 'kilograms')"
-            [class.animate-shake]="formUtils.isValidField(saleForm, 'kilograms')"
-            class="w-full rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base tabular-nums text-slate-100 placeholder:text-slate-400 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
-          />
-          <span
-            aria-hidden="true"
-            class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400 transition-colors group-focus-within:text-accent-400"
+          <select
+            id="sale-cut-meat"
+            formControlName="cutMeatId"
+            [attr.aria-invalid]="formUtils.isValidField(saleForm, 'cutMeatId')"
+            [class.!border-red-500/80]="formUtils.isValidField(saleForm, 'cutMeatId')"
+            [class.!ring-red-500/20]="formUtils.isValidField(saleForm, 'cutMeatId')"
+            [class.animate-shake]="formUtils.isValidField(saleForm, 'cutMeatId')"
+            class="w-full cursor-pointer appearance-none rounded-xl border border-slate-700/70 bg-canvas py-3 pl-3.5 pr-10 text-base text-slate-100 outline-none transition-ui hover:border-slate-600 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 sm:text-sm"
           >
-            kg
-          </span>
+            <option [ngValue]="null" disabled class="bg-surface text-slate-400">
+              Seleccionar corte...
+            </option>
+            @for (option of cutOptions(); track option.id) {
+              <option [ngValue]="option.id" class="bg-surface text-slate-200">
+                {{ option.name | titlecase }} ({{ option.count }}
+                {{ option.count === 1 ? 'disponible' : 'disponibles' }})
+              </option>
+            }
+          </select>
+          <!-- Chevron decorativo -->
+          <div
+            class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-150 group-focus-within:text-accent-400"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
         </div>
-        @if (formUtils.isValidField(saleForm, 'kilograms')) {
+        @if (availableUnits.error() || cutMeatOptions.error()) {
           <span
             role="alert"
             class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
           >
             <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
-            {{ formUtils.getFieldError(saleForm, 'kilograms') }}
+            No se pudo cargar el stock disponible
+          </span>
+        } @else if (availableUnits.hasValue() && cutOptions().length === 0) {
+          <span role="status" class="block pt-0.5 text-xs font-medium text-amber-300">
+            No hay stock para vender. Cargá los cortes de una pieza en la sección Stock.
+          </span>
+        } @else if (formUtils.isValidField(saleForm, 'cutMeatId')) {
+          <span
+            role="alert"
+            class="flex animate-fadeIn items-center gap-1.5 pt-0.5 text-xs font-medium text-red-400"
+          >
+            <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
+            {{ formUtils.getFieldError(saleForm, 'cutMeatId') }}
           </span>
         }
       </div>
+
+      <!-- Unidades de stock del corte elegido -->
+      @if (cutMeatId() !== null) {
+        <sale-units-picker
+          [units]="cutUnits()"
+          [pricePerKilo]="pricePerKilo()"
+          [(selectedIds)]="selectedIds"
+        />
+      }
+
       <!-- ====== FOOTER ====== -->
       <div
         class="mt-2 flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:items-center sm:justify-end"
@@ -195,7 +137,7 @@
         </button>
         <button
           type="submit"
-          [disabled]="saleForm.invalid"
+          [disabled]="saleForm.invalid || selectedIds().length === 0"
           class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-600/20 transition-ui duration-150 enabled:hover:bg-accent-500 enabled:hover:shadow-accent-600/30 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none sm:w-auto"
         >
           <i aria-hidden="true" class="fa-solid fa-check text-xs"></i> <span>Crear Venta</span>

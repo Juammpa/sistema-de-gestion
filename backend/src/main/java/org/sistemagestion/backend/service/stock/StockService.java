@@ -112,18 +112,99 @@ public class StockService implements IStockService {
     @Transactional
     public void updatePieceCuts(Long purchaseId, int pieceNumber, List<StockCutsRequestDto.Cut> cuts) {
 
-        Purchase purchase = purchaseRepository.findById(purchaseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Purchase", "id", purchaseId ));
+       Purchase purchase = purchaseRepository.findById(purchaseId)
+               .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", purchaseId));
 
-        int units = purchase.getUnit() != null && purchase.getUnit() > 0
-                ? purchase.getUnit()
-                : 1;
+       int units = purchase.getUnit() != null && purchase.getUnit() > 0
+               ? purchase.getUnit()
+               : 1;
 
-        if (pieceNumber < 1 || pieceNumber > units) {
-            throw new BusinessRuleException(String.format(
-                    "La compra tiene %d unidades: la pieza %d no existe.", units, pieceNumber
-            ));
+       if (pieceNumber < 1 || pieceNumber > units) {
+           throw new BusinessRuleException(String.format(
+                   "La compra tiene %d unidades: la pieza %d no existe.",
+                   units, pieceNumber
+           ));
+       }
+
+       Map<Long, StockCut> existing = stockCutRepository.findByPurchaseIdAndPieceNumber(purchaseId, pieceNumber).stream()
+               .collect(Collectors.toMap(StockCut::getId, Function.identity()));
+
+       Set<Long> keptIds = assertRequestIdsBelongToPiece(existing, cuts);
+       assertSoldCutsUntouched(existing.values(), cuts);
+
+       // Las unidades vendidas quedan como estan: solo se validan y guardan las demas
+       List<StockCutsRequestDto.Cut> changeable = cuts.stream()
+               .filter(cut -> cut.id() == null || !existing.get(cut.id()).isSold())
+               .toList();
+
+       Map<Long, CutMeat> cutMeats = loadUsableCutMeats(purchase, changeable);
+
+       assertCutsFitInPiece(purchaseId, purchase, units, pieceNumber, cuts);
+
+       // Se borran las unidades que ya no vienen en el pedido (nunca son vendidas)
+       stockCutRepository.deleteAll(existing.values().stream()
+                .filter(current -> !keptIds.contains(current.getId())).toList());
+
+       List<StockCut> rows = new ArrayList<>();
+       for (StockCutsRequestDto.Cut cut: changeable) {
+           StockCut row = cut.id() == null
+                    ? StockCut.builder().purchase(purchase).pieceNumber(pieceNumber).build()
+                    : existing.get(cut.id());
+
+           row.setCutMeat(cutMeats.get(cut.cutMeatId()));
+           row.setKilograms(Decimals.pieceKg(cut.kilograms()));
+           rows.add(row);
+       }
+
+        stockCutRepository.saveAll(rows);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AvailableCutDto> getAvailableCuts() {
+        return stockCutRepository.findAvailable();
+    }
+
+
+    // ====================== Helpers ======================
+
+    // Cada id del pedido tiene que ser de una unidad de esta pieza y no repetirse
+    private Set<Long> assertRequestIdsBelongToPiece(Map<Long, StockCut> existing, List<StockCutsRequestDto.Cut> cuts) {
+
+        Set<Long> keptIds = new HashSet<>();
+
+        for (StockCutsRequestDto.Cut cut: cuts) {
+            if (cut.id() != null && (!existing.containsKey(cut.id()) || !keptIds.add(cut.id()))) {
+                throw new BusinessRuleException("Uno de los cortes no pertenece a esta pieza.");
+            }
         }
+
+        return keptIds;
+    }
+
+    // Una unidad vendida tiene que venir en el pedido, con el mismo corte y el mismo peso
+    private void assertSoldCutsUntouched(Collection<StockCut> existing, List<StockCutsRequestDto.Cut> cuts) {
+
+        for (StockCut current: existing) {
+            boolean unchanged = cuts.stream().anyMatch(cut ->
+                    current.getId().equals(cut.id()) &&
+                    current.getCutMeat().getId().equals(cut.cutMeatId()) &&
+                    Decimals.pieceKg(cut.kilograms()).compareTo(current.getKilograms()) == 0
+            );
+
+            if (current.isSold() && !unchanged) {
+                throw new BusinessRuleException(String.format(
+                        "La unidad de «%s» (%s kg) ya fue vendida: no se puede cambiar ni quitar.",
+                        current.getCutMeat().getCutMeatName(),
+                        formatKilograms(current.getKilograms())
+                ));
+            }
+        }
+
+    }
+
+    // Los cortes elegidos tienen que existir, estar activos y ser de la especie de la compra
+    private Map<Long, CutMeat> loadUsableCutMeats(Purchase purchase, List<StockCutsRequestDto.Cut> cuts) {
 
         List<Long> cutMeatIds = cuts.stream()
                 .map(StockCutsRequestDto.Cut::cutMeatId)
@@ -133,7 +214,7 @@ public class StockService implements IStockService {
         Map<Long, CutMeat> cutMeats = cutMeatRepository.findAllById(cutMeatIds).stream()
                 .collect(Collectors.toMap(CutMeat::getId, Function.identity()));
 
-        for (Long cutMeatId: cutMeatIds) {
+        for (Long cutMeatId: cutMeatIds){
             CutMeat cutMeat = cutMeats.get(cutMeatId);
 
             if (cutMeat == null) {
@@ -141,19 +222,31 @@ public class StockService implements IStockService {
             }
 
             if (!Boolean.TRUE.equals(cutMeat.getIsActive())) {
-                throw new BusinessRuleException(String.format("El corte «%s» no está disponible.", cutMeat.getCutMeatName()));
+                throw new BusinessRuleException(String.format(
+                        "El corte «%s» no está disponible.",
+                        cutMeat.getCutMeatName()
+                ));
             }
 
             if (cutMeat.getSpecie() != purchase.getPurchaseType().getSpecie()) {
                 throw new BusinessRuleException(String.format(
-                        "El corte «%s» no corresponde a la especie de la compra.", cutMeat.getCutMeatName()
+                        "El corte «%s» no corresponde a la especie de la compra.",
+                        cutMeat.getCutMeatName()
                 ));
             }
         }
 
+        return cutMeats;
+    }
+
+    // Todos los cortes de la pieza (tambien los vendidos) tienen que entrar en su peso
+    private void assertCutsFitInPiece(Long purchaseId, Purchase purchase, int units, int pieceNumber, List<StockCutsRequestDto.Cut> cuts) {
+
         // Peso de la pieza: el ajuste manual (si lo hay) o el reparto parejo
         List<PurchasePieceWeight> savedWeights = pieceWeightRepository.findByPurchaseIdOrderByPieceNumber(purchaseId);
-        BigDecimal pieceKilograms = PieceWeights.resolve(units, purchase.getKilograms(), savedWeights).kilograms().get(pieceNumber -1);
+
+        BigDecimal pieceKilograms = PieceWeights.resolve(units, purchase.getKilograms(), savedWeights)
+                .kilograms().get(pieceNumber -1);
 
         BigDecimal sum = cuts.stream()
                 .map(cut -> Decimals.pieceKg(cut.kilograms()))
@@ -166,20 +259,6 @@ public class StockService implements IStockService {
                     formatKilograms(sum), formatKilograms(pieceKilograms)
             ));
         }
-
-        // Se reemplazan todos los cortes de la pieza
-        stockCutRepository.deleteByPurchaseIdAndPieceNumber(purchaseId, pieceNumber);
-
-        List<StockCut> rows = cuts.stream()
-                .map(cut -> StockCut.builder()
-                        .purchase(purchase)
-                        .pieceNumber(pieceNumber)
-                        .cutMeat(cutMeats.get(cut.cutMeatId()))
-                        .kilograms(Decimals.pieceKg(cut.kilograms()))
-                        .build())
-                .toList();
-
-        stockCutRepository.saveAll(rows);
     }
 
     // Los cortes ya cargados en cada pieza tienen que seguir entrando en su peso nuevo
@@ -278,9 +357,10 @@ public class StockService implements IStockService {
                 cut.getId(),
                 cut.getCutMeat().getId(),
                 cut.getCutMeat().getCutMeatName(),
-                cut.getKilograms());
+                cut.getKilograms(),
+                cut.isSold()
+        );
     }
-
 
     // Los totales salen de las compras (no de sumas las piezas), asi no se acumula error de redondeo
     private StockSummaryDto summarize(List<StockPurchaseDto> purchases) {

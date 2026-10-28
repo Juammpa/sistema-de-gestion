@@ -1,3 +1,5 @@
+import { AvailableCut } from '../../../stock/interfaces/stock.interface';
+
 export interface Sale {
   id: number;
   clientId: number;
@@ -8,13 +10,13 @@ export interface Sale {
   kilograms: number;
   pricePerKilo: number;
   subtotal: number;
+  stockCuts?: AvailableCut[]; // solo viene al pedir una venta, no en los listados
 }
 
 export interface SaleRequest {
   clientId: number;
   butcherShopId: number;
   cutMeatId: number;
-  kilograms: number;
-  unit: number;
+  stockCutIds: number[]; // unidades de stock que se venden
   date?: string;
 }
