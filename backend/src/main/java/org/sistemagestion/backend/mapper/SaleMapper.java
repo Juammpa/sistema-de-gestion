@@ -1,6 +1,5 @@
 package org.sistemagestion.backend.mapper;
 
-import org.sistemagestion.backend.dto.sales.SaleRequestDto;
 import org.sistemagestion.backend.dto.sales.SaleResponseDto;
 import org.sistemagestion.backend.model.Client;
 import org.sistemagestion.backend.model.CurrentAccount;
@@ -15,13 +14,13 @@ import java.time.LocalDate;
 @Component
 public class SaleMapper {
 
-    public Sale toSale(SaleRequestDto requestDto, Client client, CutMeat cutMeat, CurrentAccount currentAccount) {
+    public Sale toSale(Client client, CutMeat cutMeat, CurrentAccount currentAccount, BigDecimal kilograms, Integer unit) {
 
-        BigDecimal amount = Decimals.multiply(requestDto.getKilograms(), cutMeat.getPricePerKilo());
+        BigDecimal amount = Decimals.multiply(kilograms, cutMeat.getPricePerKilo());
 
         return Sale.builder()
-                .kilograms(Decimals.kilograms(requestDto.getKilograms()))
-                .unit(requestDto.getUnit())
+                .kilograms(Decimals.kilograms(kilograms))
+                .unit(unit)
                 .client(client)
                 .cutMeat(cutMeat)
                 .currentAccount(currentAccount)

@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.sistemagestion.backend.dto.stock.AvailableCutDto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +26,9 @@ public class SaleResponseDto {
     private BigDecimal kilograms;
     private BigDecimal pricePerKilo;
     private BigDecimal subtotal;
+
+    // Unidades de stock de la venta.
+    // Solo viene al pedir una venta o al crearla/editarla; en los listados es null
+    private List<AvailableCutDto> stockCuts;
 
 }
