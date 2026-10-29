@@ -8,7 +8,13 @@ import {
 } from '@angular/forms';
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
-import { PAYMENT_TYPE_OPTIONS, PaymentTypeValue } from '../../utils/payment.utils';
+import {
+  customMethodKey,
+  parsePaymentMethodKey,
+  PAYMENT_TYPE_OPTIONS,
+  paymentMethodKey,
+  PaymentMethodOption,
+} from '../../utils/payment.utils';
 import { DeleteModal } from '../../../../shared/components/delete-modal/delete-modal';
 import translatePaymentType from '../../utils/payment.utils';
 import { Payment, PaymentRequest } from '../../interfaces/payment.interface';
@@ -20,6 +26,7 @@ import { CurrencyPipe } from '@angular/common';
 import { DateField } from '../../../../shared/components/date-field/date-field';
 import { toIsoDate } from '../../../../shared/utils/date.utils';
 import { AppValidators } from '../../../../shared/validators/app-validators';
+import { CustomPaymentMethodService } from '../../../../custom-payment-method/services/custom-payment-method.service';
 
 @Component({
   selector: 'edit-payment-modal',
@@ -31,6 +38,7 @@ export class EditPaymentModal implements OnInit {
   private paymentService = inject(PaymentService);
   private supplierService = inject(SupplierService);
   private cashService = inject(CashService);
+  private customMethodService = inject(CustomPaymentMethodService);
   formUtils = FormUtils;
 
   translatePaymentType = translatePaymentType;
@@ -45,21 +53,40 @@ export class EditPaymentModal implements OnInit {
   allowSupplierTransfer = input<boolean>(false);
   showCashBalance = input<boolean>(false); // true solo en la pagina de proveedor
 
-  paymentTypeOptions = computed(() => {
-    const options = PAYMENT_TYPE_OPTIONS.filter(
-      (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
-    );
+  // Métodos propios del usuario
+  customMethods = rxResource({
+    stream: () => this.customMethodService.getAll(),
+  });
+
+  paymentTypeOptions = computed<PaymentMethodOption[]>(() => {
+    const customMethods = this.customMethods.hasValue() ? this.customMethods.value() : [];
+
+    const options: PaymentMethodOption[] = [
+      ...PAYMENT_TYPE_OPTIONS.filter(
+        (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
+      ),
+      ...customMethods
+        .filter((method) => method.isActive)
+        .map((method) => ({ value: customMethodKey(method.id), label: method.name })),
+    ];
+
+    // El método actual del pago se conserva aunque ya esté eliminado
+    const current = this.payment();
+    const currentKey = paymentMethodKey(current);
+    if (
+      this.customMethods.hasValue() &&
+      current.paymentType === 'CUSTOM' &&
+      !options.some((option) => option.value === currentKey)
+    ) {
+      options.push({ value: currentKey, label: `${current.customPaymentMethodName} (eliminado)` });
+    }
 
     // El rechazo no se elige a mano, pero se muestra al abrir uno
-    return this.isRejection()
-      ? [
-          ...options,
-          {
-            value: 'CHECK_REJECTION' as PaymentTypeValue,
-            label: translatePaymentType('CHECK_REJECTION'),
-          },
-        ]
-      : options;
+    if (this.isRejection()) {
+      options.push({ value: 'CHECK_REJECTION', label: translatePaymentType('CHECK_REJECTION') });
+    }
+
+    return options;
   });
 
   cashBalance = rxResource({
@@ -134,7 +161,7 @@ export class EditPaymentModal implements OnInit {
     const current = this.payment();
     this.paymentForm.patchValue({
       date: current.date,
-      paymentType: current.paymentType,
+      paymentType: paymentMethodKey(current),
       supplierId: current.supplierId,
       amount: current.amount,
     });
@@ -168,10 +195,12 @@ export class EditPaymentModal implements OnInit {
       return;
     }
 
-    const { date, paymentType, amount, supplierId } = this.paymentForm.value;
+    const { date, paymentType: methodKey, amount, supplierId } = this.paymentForm.value;
+    const { paymentType, customPaymentMethodId } = parsePaymentMethodKey(methodKey);
     const request: PaymentRequest = {
       date,
       paymentType,
+      customPaymentMethodId,
       amount: this.formUtils.parseDecimal(amount)!,
       supplierId,
       currentAccountId: this.payment().currentAccountId,

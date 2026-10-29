@@ -27,6 +27,7 @@ export interface PurchaseMovement extends BaseMovement {
 export interface PaymentMovement extends BaseMovement {
   type: 'PAYMENT';
   paymentType: string;
+  customPaymentMethodName?: string | null; // Solo en pagos CUSTOM
 }
 
 // Un boton del filtro de tipo de movimiento (value null = todos)

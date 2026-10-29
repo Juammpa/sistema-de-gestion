@@ -6,6 +6,7 @@ export interface CashPayment {
   clientName: string;
   butcherShopName: string;
   supplierName: string | null;
+  customPaymentMethodName?: string | null; // Solo en pagos CUSTOM
 }
 
 export interface CashWithdrawal {

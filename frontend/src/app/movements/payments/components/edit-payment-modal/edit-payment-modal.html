@@ -342,7 +342,11 @@
     animate.leave="modal-host-leave"
     description="Eliminar pago"
     entityType="El pago"
-    [entityName]="translatePaymentType(payment().paymentType) + ' - $' + payment().amount"
+    [entityName]="
+      translatePaymentType(payment().paymentType, payment().customPaymentMethodName) +
+      ' - $' +
+      payment().amount
+    "
     [loading]="deleting()"
     (cancel)="showDeleteConfirm.set(false)"
     (confirm)="onDelete()"

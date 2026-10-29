@@ -19,5 +19,5 @@ export function paymentMethodLabel(payment: CashPayment): string | null {
   if (payment.paymentType === 'CASH') return null;
   if (payment.paymentType === 'SUPPLIER_TRANSFER') return `Trans. ${payment.supplierName}`;
 
-  return translatePaymentType(payment.paymentType);
+  return translatePaymentType(payment.paymentType, payment.customPaymentMethodName);
 }
