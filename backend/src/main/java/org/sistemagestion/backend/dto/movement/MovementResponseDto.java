@@ -32,6 +32,9 @@ public class MovementResponseDto {
     // Propio de Payment (null si type == SALE)
     private PaymentType paymentType;
 
+    // Solo en pagos CUSTOM
+    private String customPaymentMethodName;
+
     // Propio de Purchase (null salvo que type == PURCHASE)
     private Long purchaseTypeId;
     private String purchaseTypeName;

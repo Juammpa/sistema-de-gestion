@@ -8,13 +8,11 @@ import org.sistemagestion.backend.dto.payment.PaymentResponseDto;
 import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PaymentMapper;
-import org.sistemagestion.backend.model.ButcherShop;
-import org.sistemagestion.backend.model.CurrentAccount;
-import org.sistemagestion.backend.model.Payment;
-import org.sistemagestion.backend.model.Supplier;
+import org.sistemagestion.backend.model.*;
 import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
+import org.sistemagestion.backend.repository.CustomPaymentMethodRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
 import org.sistemagestion.backend.service.account.AccountGuard;
 import org.sistemagestion.backend.service.cash.CashService;
@@ -31,6 +29,7 @@ public class PaymentService implements IPaymentService{
     private final CurrentAccountRepository currentAccountRepository;
     private final ButcherShopRepository butcherShopRepository;
     private final PaymentMirrorService paymentMirrorService;
+    private final CustomPaymentMethodRepository customPaymentMethodRepository;
     private final BalanceRecalculationService balanceRecalculationService;
     private final CashService cashService;
     private final AccountGuard accountGuard;
@@ -48,10 +47,12 @@ public class PaymentService implements IPaymentService{
        accountGuard.assertOwnerActive(currentAccount);
 
        Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), currentAccount);
+       CustomPaymentMethod customMethod = resolveCustomMethod(request, null);
        cashService.assertSufficientBalance(currentAccount,  request.getAmount(), null);
 
        Payment payment = mapper.toPayment(request, currentAccount);
        payment.setSupplier(supplier);
+       payment.setCustomPaymentMethod(customMethod);
        Payment paymentSaved = paymentRepository.save(payment);
 
        paymentMirrorService.sync(paymentSaved);
@@ -86,12 +87,14 @@ public class PaymentService implements IPaymentService{
         assertNotRejected(payment);
 
         Supplier supplier = paymentMirrorService.resolveSupplier(request.getPaymentType(), request.getSupplierId(), payment.getCurrentAccount());
+        CustomPaymentMethod customMethod = resolveCustomMethod(request, payment.getCustomPaymentMethod());
         cashService.assertSufficientBalance(payment.getCurrentAccount(), request.getAmount(), payment);
 
         payment.setDate(request.getDate());
         payment.setPaymentType(request.getPaymentType());
         payment.setAmount(Decimals.money(request.getAmount()));
         payment.setSupplier(supplier);
+        payment.setCustomPaymentMethod(customMethod);
 
         Payment paymentUpdated = paymentRepository.saveAndFlush(payment);
 
@@ -163,6 +166,29 @@ public class PaymentService implements IPaymentService{
 
         return butcherShopRepository.findByCurrentAccountId(origin.getCurrentAccount().getId())
                 .orElse(null);
+    }
+
+    // Metodo personalizado a asociar (null si el tipo no es CUSTOM)
+    // Se puede conservar el metodo actual del pago aunque ya este eliminado, pero no elegir uno eliminado
+    private CustomPaymentMethod resolveCustomMethod(PaymentRequestDto request, CustomPaymentMethod current) {
+
+        if (request.getPaymentType() != PaymentType.CUSTOM) {
+            return null;
+        }
+
+        Long methodId = request.getCustomPaymentMethodId();
+
+        if (methodId == null) {
+            throw new BusinessRuleException("Indicá el método de pago.");
+        }
+
+        if (current != null && current.getId().equals(methodId)) {
+            return current;
+        }
+
+        return customPaymentMethodRepository.findByIdAndIsActiveTrue(methodId)
+                .orElseThrow(() -> new ResourceNotFoundException("CustomPaymentMethod","id",methodId));
+
     }
 
     // CHECK_REJECTION solo lo genera el sistema al rechazar un cheque, nunca se carga a mano

@@ -17,6 +17,11 @@ public class Payment extends Movement{
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
+    // Metodo de pago elegido por el usuario (solo en pagos de tipo CUSTOM)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "custom_payment_method_id")
+    private CustomPaymentMethod customPaymentMethod;
+
     // Cheque que este movimiento rechaza (solo en pagos CHECK_REJECTION)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rejected_payment_id")

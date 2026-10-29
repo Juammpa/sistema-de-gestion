@@ -38,7 +38,7 @@ class CashServiceTest {
     // ====== Helpers ======
 
     private CashPaymentDto clientPayment(long id, LocalDate date, PaymentType type, String amount) {
-        return new CashPaymentDto(id, date, type, new BigDecimal(amount), "Castella Julio", "Carniceria Prueba", null);
+        return new CashPaymentDto(id, date, type, new BigDecimal(amount), "Castella Julio", "Carniceria Prueba", null, null);
     }
 
     // La cuenta arranca con $1.000 y sin extracciones a proveedores

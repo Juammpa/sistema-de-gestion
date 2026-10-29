@@ -16,10 +16,12 @@ import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
 import org.sistemagestion.backend.mapper.PaymentMapper;
 import org.sistemagestion.backend.model.CurrentAccount;
+import org.sistemagestion.backend.model.CustomPaymentMethod;
 import org.sistemagestion.backend.model.Payment;
 import org.sistemagestion.backend.model.enums.PaymentType;
 import org.sistemagestion.backend.repository.ButcherShopRepository;
 import org.sistemagestion.backend.repository.CurrentAccountRepository;
+import org.sistemagestion.backend.repository.CustomPaymentMethodRepository;
 import org.sistemagestion.backend.repository.PaymentRepository;
 import org.sistemagestion.backend.service.account.AccountGuard;
 import org.sistemagestion.backend.service.cash.CashService;
@@ -42,6 +44,7 @@ class PaymentServiceTest {
     @Mock private CurrentAccountRepository currentAccountRepository;
     @Mock private ButcherShopRepository butcherShopRepository;
     @Mock private PaymentMirrorService paymentMirrorService;
+    @Mock private CustomPaymentMethodRepository customPaymentMethodRepository;
     @Mock private BalanceRecalculationService balanceRecalculationService;
     @Mock private CashService cashService;
     @Mock private AccountGuard accountGuard;
@@ -78,6 +81,20 @@ class PaymentServiceTest {
                 .currentAccountId(1L)
                 .date(LocalDate.of(2026, 10, 24))
                 .build();
+    }
+
+    private CustomPaymentMethod customMethod(long id, boolean active) {
+        return CustomPaymentMethod.builder()
+                .id(id)
+                .name("Mercado Pago")
+                .isActive(active)
+                .build();
+    }
+
+    private PaymentRequestDto customRequest(PaymentType type, Long methodId) {
+        PaymentRequestDto request = request(type);
+        request.setCustomPaymentMethodId(methodId);
+        return request;
     }
 
     @Nested
@@ -306,5 +323,154 @@ class PaymentServiceTest {
             verify(paymentRepository, never()).save(any());
         }
     }
+
+    @Nested
+    @DisplayName("Metodo de pago personalizado")
+    class CustomPaymentMethodTests {
+
+        @Test
+        @DisplayName("Al crear un pago CUSTOM lo asocia al metodo elegido")
+        void createPaymentShouldAssociateTheCustomMethod() {
+
+            // Arrange
+            CustomPaymentMethod method = customMethod(7L, true);
+            when(currentAccountRepository.findById(1L)).thenReturn(Optional.of(account()));
+            when(customPaymentMethodRepository.findByIdAndIsActiveTrue(7L)).thenReturn(Optional.of(method));
+            when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            // Act
+            PaymentResponseDto result = service.createPayment(customRequest(PaymentType.CUSTOM, 7L));
+
+            // Assert
+            ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+            verify(paymentRepository).save(captor.capture());
+            assertThat(captor.getValue().getCustomPaymentMethod()).isSameAs(method);
+            assertThat(result.getCustomPaymentMethodId()).isEqualTo(7L);
+            assertThat(result.getCustomPaymentMethodName()).isEqualTo("Mercado Pago");
+        }
+
+        @Test
+        @DisplayName("Rechaza un pago CUSTOM sin indicar el metodo")
+        void createPaymentShouldRejectCustomWithoutMethod() {
+
+            // Arrange
+            when(currentAccountRepository.findById(1L)).thenReturn(Optional.of(account()));
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.createPayment(customRequest(PaymentType.CUSTOM, null)))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("método de pago");
+
+            verify(paymentRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Rechaza un metodo que no existe, es de otro usuario o esta eliminado")
+        void createPaymentShouldRejectUnknownOrArchivedMethod() {
+
+            // Arrange: la consulta solo devuelve metodos activos del usuario
+            when(currentAccountRepository.findById(1L)).thenReturn(Optional.of(account()));
+            when(customPaymentMethodRepository.findByIdAndIsActiveTrue(7L)).thenReturn(Optional.empty());
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.createPayment(customRequest(PaymentType.CUSTOM, 7L)))
+                    .isInstanceOf(ResourceNotFoundException.class);
+
+            verify(paymentRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Ignora el metodo si el tipo de pago no es CUSTOM")
+        void createPaymentShouldIgnoreTheMethodForOtherTypes() {
+
+            // Arrange
+            when(currentAccountRepository.findById(1L)).thenReturn(Optional.of(account()));
+            when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            // Act
+            service.createPayment(customRequest(PaymentType.TRANSFER, 7L));
+
+            // Assert: ni siquiera se consulta el metodo
+            ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+            verify(paymentRepository).save(captor.capture());
+            assertThat(captor.getValue().getCustomPaymentMethod()).isNull();
+            verifyNoInteractions(customPaymentMethodRepository);
+        }
+
+        @Test
+        @DisplayName("Al editar, conserva el metodo actual aunque ya este eliminado")
+        void updatePaymentShouldKeepTheCurrentMethodEvenIfArchived() {
+
+            // Arrange
+            CustomPaymentMethod archived = customMethod(7L, false);
+            Payment payment = payment(10L, PaymentType.CUSTOM, account());
+            payment.setCustomPaymentMethod(archived);
+            when(paymentRepository.findById(10L)).thenReturn(Optional.of(payment));
+            when(paymentRepository.saveAndFlush(payment)).thenReturn(payment);
+
+            // Act
+            service.updatePayment(10L, customRequest(PaymentType.CUSTOM, 7L));
+
+            // Assert: no hace falta buscarlo, ya lo tiene el pago
+            assertThat(payment.getCustomPaymentMethod()).isSameAs(archived);
+            verifyNoInteractions(customPaymentMethodRepository);
+        }
+
+        @Test
+        @DisplayName("Al editar, permite cambiar a otro metodo activo")
+        void updatePaymentShouldAllowSwitchingToAnotherActiveMethod() {
+
+            // Arrange
+            Payment payment = payment(10L, PaymentType.CUSTOM, account());
+            payment.setCustomPaymentMethod(customMethod(7L, true));
+            CustomPaymentMethod other = customMethod(8L, true);
+            when(paymentRepository.findById(10L)).thenReturn(Optional.of(payment));
+            when(customPaymentMethodRepository.findByIdAndIsActiveTrue(8L)).thenReturn(Optional.of(other));
+            when(paymentRepository.saveAndFlush(payment)).thenReturn(payment);
+
+            // Act
+            service.updatePayment(10L, customRequest(PaymentType.CUSTOM, 8L));
+
+            // Assert
+            assertThat(payment.getCustomPaymentMethod()).isSameAs(other);
+        }
+
+        @Test
+        @DisplayName("Al editar, rechaza cambiar a un metodo eliminado")
+        void updatePaymentShouldRejectSwitchingToAnArchivedMethod() {
+
+            // Arrange
+            Payment payment = payment(10L, PaymentType.CUSTOM, account());
+            payment.setCustomPaymentMethod(customMethod(7L, true));
+            when(paymentRepository.findById(10L)).thenReturn(Optional.of(payment));
+            when(customPaymentMethodRepository.findByIdAndIsActiveTrue(8L)).thenReturn(Optional.empty());
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.updatePayment(10L, customRequest(PaymentType.CUSTOM, 8L)))
+                    .isInstanceOf(ResourceNotFoundException.class);
+
+            verify(paymentRepository, never()).saveAndFlush(any());
+        }
+
+        @Test
+        @DisplayName("Al editar un CUSTOM a otro tipo, le saca el metodo")
+        void updatePaymentShouldClearTheMethodWhenTypeChanges() {
+
+            // Arrange
+            Payment payment = payment(10L, PaymentType.CUSTOM, account());
+            payment.setCustomPaymentMethod(customMethod(7L, true));
+            when(paymentRepository.findById(10L)).thenReturn(Optional.of(payment));
+            when(paymentRepository.saveAndFlush(payment)).thenReturn(payment);
+
+            // Act
+            service.updatePayment(10L, request(PaymentType.CASH));
+
+            // Assert: sino la restriccion de la base rechazaria el pago
+            assertThat(payment.getPaymentType()).isEqualTo(PaymentType.CASH);
+            assertThat(payment.getCustomPaymentMethod()).isNull();
+        }
+
+    }
+
 
 }

@@ -96,7 +96,10 @@ public class DashboardService implements IDashboardService{
         String detail = switch (movement) {
             case Sale sale -> sale.getCutMeatName();
             case Purchase purchase -> purchase.getPurchaseType().getName();
-            case Payment payment -> payment.getPaymentType().name();
+            case Payment payment -> payment.getPaymentType() == PaymentType.CUSTOM &&
+                    payment.getCustomPaymentMethod() != null
+                            ? payment.getCustomPaymentMethod().getName()
+                            : payment.getPaymentType().name();
             default -> null;
         };
 

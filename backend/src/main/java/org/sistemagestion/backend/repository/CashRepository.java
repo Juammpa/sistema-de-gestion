@@ -18,11 +18,12 @@ public interface CashRepository extends Repository<Payment, Long> {
     @Query("""
             select new org.sistemagestion.backend.dto.cash.CashPaymentDto(
                 p.id, p.date, p.paymentType, p.amount,
-                concat(c.lastName, ' ', c.name), bs.name, s.companyName)
+                concat(c.lastName, ' ', c.name), bs.name, s.companyName, cpm.name)
             from Payment p
             join ButcherShop bs on bs.currentAccount = p.currentAccount
             join bs.client c
             left join p.supplier s
+            left join p.customPaymentMethod cpm
             where p.date between :from and :to
             order by p.date, p.id
             """)
