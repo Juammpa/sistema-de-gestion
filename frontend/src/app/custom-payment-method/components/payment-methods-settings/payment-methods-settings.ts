@@ -135,7 +135,7 @@ export class PaymentMethodsSettings {
 
     this.saving.set(true);
     this.methodService
-      .update(method.id, name)
+      .update(method.id, { name })
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: () => {

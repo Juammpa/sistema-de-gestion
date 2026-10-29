@@ -19,7 +19,7 @@ export class CustomPaymentMethodService {
     return this.http.post<CustomPaymentMethod>(`${environment.apiUrl}/payment-methods`, request);
   }
 
-  update(id: number, request: CustomPaymentMethod) {
+  update(id: number, request: CustomPaymentMethodRequest) {
     return this.http.put<CustomPaymentMethod>(
       `${environment.apiUrl}/payment-methods/${id}`,
       request,
