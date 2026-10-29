@@ -150,7 +150,7 @@
     animate.leave="modal-host-leave"
     [sale]="sale"
     [butcherShopId]="butcherShopId()!"
-    (cancel)="showSaleDetail.set(false)"
+    (cancel)="closeSaleDetail()"
     (saved)="onSaleChanged()"
     (deleted)="onSaleChanged()"
   />
@@ -160,7 +160,7 @@
   <edit-payment-modal
     animate.leave="modal-host-leave"
     [payment]="payment"
-    (cancel)="showPaymentDetail.set(false)"
+    (cancel)="closePaymentDetail()"
     (saved)="onPaymentChanged()"
     (deleted)="onPaymentChanged()"
     [allowSupplierTransfer]="butcherShopId() !== null"
@@ -173,7 +173,7 @@
     animate.leave="modal-host-leave"
     [purchase]="purchase"
     [supplierType]="supplierType()"
-    (cancel)="showPurchaseDetail.set(false)"
+    (cancel)="closePurchaseDetail()"
     (saved)="onPurchaseChanged()"
     (deleted)="onPurchaseChanged()"
   />
