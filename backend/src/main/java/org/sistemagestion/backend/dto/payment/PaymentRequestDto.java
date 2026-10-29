@@ -44,4 +44,8 @@ public class PaymentRequestDto {
     // Solo se usa en transferencia a proveedor
     @Positive(message = "El ID del proveedor debe ser positivo.")
     private Long supplierId;
+
+    // Solo se usa en pagos de tipo CUSTOM
+    @Positive(message = "El ID del método de pago debe ser positivo.")
+    private Long customPaymentMethodId;
 }

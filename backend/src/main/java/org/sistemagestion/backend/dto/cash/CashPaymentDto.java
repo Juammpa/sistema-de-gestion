@@ -14,7 +14,8 @@ public record CashPaymentDto(
         BigDecimal amount,
         String clientName,
         String butcherShopName,
-        String supplierName // Solo en SUPPLIER_TRANSFER
+        String supplierName, // Solo en SUPPLIER_TRANSFER
+        String customPaymentMethodName  // Solo en CUSTOM
 ) {}
 
 

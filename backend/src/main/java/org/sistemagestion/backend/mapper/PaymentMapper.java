@@ -34,6 +34,7 @@ public class PaymentMapper {
     public PaymentResponseDto toDto(Payment payment, ButcherShop originShop) {
 
         Supplier supplier = payment.getSupplier();
+        CustomPaymentMethod customMethod = payment.getCustomPaymentMethod();
 
         return PaymentResponseDto.builder()
                 .id(payment.getId())
@@ -44,6 +45,8 @@ public class PaymentMapper {
                 .mirror(payment.getOriginPayment() != null)
                 .supplierId(supplier != null ? supplier.getId() : null)
                 .supplierName(supplier != null ? supplier.getCompanyName() : null)
+                .customPaymentMethodId(customMethod != null ? customMethod.getId() : null)
+                .customPaymentMethodName(customMethod != null ? customMethod.getName() : null)
                 .rejectedPaymentId(payment.getRejectedPayment() != null ? payment.getRejectedPayment().getId() : null)
                 .originClientName(originShop != null ?  fullName(originShop.getClient()): null)
                 .originButcherShopName(originShop != null ? originShop.getName() : null)

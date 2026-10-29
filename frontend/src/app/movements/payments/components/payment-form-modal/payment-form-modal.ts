@@ -9,13 +9,19 @@ import {
 import { FormUtils } from '../../../../shared/utils/form-utils';
 import { PaymentService } from '../../services/payment.service';
 import { PaymentRequest } from '../../interfaces/payment.interface';
-import { PAYMENT_TYPE_OPTIONS } from '../../utils/payment.utils';
+import {
+  customMethodKey,
+  parsePaymentMethodKey,
+  PAYMENT_TYPE_OPTIONS,
+  PaymentMethodOption,
+} from '../../utils/payment.utils';
 import { SupplierService } from '../../../../supplier/services/supplier.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 import { CashService } from '../../../../cash/services/cash.service';
 import { CurrencyPipe } from '@angular/common';
 import { AppValidators } from '../../../../shared/validators/app-validators';
+import { CustomPaymentMethodService } from '../../../../custom-payment-method/services/custom-payment-method.service';
 
 @Component({
   selector: 'payment-form-modal',
@@ -26,6 +32,7 @@ export class PaymentFormModal {
   private paymentService = inject(PaymentService);
   private supplierService = inject(SupplierService);
   private cashService = inject(CashService);
+  private customMethodService = inject(CustomPaymentMethodService);
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
 
@@ -38,12 +45,20 @@ export class PaymentFormModal {
   cancel = output();
   saved = output();
 
-  // Tipos de pago (la transferencia a proveedor solo se ofrece en cuentas de clientes)
-  paymentTypesOptions = computed(() =>
-    PAYMENT_TYPE_OPTIONS.filter(
+  // Métodos propios del usuario
+  customMethods = rxResource({
+    stream: () => this.customMethodService.getAll(),
+  });
+
+  // Los de fábrica y después los del usuario (la transferencia a proveedor solo se ofrece en cuentas de clientes)
+  paymentTypesOptions = computed<PaymentMethodOption[]>(() => [
+    ...PAYMENT_TYPE_OPTIONS.filter(
       (option) => option.value !== 'SUPPLIER_TRANSFER' || this.allowSupplierTransfer(),
     ),
-  );
+    ...(this.customMethods.hasValue() ? this.customMethods.value() : [])
+      .filter((method) => method.isActive)
+      .map((method) => ({ value: customMethodKey(method.id), label: method.name })),
+  ]);
 
   cashBalance = rxResource({
     params: () => this.showCashBalance(),
@@ -114,9 +129,11 @@ export class PaymentFormModal {
     }
 
     // Armamos el request explicitamente (el monto llega como texto: se convierte acá)
-    const { paymentType, amount, supplierId } = this.paymentForm.value;
+    const { paymentType: methodKey, amount, supplierId } = this.paymentForm.value;
+    const { paymentType, customPaymentMethodId } = parsePaymentMethodKey(methodKey);
     const request: PaymentRequest = {
       paymentType,
+      customPaymentMethodId,
       amount: this.formUtils.parseDecimal(amount)!,
       supplierId,
       currentAccountId: this.currentAccountId(),

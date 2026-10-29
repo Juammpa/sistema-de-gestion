@@ -131,7 +131,7 @@ public class ExportDataService {
             // El rechazo de un cheque vuelve a sumar a la deuda: va en "Monto total", como una venta
             case Payment payment when payment.getPaymentType() == PaymentType.CHECK_REJECTION -> new ExportData.ClientRow(
                     payment.getDate(),
-                    ExportLabels.paymentType(payment.getPaymentType()),
+                    ExportLabels.paymentType(payment),
                     null, null, null, null,
                     null, payment.getAmount(),
                     payment.getBalance(), false);
@@ -155,7 +155,7 @@ public class ExportDataService {
             return "Transferencia " + payment.getSupplier().getCompanyName();
         }
 
-        return ExportLabels.paymentType(payment.getPaymentType());
+        return ExportLabels.paymentType(payment);
     }
 
 
@@ -198,7 +198,7 @@ public class ExportDataService {
         Payment origin = payment.getOriginPayment();
 
         if (origin == null) {
-            return ExportLabels.paymentType(payment.getPaymentType());
+            return ExportLabels.paymentType(payment);
         }
 
         Long originAccountId = origin.getCurrentAccount().getId();

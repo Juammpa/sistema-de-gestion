@@ -1,0 +1,171 @@
+<h2 class="text-xl font-bold text-slate-50">Métodos de pago</h2>
+<p class="mt-1 text-sm text-slate-400">
+  Efectivo, transferencia, cheque y transferencia a proveedor ya vienen incluidos. Acá podés sumar
+  los tuyos (por ejemplo, una billetera virtual): se registran como una transferencia.
+</p>
+
+<!-- Alta -->
+<form
+  [formGroup]="createForm"
+  (ngSubmit)="onCreate()"
+  class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]"
+>
+  <div>
+    <label for="new-method-name" [class]="ui.label">Nombre</label>
+    <input
+      id="new-method-name"
+      type="text"
+      autocomplete="off"
+      formControlName="name"
+      placeholder="Ej. Mercado Pago"
+      [attr.aria-invalid]="formUtils.isValidField(createForm, 'name')"
+      [class]="ui.field"
+    />
+    @if (formUtils.isValidField(createForm, 'name')) {
+      <p role="alert" class="mt-1.5 text-xs font-medium text-red-400">
+        {{ formUtils.getFieldError(createForm, 'name') }}
+      </p>
+    }
+  </div>
+  <div class="sm:pt-7">
+    <button
+      type="submit"
+      [disabled]="createForm.invalid || createForm.pending || saving()"
+      [class]="ui.primaryButton"
+      class="w-full disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+    >
+      <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
+      Agregar
+    </button>
+  </div>
+</form>
+
+<!-- Listado -->
+@if (methods.hasValue()) {
+  <section class="mt-8" aria-labelledby="active-methods-title">
+    <h3
+      id="active-methods-title"
+      class="text-xs font-semibold uppercase tracking-widest text-slate-400"
+    >
+      Tus métodos
+    </h3>
+
+    @if (active().length === 0) {
+      <p class="mt-2 text-sm text-slate-500">Todavía no cargaste métodos de pago propios.</p>
+    } @else {
+      <ul
+        class="mt-2 divide-y divide-slate-800/80 overflow-hidden rounded-xl border border-slate-800/80"
+      >
+        @for (method of active(); track method.id) {
+          <li class="flex items-start gap-2 px-4 py-2">
+            @if (editingId() === method.id) {
+              <form
+                [formGroup]="editForm"
+                (ngSubmit)="saveEdit(method)"
+                class="flex min-w-0 flex-1 flex-wrap items-start gap-2"
+              >
+                <div class="min-w-0 flex-1 basis-48">
+                  <label [for]="'edit-method-' + method.id" class="sr-only">
+                    Nombre del método de pago
+                  </label>
+                  <input
+                    [id]="'edit-method-' + method.id"
+                    type="text"
+                    autocomplete="off"
+                    formControlName="name"
+                    (keydown.escape)="cancelEdit()"
+                    [attr.aria-invalid]="formUtils.isValidField(editForm, 'name')"
+                    [class]="ui.field"
+                  />
+                  @if (formUtils.isValidField(editForm, 'name')) {
+                    <p role="alert" class="mt-1.5 text-xs font-medium text-red-400">
+                      {{ formUtils.getFieldError(editForm, 'name') }}
+                    </p>
+                  }
+                </div>
+                <button
+                  type="submit"
+                  [disabled]="editForm.invalid || editForm.pending || saving()"
+                  [class]="ui.primaryButton"
+                  class="disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Guardar
+                </button>
+                <button type="button" (click)="cancelEdit()" [class]="ui.outlineButton">
+                  Cancelar
+                </button>
+              </form>
+            } @else {
+              <span class="min-w-0 flex-1 truncate py-2.5 text-sm text-slate-100">
+                {{ method.name }}
+              </span>
+              <button
+                type="button"
+                (click)="startEdit(method)"
+                [disabled]="saving()"
+                [attr.aria-label]="'Editar ' + method.name"
+                [title]="'Editar ' + method.name"
+                [class]="iconButton"
+              >
+                <i class="fa-solid fa-pen text-sm" aria-hidden="true"></i>
+              </button>
+              <button
+                type="button"
+                (click)="remove(method)"
+                [disabled]="saving()"
+                [attr.aria-label]="'Eliminar ' + method.name"
+                [title]="'Eliminar ' + method.name"
+                [class]="dangerIconButton"
+              >
+                <i class="fa-regular fa-trash-can text-sm" aria-hidden="true"></i>
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    @if (archived().length > 0) {
+      <details class="mt-3">
+        <summary
+          class="cursor-pointer text-sm text-slate-400 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
+        >
+          Eliminados ({{ archived().length }})
+        </summary>
+        <ul
+          class="mt-2 divide-y divide-slate-800/80 overflow-hidden rounded-xl border border-slate-800/80"
+        >
+          @for (method of archived(); track method.id) {
+            <li class="flex items-center gap-2 px-4 py-2">
+              <span class="min-w-0 flex-1 truncate text-sm text-slate-500 line-through">
+                {{ method.name }}
+              </span>
+              <button
+                type="button"
+                (click)="restore(method)"
+                [disabled]="saving()"
+                [class]="ui.outlineButton"
+                class="px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Reactivar
+              </button>
+            </li>
+          }
+        </ul>
+      </details>
+    }
+  </section>
+} @else if (methods.isLoading()) {
+  <p role="status" class="mt-6 flex items-center gap-2 text-sm text-slate-400">
+    <i class="fa-solid fa-spinner fa-spin text-xs" aria-hidden="true"></i>
+    Cargando tus métodos de pago...
+  </p>
+} @else if (methods.error()) {
+  <div class="mt-6">
+    <error-state
+      title="No se pudieron cargar los métodos de pago"
+      [error]="methods.error()"
+      (retry)="methods.reload()"
+    />
+  </div>
+}

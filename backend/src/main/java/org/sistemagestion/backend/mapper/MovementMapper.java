@@ -45,6 +45,7 @@ public class MovementMapper {
             return builder
                     .type(MovementType.PAYMENT)
                     .paymentType(payment.getPaymentType())
+                    .customPaymentMethodName(payment.getCustomPaymentMethod() != null ? payment.getCustomPaymentMethod().getName() : null)
                     .build();
         }
 

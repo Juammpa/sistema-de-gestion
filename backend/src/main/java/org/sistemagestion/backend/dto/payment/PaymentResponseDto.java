@@ -26,6 +26,10 @@ public class PaymentResponseDto {
     private Long supplierId;
     private String supplierName;
 
+    // Solo en pagos CUSTOM: metodo de pago elegido
+    private Long customPaymentMethodId;
+    private String customPaymentMethodName;
+
     // Solo en rechazos de cheque: ID del cheque rechazado
     private Long rejectedPaymentId;
 

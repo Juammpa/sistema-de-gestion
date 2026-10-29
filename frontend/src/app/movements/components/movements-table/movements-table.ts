@@ -191,6 +191,23 @@ export class MovementsTable {
     if (this.purchaseDetail.error()) this.purchaseDetail.reload();
   }
 
+  // Al cerrar se limpia la selección: así, al volver a abrir el mismo registro, se pide de nuevo
+  // y no se muestran los datos de antes de editarlo
+  closeSaleDetail() {
+    this.showSaleDetail.set(false);
+    this.selectedSale.set(null);
+  }
+
+  closePaymentDetail() {
+    this.showPaymentDetail.set(false);
+    this.selectedPayment.set(null);
+  }
+
+  closePurchaseDetail() {
+    this.showPurchaseDetail.set(false);
+    this.selectedPurchase.set(null);
+  }
+
   // Solo pide el detalle completo (con cutMeatId) cuando hay una venta seleccionada
   saleDetail = rxResource({
     params: () => this.selectedSale()?.id ?? null,
@@ -214,21 +231,21 @@ export class MovementsTable {
 
   // Al guardar o eliminar desde el modal: cerrar, refrescar tabla, avisar al padre
   onSaleChanged() {
-    this.showSaleDetail.set(false);
+    this.closeSaleDetail();
     this.reload();
     this.movementChanged.emit();
   }
 
   // Al guardar o eliminar desde el modal: cerrar, refrescar tabla, avisar al padre
   onPurchaseChanged() {
-    this.showPurchaseDetail.set(false);
+    this.closePurchaseDetail();
     this.reload();
     this.movementChanged.emit();
   }
 
   // Al guardar o eliminar desde el modal: cerrar, refrescar tabla, avisar al padre
   onPaymentChanged() {
-    this.showPaymentDetail.set(false);
+    this.closePaymentDetail();
     this.reload();
     this.movementChanged.emit();
   }
