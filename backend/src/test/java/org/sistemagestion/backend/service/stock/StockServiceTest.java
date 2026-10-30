@@ -34,8 +34,10 @@ class StockServiceTest {
     @Mock private CutMeatRepository cutMeatRepository;
     @Mock private StockCutRepository stockCutRepository;
     @Mock private StockRepository stockRepository;
+    @Mock private StockPieceClosureRepository closureRepository;
 
     @Captor private ArgumentCaptor<List<StockCut>> rowsCaptor;
+    @Captor private ArgumentCaptor<StockPieceClosure> closureCaptor;
 
     @InjectMocks
     private StockService service;
@@ -540,6 +542,283 @@ class StockServiceTest {
 
             // Assert
             verify(pieceWeightRepository).deleteByPurchaseId(1L);
+        }
+    }
+
+    @Nested
+    @DisplayName("closePiece()")
+    class ClosePieceTests {
+
+        @Test
+        @DisplayName("Cierra la pieza cuando todos sus cortes estan vendidos")
+        void closePieceSavesTheClosureWhenAllCutsAreSold() {
+
+            // Arrange
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1))
+                    .thenReturn(List.of(soldUnit(purchase)));
+
+            // Act
+            service.closePiece(1L, 1);
+
+            // Assert
+            verify(closureRepository).save(closureCaptor.capture());
+            assertThat(closureCaptor.getValue().getPurchase()).isSameAs(purchase);
+            assertThat(closureCaptor.getValue().getPieceNumber()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("Rechaza cerrar una pieza que todavia tiene un corte sin vender")
+        void closePieceRejectsWhenACutIsUnsold() {
+
+            // Arrange: la pieza tiene un corte vendido y otro disponible
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(List.of(
+                    soldUnit(purchase),
+                    stockCut(101L, purchase, 1, cutMeat(2L, "Rueda", Specie.BOVINE, true), "15.00", null)));
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.closePiece(1L, 1))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("todos sus cortes ya fueron vendidos");
+
+            verify(closureRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Rechaza cerrar una pieza sin cortes")
+        void closePieceRejectsWhenThePieceHasNoCuts() {
+
+            // Arrange
+            givenBovinePurchaseWithCuts();
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.closePiece(1L, 1))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("todos sus cortes ya fueron vendidos");
+
+            verify(closureRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("No vuelve a guardar el cierre si la pieza ya estaba cerrada")
+        void closePieceDoesNothingWhenAlreadyClosed() {
+
+            // Arrange
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1))
+                    .thenReturn(List.of(soldUnit(purchase)));
+            when(closureRepository.existsByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(true);
+
+            // Act
+            service.closePiece(1L, 1);
+
+            // Assert
+            verify(closureRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Rechaza una pieza que no existe en la compra")
+        void closePieceRejectsAPieceThatDoesNotExist() {
+
+            // Arrange: la compra tiene 2 piezas
+            givenBovinePurchaseWithCuts();
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.closePiece(1L, 3))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("la pieza 3 no existe");
+
+            verifyNoInteractions(stockCutRepository, closureRepository);
+        }
+
+        @Test
+        @DisplayName("Falla si la compra no existe")
+        void closePieceFailsWhenThePurchaseDoesNotExist() {
+
+            // Arrange
+            when(purchaseRepository.findById(9L)).thenReturn(Optional.empty());
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.closePiece(9L, 1))
+                    .isInstanceOf(ResourceNotFoundException.class);
+
+            verifyNoInteractions(closureRepository);
+        }
+    }
+
+    @Nested
+    @DisplayName("reopenPiece()")
+    class ReopenPieceTests {
+
+        @Test
+        @DisplayName("Borra el cierre de la pieza")
+        void reopenPieceDeletesTheClosure() {
+
+            // Arrange
+            givenBovinePurchaseWithCuts();
+
+            // Act
+            service.reopenPiece(1L, 1);
+
+            // Assert
+            verify(closureRepository).deleteByPurchaseIdAndPieceNumber(1L, 1);
+        }
+
+        @Test
+        @DisplayName("Rechaza una pieza que no existe en la compra")
+        void reopenPieceRejectsAPieceThatDoesNotExist() {
+
+            // Arrange
+            givenBovinePurchaseWithCuts();
+
+            // Act + Assert
+            assertThatThrownBy(() -> service.reopenPiece(1L, 3))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("la pieza 3 no existe");
+
+            verifyNoInteractions(closureRepository);
+        }
+    }
+
+    @Nested
+    @DisplayName("updatePieceCuts() con la pieza cerrada")
+    class UpdateClosedPieceCutsTests {
+
+        @Test
+        @DisplayName("Rechaza cambiar los cortes de una pieza cerrada")
+        void updatePieceCutsRejectsAClosedPiece() {
+
+            // Arrange: la pieza tiene un unico corte, vendido, y esta cerrada
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1))
+                    .thenReturn(List.of(soldUnit(purchase)));
+            when(closureRepository.existsByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(true);
+
+            // Act + Assert: intenta agregar un corte nuevo (entraria en el peso: hay merma)
+            assertThatThrownBy(() -> service.updatePieceCuts(1L, 1,
+                    List.of(existingCut(100L, 1L, "30.00"), cut(1L, "10.00"))))
+                    .isInstanceOf(BusinessRuleException.class)
+                    .hasMessageContaining("cerrada como vendida");
+
+            verifyNothingWasWritten();
+            verify(closureRepository, never()).deleteByPurchaseIdAndPieceNumber(any(), any());
+        }
+
+        @Test
+        @DisplayName("Si el cierre quedo viejo (un corte volvio a estar disponible), lo borra y permite editar")
+        void updatePieceCutsDropsAStaleClosure() {
+
+            // Arrange: hay un cierre guardado, pero el corte ya no esta vendido
+            Purchase purchase = givenBovinePurchaseWithCuts();
+            CutMeat asado = cutMeat(1L, "Asado", Specie.BOVINE, true);
+            when(stockCutRepository.findByPurchaseIdAndPieceNumber(1L, 1))
+                    .thenReturn(List.of(stockCut(100L, purchase, 1, asado, "30.00", null)));
+            when(closureRepository.existsByPurchaseIdAndPieceNumber(1L, 1)).thenReturn(true);
+            when(cutMeatRepository.findAllById(List.of(1L))).thenReturn(List.of(asado));
+
+            // Act
+            service.updatePieceCuts(1L, 1, List.of(existingCut(100L, 1L, "30.00")));
+
+            // Assert
+            verify(closureRepository).deleteByPurchaseIdAndPieceNumber(1L, 1);
+            verify(stockCutRepository).saveAll(anyList());
+        }
+    }
+
+    @Nested
+    @DisplayName("getStock() con cierres de pieza")
+    class GetStockClosuresTests {
+
+        private final LocalDate day = LocalDate.of(2026, 10, 30);
+        private final Purchase purchase = Purchase.builder().id(1L).build();
+
+        // Una compra de una sola pieza de 100 kg, con los cortes indicados
+        private void givenOnePiece(StockCut... cuts) {
+            when(stockRepository.findPurchases(day, day)).thenReturn(List.of(new StockPurchaseDto(
+                    1L, day, 10L, "Media Cerdo", Specie.PORCINE, 1, new BigDecimal("100.00"), 5L, "La Estancia")));
+
+            if (cuts.length > 0) {
+                when(stockCutRepository.findByPurchaseIdIn(List.of(1L))).thenReturn(List.of(cuts));
+            }
+        }
+
+        private void givenPieceIsClosed() {
+            when(closureRepository.findByPurchaseIdIn(List.of(1L))).thenReturn(List.of(
+                    StockPieceClosure.builder().purchase(purchase).pieceNumber(1).build()));
+        }
+
+        // 90 kg vendidos de una pieza de 100: los 10 restantes son merma
+        private StockCut soldCut() {
+            return stockCut(100L, purchase, 1, cutMeat(1L, "Media Cerdo", Specie.PORCINE, true),
+                    "90.00", Sale.builder().id(50L).build());
+        }
+
+        private StockCut unsoldCut() {
+            return stockCut(101L, purchase, 1, cutMeat(1L, "Media Cerdo", Specie.PORCINE, true),
+                    "10.00", null);
+        }
+
+        @Test
+        @DisplayName("Una pieza cerrada con todos sus cortes vendidos figura como vendida, aunque haya merma")
+        void getStockMarksAClosedPieceAsSoldOut() {
+
+            // Arrange
+            givenOnePiece(soldCut());
+            givenPieceIsClosed();
+
+            // Act
+            StockItemDto item = service.getStock(day, day).items().get(0);
+
+            // Assert
+            assertThat(item.soldOut()).isTrue();
+            assertThat(item.canClose()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Una pieza abierta con todos sus cortes vendidos se puede cerrar")
+        void getStockOffersToCloseAFullySoldPiece() {
+
+            // Arrange
+            givenOnePiece(soldCut());
+
+            // Act
+            StockItemDto item = service.getStock(day, day).items().get(0);
+
+            // Assert
+            assertThat(item.soldOut()).isFalse();
+            assertThat(item.canClose()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Un cierre viejo no cuenta si volvio a haber un corte sin vender")
+        void getStockIgnoresAStaleClosure() {
+
+            // Arrange
+            givenOnePiece(soldCut(), unsoldCut());
+            givenPieceIsClosed();
+
+            // Act
+            StockItemDto item = service.getStock(day, day).items().get(0);
+
+            // Assert
+            assertThat(item.soldOut()).isFalse();
+            assertThat(item.canClose()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Una pieza sin cortes no figura como vendida ni se puede cerrar")
+        void getStockDoesNotCloseAPieceWithoutCuts() {
+
+            // Arrange
+            givenOnePiece();
+
+            // Act
+            StockItemDto item = service.getStock(day, day).items().get(0);
+
+            // Assert
+            assertThat(item.soldOut()).isFalse();
+            assertThat(item.canClose()).isFalse();
         }
     }
 

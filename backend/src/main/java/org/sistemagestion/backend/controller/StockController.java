@@ -48,4 +48,18 @@ public class StockController {
 
         return ResponseEntity.ok(stockService.getAvailableCuts());
     }
+
+    @PutMapping("/purchase/{purchaseId}/pieces/{pieceNumber}/close")
+    public ResponseEntity<Void> closePiece(@PathVariable Long purchaseId, @PathVariable int pieceNumber) {
+
+        stockService.closePiece(purchaseId, pieceNumber);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/purchase/{purchaseId}/pieces/{pieceNumber}/close")
+    public ResponseEntity<Void> reopenPiece(@PathVariable Long purchaseId, @PathVariable int pieceNumber) {
+
+        stockService.reopenPiece(purchaseId, pieceNumber);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -21,4 +21,10 @@ public interface IStockService {
 
     // Unidades de corte sin vender (de la mas antigua a la mas nueva), para armar una venta
     List<AvailableCutDto> getAvailableCuts();
+
+    // Cierra la pieza como vendida (lo que no se corto queda como merma) --> Todos sus cortes tienen que estar vendidos
+    void closePiece(Long purchaseId, int pieceNumber);
+
+    // Reabre una pieza cerrada para poder tocar sus cortes de nuevo
+    void reopenPiece(Long purchaseId, int pieceNumber);
 }

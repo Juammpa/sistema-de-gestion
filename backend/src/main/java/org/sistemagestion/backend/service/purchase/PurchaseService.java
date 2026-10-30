@@ -30,6 +30,7 @@ public class PurchaseService implements IPurchaseService {
     private final CurrentAccountRepository currentAccountRepository;
     private final SupplierRepository supplierRepository;
     private final StockCutRepository stockCutRepository;
+    private final StockPieceClosureRepository stockPieceClosureRepository;
     private final BalanceRecalculationService balanceRecalculationService;
     private final AccountGuard accountGuard;
     private final PurchaseMapper mapper;
@@ -95,6 +96,7 @@ public class PurchaseService implements IPurchaseService {
 
         if (distributionChanged) {
             pieceWeightRepository.deleteByPurchaseId(id);
+            stockPieceClosureRepository.deleteByPurchaseId(id);
         }
 
         Purchase purchaseSaved = purchaseRepository.saveAndFlush(purchase);
@@ -121,6 +123,7 @@ public class PurchaseService implements IPurchaseService {
         // Actualizamos el balance de la cuenta
         CurrentAccount currentAccount = purchase.getCurrentAccount();
         pieceWeightRepository.deleteByPurchaseId(id);
+        stockPieceClosureRepository.deleteByPurchaseId(id);
         purchaseRepository.delete(purchase);
         purchaseRepository.flush();
 

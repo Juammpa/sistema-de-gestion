@@ -127,6 +127,22 @@ export default class StockPage {
     this.stockResource.reload();
   }
 
+  // Cierra la pieza como vendida (lo que no se corto queda como merma)
+  protected closePiece(item: StockItem) {
+    this.stockService.closePiece(item.purchaseId, item.unitNumber).subscribe({
+      next: () => this.stockResource.reload(),
+      error: () => {}, // El aviso lo muestra el interceptor
+    });
+  }
+
+  // Reabre una pieza cerrada para poder tocar sus cortes de nuevo
+  protected reopenPiece(item: StockItem) {
+    this.stockService.reopenPiece(item.purchaseId, item.unitNumber).subscribe({
+      next: () => this.stockResource.reload(),
+      error: () => {}, // El aviso lo muestra el interceptor
+    });
+  }
+
   // Color de las insignas segun la especie elegida (el acento de la app si son todas)
   protected countBadge = computed(() => {
     const specie = this.specie();

@@ -15,6 +15,8 @@ export interface StockItem {
   editable: boolean; // la compra tiene mas de una unidad: se puede repartir el peso
   adjusted: boolean; // el peso fue ajustado a mano
   cuts: StockCut[]; // cortes sacados de esta pieza (vacio si no tiene)
+  soldOut: boolean; // cerrada a mano como vendida (lo que no se cortó es merma)
+  canClose: boolean; // ttodos sus cortes estan vendidos y todavia no se cerro
 }
 
 export interface SpecieTotals {
