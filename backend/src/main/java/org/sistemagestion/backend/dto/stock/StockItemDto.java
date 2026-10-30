@@ -21,7 +21,9 @@ public record StockItemDto(
         String supplierName,
         boolean editable,   // la compra tiene mas de una unidad, se puede repartir el peso
         boolean adjusted,    // el peso fue ajustado a mano
-        List<Cut> cuts      // cortes sacadose de esta pieza (vacio si no tiene)
+        List<Cut> cuts,      // cortes sacadose de esta pieza (vacio si no tiene)
+        boolean soldOut,      // cerrada a mano como vendida
+        boolean canClose      // todos sus cortes estan vendidos y todavia no se cerro
 ) {
 
     // Una unidad de corte de la pieza (vendidad = ya pertenece a una venta y no se puede tocar)

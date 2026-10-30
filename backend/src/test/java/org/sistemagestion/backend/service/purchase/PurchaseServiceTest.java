@@ -37,6 +37,7 @@ class PurchaseServiceTest {
     @Mock private SupplierRepository supplierRepository;
     @Mock private PurchaseTypeRepository purchaseTypeRepository;
     @Mock private StockCutRepository stockCutRepository;
+    @Mock private StockPieceClosureRepository stockPieceClosureRepository;
     @Mock private BalanceRecalculationService balanceRecalculationService;
     @Mock private AccountGuard accountGuard;
     @Mock private PurchaseMapper purchaseMapper;
@@ -175,6 +176,7 @@ class PurchaseServiceTest {
 
             verify(purchaseRepository, never()).saveAndFlush(any());
             verifyNoInteractions(pieceWeightRepository);
+            verifyNoInteractions(stockPieceClosureRepository);
         }
 
         @Test
@@ -220,6 +222,44 @@ class PurchaseServiceTest {
             verify(purchaseRepository).saveAndFlush(purchase);
         }
 
+        @Test
+        @DisplayName("Debe borrar los pesos ajustados y los cierres cuando cambia el reparto de la compra")
+        void updatePurchaseShouldDropClosuresWhenTheDistributionChanges() {
+
+            // Arrange: la compra no tiene cortes y cambian sus kilos
+            PurchaseType bovine = type(5L, true);
+            Purchase purchase = existingPurchase(bovine);
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+            when(purchaseTypeRepository.findById(5L)).thenReturn(Optional.of(bovine));
+            when(purchaseRepository.saveAndFlush(purchase)).thenReturn(purchase);
+
+            // Act
+            service.updatePurchase(1L, updateRequest(5L, "120.00", "10.00"));
+
+            // Assert
+            verify(pieceWeightRepository).deleteByPurchaseId(1L);
+            verify(stockPieceClosureRepository).deleteByPurchaseId(1L);
+        }
+
+        @Test
+        @DisplayName("Debe conservar los cierres cuando solo cambia el precio")
+        void updatePurchaseShouldKeepClosuresWhenOnlyThePriceChanges() {
+
+            // Arrange: mismos kilos, unidades y especie
+            PurchaseType bovine = type(5L, true);
+            Purchase purchase = existingPurchase(bovine);
+
+            when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+            when(purchaseTypeRepository.findById(5L)).thenReturn(Optional.of(bovine));
+            when(purchaseRepository.saveAndFlush(purchase)).thenReturn(purchase);
+
+            // Act
+            service.updatePurchase(1L, updateRequest(5L, "100.00", "25.00"));
+
+            // Assert
+            verifyNoInteractions(stockPieceClosureRepository);
+        }
 
     }
 
@@ -244,6 +284,7 @@ class PurchaseServiceTest {
 
             verify(purchaseRepository, never()).delete(any());
             verifyNoInteractions(pieceWeightRepository);
+            verifyNoInteractions(stockPieceClosureRepository);
         }
 
         @Test
@@ -262,6 +303,7 @@ class PurchaseServiceTest {
             verify(pieceWeightRepository).deleteByPurchaseId(1L);
             verify(purchaseRepository).delete(purchase);
             verify(balanceRecalculationService).recalculate(purchase.getCurrentAccount());
+            verify(stockPieceClosureRepository).deleteByPurchaseId(1L);
         }
     }
 

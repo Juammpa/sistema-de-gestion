@@ -5,10 +5,7 @@ import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.dto.stock.*;
 import org.sistemagestion.backend.exception.BusinessRuleException;
 import org.sistemagestion.backend.exception.ResourceNotFoundException;
-import org.sistemagestion.backend.model.CutMeat;
-import org.sistemagestion.backend.model.Purchase;
-import org.sistemagestion.backend.model.PurchasePieceWeight;
-import org.sistemagestion.backend.model.StockCut;
+import org.sistemagestion.backend.model.*;
 import org.sistemagestion.backend.model.enums.Specie;
 import org.sistemagestion.backend.repository.*;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,7 @@ public class StockService implements IStockService {
     private final PurchaseRepository purchaseRepository;
     private final CutMeatRepository cutMeatRepository;
     private final StockCutRepository stockCutRepository;
+    private final StockPieceClosureRepository closureRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -119,15 +117,20 @@ public class StockService implements IStockService {
                ? purchase.getUnit()
                : 1;
 
-       if (pieceNumber < 1 || pieceNumber > units) {
-           throw new BusinessRuleException(String.format(
-                   "La compra tiene %d unidades: la pieza %d no existe.",
-                   units, pieceNumber
-           ));
-       }
+       assertPieceExists(purchase, pieceNumber);
 
        Map<Long, StockCut> existing = stockCutRepository.findByPurchaseIdAndPieceNumber(purchaseId, pieceNumber).stream()
                .collect(Collectors.toMap(StockCut::getId, Function.identity()));
+
+       // Una pieza cerrada no se modifica: hay que reabrirla primero.
+       // Si el cierre quedo viejo (se libero un corte al editar una venta), la pieza ya esta abierta
+        if (closureRepository.existsByPurchaseIdAndPieceNumber(purchaseId, pieceNumber)) {
+            if (!existing.isEmpty() && existing.values().stream().allMatch(StockCut::isSold)) {
+                throw new BusinessRuleException("La pieza está cerrada como vendida: reabrila para cambiar sus cortes.");
+            }
+
+            closureRepository.deleteByPurchaseIdAndPieceNumber(purchaseId, pieceNumber);
+        }
 
        Set<Long> keptIds = assertRequestIdsBelongToPiece(existing, cuts);
        assertSoldCutsUntouched(existing.values(), cuts);
@@ -163,6 +166,44 @@ public class StockService implements IStockService {
     @Transactional(readOnly = true)
     public List<AvailableCutDto> getAvailableCuts() {
         return stockCutRepository.findAvailable();
+    }
+
+    @Override
+    @Transactional
+    public void closePiece(Long purchaseId, int pieceNumber) {
+
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase","id", purchaseId));
+
+        assertPieceExists(purchase, pieceNumber);
+
+        List<StockCut> cuts = stockCutRepository.findByPurchaseIdAndPieceNumber(purchaseId, pieceNumber);
+
+        if (cuts.isEmpty() || cuts.stream().anyMatch(cut -> !cut.isSold())) {
+            throw new BusinessRuleException("Solo se puede cerrar una pieza cuando todos sus cortes ya fueron vendidos.");
+        }
+
+        // Si ya estaba cerrada, no hay nada que hacer
+        if (!closureRepository.existsByPurchaseIdAndPieceNumber(purchaseId, pieceNumber)) {
+            closureRepository.save(StockPieceClosure.builder()
+                    .purchase(purchase)
+                    .pieceNumber(pieceNumber)
+                    .build()
+            );
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void reopenPiece(Long purchaseId, int pieceNumber) {
+
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase","id",purchaseId));
+
+        assertPieceExists(purchase, pieceNumber);
+
+        closureRepository.deleteByPurchaseIdAndPieceNumber(purchaseId, pieceNumber);
     }
 
 
@@ -290,6 +331,7 @@ public class StockService implements IStockService {
 
         Map<Long, List<PurchasePieceWeight>> savedByPurchase = loadSavedWeights(purchases);
         Map<Long, Map<Integer, List<StockItemDto.Cut>>> cutsByPurchase = loadCuts(purchases);
+        Map<Long, Set<Integer>> closedByPurchase = loadClosures(purchases);
         List<StockItemDto> items = new ArrayList<>();
 
         for (StockPurchaseDto purchase: purchases) {
@@ -299,6 +341,15 @@ public class StockService implements IStockService {
             );
 
             for (int number = 1; number <= units; number++) {
+                BigDecimal pieceKilograms = distribution.kilograms().get(number - 1);
+                List<StockItemDto.Cut> cuts = cutsByPurchase
+                        .getOrDefault(purchase.id(), Map.of())
+                        .getOrDefault(number, List.of());
+
+                // Solo cuenta como cerrada si todos sus cortes siguen vendidos
+                boolean allSold = !cuts.isEmpty() && cuts.stream().allMatch(StockItemDto.Cut::sold);
+                boolean closed = closedByPurchase.getOrDefault(purchase.id(), Set.of()).contains(number);
+
                 items.add(new StockItemDto(
                         purchase.id(),
                         number,
@@ -306,14 +357,16 @@ public class StockService implements IStockService {
                         purchase.purchaseTypeId(),
                         purchase.purchaseTypeName(),
                         purchase.specie(),
-                        distribution.kilograms().get(number - 1),
+                        pieceKilograms,
                         purchase.date(),
                         purchase.supplierId(),
                         purchase.supplierName(),
                         units > 1,
                         distribution.adjusted(),
-                        cutsByPurchase.getOrDefault(purchase.id(), Map.of()).getOrDefault(number, List.of())
-                        ));
+                        cuts,
+                        allSold && closed,
+                        allSold && !closed
+                ));
             }
         }
 
@@ -350,6 +403,37 @@ public class StockService implements IStockService {
                                 Collectors.mapping(this::toCutDto, Collectors.toList()))
                 ));
 
+    }
+
+    // Piezas cerradas de todas las compras del rango, agrupadas por compra, con una sola consulta
+    private Map<Long, Set<Integer>> loadClosures(List<StockPurchaseDto> purchases) {
+
+        if(purchases.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> purchaseIds = purchases.stream().map(StockPurchaseDto::id).toList();
+
+        return closureRepository.findByPurchaseIdIn(purchaseIds).stream()
+                .collect(Collectors.groupingBy(
+                        closure -> closure.getPurchase().getId(),
+                        Collectors.mapping(StockPieceClosure::getPieceNumber, Collectors.toSet())
+                ));
+    }
+
+    // El numero de pieza tiene que existir en la compra
+    private void assertPieceExists(Purchase purchase, int pieceNumber) {
+
+        int units = purchase.getUnit() != null && purchase.getUnit() > 0
+                ? purchase.getUnit()
+                : 1;
+
+        if (pieceNumber < 1 || pieceNumber > units) {
+            throw new BusinessRuleException(String.format(
+                    "La compra tiene %d unidades: la pieza %d no existe.",
+                    units, pieceNumber
+            ));
+        }
     }
 
     private StockItemDto.Cut toCutDto(StockCut cut) {
