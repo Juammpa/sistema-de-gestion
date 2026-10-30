@@ -98,6 +98,8 @@
                 [item]="item"
                 (edit)="editingPurchaseId.set($event.purchaseId)"
                 (editCuts)="openCuts($event)"
+                (closePiece)="closePiece($event)"
+                (reopenPiece)="reopenPiece($event)"
               />
             </li>
           } @empty {

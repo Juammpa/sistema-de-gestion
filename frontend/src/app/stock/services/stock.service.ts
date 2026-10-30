@@ -33,4 +33,19 @@ export class StockService {
   getAvailableCuts() {
     return this.http.get<AvailableCut[]>(`${environment.apiUrl}/stock/cuts/available`);
   }
+
+  // Cierra la pieza como vendida (lo que no se corto queda como merma)
+  closePiece(purchaseId: number, pieceNumber: number) {
+    return this.http.put<void>(
+      `${environment.apiUrl}/stock/purchase/${purchaseId}/pieces/${pieceNumber}/close`,
+      {},
+    );
+  }
+
+  // Reabre una pieza cerrada
+  reopenPiece(purchaseId: number, pieceNumber: number) {
+    return this.http.delete<void>(
+      `${environment.apiUrl}/stock/purchase/${purchaseId}/pieces/${pieceNumber}/close`,
+    );
+  }
 }
