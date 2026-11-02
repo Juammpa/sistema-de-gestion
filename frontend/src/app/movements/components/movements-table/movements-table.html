@@ -74,7 +74,7 @@
     } @else if (movements().length === 0) {
       <tr class="max-md:block">
         <td colspan="9" class="max-md:block py-10 text-center text-sm text-slate-400">
-          @if (movementType() || dateRange().from || dateRange().to) {
+          @if (movementType() || dateRange().from || dateRange().to || search()) {
             No hay movimientos con los filtros elegidos
           } @else {
             Todavía no hay movimientos registrados

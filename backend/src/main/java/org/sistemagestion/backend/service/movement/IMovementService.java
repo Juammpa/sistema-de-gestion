@@ -10,5 +10,5 @@ public interface IMovementService {
 
     // type: null = todos los tipos de movimientos.
     // from / to: null = sin limite de ese lado.
-    SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, MovementType type , LocalDate from,LocalDate to, int page, int size);
+    SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, MovementType type , LocalDate from,LocalDate to, String search,int page, int size);
 }

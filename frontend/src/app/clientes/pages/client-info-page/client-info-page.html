@@ -18,6 +18,7 @@
       [options]="movementFilters"
       [(selectedType)]="movementType"
       [(dateRange)]="dateRange"
+      [(search)]="search"
     />
 
     <!-- Tabla Movimientos -->
@@ -30,6 +31,7 @@
           [movementType]="movementType()"
           [dateRange]="dateRange()"
           (movementChanged)="clientResource.reload()"
+          [search]="search()"
         />
       </div>
     </div>

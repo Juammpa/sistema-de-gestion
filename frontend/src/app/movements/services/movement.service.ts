@@ -17,6 +17,7 @@ export class MovementService {
     size: number,
     type: MovementType | null = null,
     range: DateRange = { from: null, to: null },
+    search = '',
   ) {
     return this.http.get<PageResponse<Movement>>(`${environment.apiUrl}/movements`, {
       params: {
@@ -26,6 +27,7 @@ export class MovementService {
         ...(type ? { type } : {}),
         ...(range.from ? { from: range.from } : {}),
         ...(range.to ? { to: range.to } : {}),
+        ...(search.trim() ? { q: search.trim() } : {}),
       },
     });
   }

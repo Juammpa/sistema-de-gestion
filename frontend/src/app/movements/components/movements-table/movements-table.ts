@@ -70,6 +70,9 @@ export class MovementsTable {
   // Tipo de proveedor (solo aplica en la ficha de un proveedor)
   supplierType = input<SupplierType>('BOTH');
 
+  // Texto de busqueda (vacio = sin filtro)
+  search = input<string>('');
+
   // Avisa al padre que un movimiento cambio (para refrescar el saldo)
   movementChanged = output();
 
@@ -92,6 +95,7 @@ export class MovementsTable {
       this.currentCurrentId();
       this.movementType();
       this.dateRange();
+      this.search();
       untracked(() => this.reload());
     });
 
@@ -144,6 +148,7 @@ export class MovementsTable {
         PAGE_SIZE,
         this.movementType(),
         this.dateRange(),
+        this.search(),
       )
       .subscribe({
         next: (page) => {
