@@ -10,6 +10,8 @@ import org.sistemagestion.backend.repository.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,8 @@ public class MovementService implements IMovementService{
     private static final LocalDate MIN_DATE = LocalDate.of(1900,1,1);
     private static final LocalDate MAX_DATE = LocalDate.of(9999,12,31);
 
+    private static final int MAX_SEARCH_LENGTH = 100;
+
     private final MovementRepository movementRepository;
     private final SaleRepository saleRepository;
     private final PurchaseRepository purchaseRepository;
@@ -33,13 +37,24 @@ public class MovementService implements IMovementService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, MovementType type, LocalDate from, LocalDate to, int page, int size) {
+    public SliceResponseDto<MovementResponseDto> getMovementsByCurrentAccount(Long currentAccountId, MovementType type, LocalDate from, LocalDate to, String search,int page, int size) {
 
         LocalDate start = from != null ? from : MIN_DATE;
         LocalDate end = to != null ? to : MAX_DATE;
+        String text = search != null && search.length() > MAX_SEARCH_LENGTH
+                ? search.substring(0, MAX_SEARCH_LENGTH)
+                : search;
 
-        Slice<? extends Movement> movements =
-                findMovements(currentAccountId, type, start, end, PageRequest.of(page, size));
+        Specification<Movement> spec = Specification.allOf(
+                MovementSpecifications.inAccount(currentAccountId),
+                MovementSpecifications.dateBetween(start, end),
+                MovementSpecifications.ofType(type),
+                MovementSpecifications.matching(text)
+        );
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("date"), Sort.Order.desc("id")));
+
+        Slice<Movement> movements = movementRepository.findBy(spec, query -> query.slice(pageable));
 
         return SliceResponseDto.from(movements, mapper::toDto);
     }

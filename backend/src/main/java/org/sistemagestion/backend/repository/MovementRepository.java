@@ -4,6 +4,7 @@ import org.sistemagestion.backend.model.Movement;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface MovementRepository extends JpaRepository<Movement, Long> {
+public interface MovementRepository extends JpaRepository<Movement, Long>, JpaSpecificationExecutor<Movement> {
 
     // Para listar (paginado, del mas reciente al mas antiguo, dentro de un rango de fechas)
     Slice<Movement> findByCurrentAccountIdAndDateBetweenOrderByDateDescIdDesc(Long currentAccountId, LocalDate from, LocalDate to, Pageable pageable);

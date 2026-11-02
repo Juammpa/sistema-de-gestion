@@ -26,13 +26,14 @@ public class MovementController {
             @RequestParam(required = false)MovementType type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
 
-        return ResponseEntity.ok(movementService.getMovementsByCurrentAccount(currentAccountId, type, from, to, safePage, safeSize));
+        return ResponseEntity.ok(movementService.getMovementsByCurrentAccount(currentAccountId, type, from, to, q,safePage, safeSize));
     }
 
 
