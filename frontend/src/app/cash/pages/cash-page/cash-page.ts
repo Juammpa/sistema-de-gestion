@@ -22,6 +22,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
     ErrorState,
   ],
   templateUrl: './cash-page.html',
+  host: { class: 'flex min-h-0 flex-1 flex-col' },
 })
 export default class CashPage {
   private cashService = inject(CashService);

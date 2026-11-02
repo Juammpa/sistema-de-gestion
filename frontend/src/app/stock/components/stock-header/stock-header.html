@@ -27,7 +27,7 @@
       class="w-full min-w-48 rounded-2xl border border-accent-500/25 bg-linear-to-br from-accent-500/15 to-accent-500/5 px-5 py-3.5 ring-1 ring-inset ring-accent-400/10 sm:ml-auto sm:w-auto"
     >
       <p
-        class="flex items-center justify-end gap-2 text-2xl font-bold tabular-nums tracking-tight text-accent-300 sm:text-3xl"
+        class="flex items-center justify-center gap-2 text-2xl font-bold tabular-nums tracking-tight text-accent-300 sm:text-3xl"
       >
         <i aria-hidden="true" class="fa-solid fa-weight-hanging text-base opacity-80"></i>
         @if (kilograms() != null) {
@@ -36,7 +36,7 @@
           <span class="text-slate-400" role="img" aria-label="Total no disponible">—</span>
         }
       </p>
-      <p class="mt-1 text-right text-xs font-medium text-slate-300">
+      <p class="mt-1 text-center text-xs font-medium text-slate-300">
         Cant. kilos
         @if (units() != null) {
           · {{ units() }} {{ units() === 1 ? 'pieza' : 'piezas' }}

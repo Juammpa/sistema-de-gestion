@@ -28,6 +28,7 @@ const SEARCH_DEBOUNCE_MS = 300;
     UserManageModal,
   ],
   templateUrl: './users-page.html',
+  host: { class: 'flex min-h-0 flex-1 flex-col' },
 })
 export default class UsersPage {
   private userService = inject(UserService);

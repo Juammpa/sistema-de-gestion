@@ -29,6 +29,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
     ErrorState,
   ],
   templateUrl: './client-info-page.html',
+  host: { class: 'min-h-0 flex-1 overflow-y-auto scrollbar-none' },
 })
 export default class ClientInfoPage implements OnDestroy {
   // Inyectamos el service

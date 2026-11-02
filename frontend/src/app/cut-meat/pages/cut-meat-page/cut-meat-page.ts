@@ -30,6 +30,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
     ErrorState,
   ],
   templateUrl: './cut-meat-page.html',
+  host: { class: 'flex min-h-0 flex-1 flex-col' },
 })
 export default class CutMeatPage {
   private cutMeatService = inject(CutMeatService);

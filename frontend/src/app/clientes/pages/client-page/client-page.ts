@@ -28,6 +28,7 @@ const totalDebt = (client: Client) =>
   selector: 'app-client-page',
   imports: [ListSkeleton, SearchInput, EmptyState, SearchList, ClientFormModal, ErrorState],
   templateUrl: './client-page.html',
+  host: { class: 'flex min-h-0 flex-1 flex-col' },
 })
 export default class ClientPage {
   // Inyectamos el service
