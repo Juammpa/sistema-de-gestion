@@ -69,6 +69,7 @@ export default class ClientInfoPage implements OnDestroy {
   selectedButcherShopId = signal<number | null>(null);
   movementType = signal<MovementType | null>(null); // Tipo de movimiento elegido (null = todos)
   dateRange = signal<DateRange>({ from: null, to: null }); // Rango de fechas elegido
+  search = signal<string>('');
 
   selectedCurrentAccountId = computed(() => {
     const shopId = this.selectedButcherShopId();

@@ -1,4 +1,13 @@
-import { Component, computed, ElementRef, inject, input, model, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  model,
+  signal,
+} from '@angular/core';
 import { MovementFilterOption, MovementType } from '../../interfaces/movement.interface';
 import { DateRange } from '../../../shared/interfaces/date-range.interface';
 import { DateField } from '../../../shared/components/date-field/date-field';
@@ -16,6 +25,21 @@ import { formatIsoDate, toIsoDate } from '../../../shared/utils/date.utils';
 })
 export class MovementsFilters {
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  // Texto de busqueda aplicado (se usa con [(search)])
+  search = model<string>('');
+
+  private searchTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.searchTimer));
+  }
+
+  // Espera a que termine de escribir antes de aplicar la busqueda
+  onSearchInput(value: string) {
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.search.set(value.trim()), 300);
+  }
 
   // Botones de tipo de movimiento (los define cada pagina)
   options = input.required<MovementFilterOption[]>();

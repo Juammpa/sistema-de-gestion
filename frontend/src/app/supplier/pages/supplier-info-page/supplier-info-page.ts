@@ -66,6 +66,7 @@ export default class SupplierInfoPage implements OnDestroy {
   deleting = signal<boolean>(false); // Estado de la request de borrado
   movementType = signal<MovementType | null>(null); // Tipo de movimiento elegido (null = todos)
   dateRange = signal<DateRange>({ from: null, to: null }); // Rango de fechas elegido
+  search = signal<string>('');
 
   // Aviso del modal de eliminar: un saldo pendiente sigue contando en "Por pagar"
   deleteWarning = computed(() => {
