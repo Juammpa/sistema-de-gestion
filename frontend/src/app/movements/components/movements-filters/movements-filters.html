@@ -3,8 +3,8 @@
 >
   <!-- Grupo Izquierdo: Buscador y Pestañas de Tipo de Movimiento -->
   <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-    <!-- Input de Búsqueda -->
-    <div class="relative w-full max-w-md flex-1 sm:min-w-65">
+    <!-- Input de Búsqueda  (solo desde sm: en movil no se muestra)-->
+    <div class="relative hidden w-full max-w-md flex-1 sm:block sm:min-w-65">
       <div
         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"
       >
@@ -135,10 +135,7 @@
 
           @if (invalidRange()) {
             <p role="alert" class="flex items-center gap-1.5 text-xs font-medium text-red-400">
-              <i
-                aria-hidden="true"
-                class="fa-solid fa-triangle-exclamation shrink-0 text-xs"
-              ></i>
+              <i aria-hidden="true" class="fa-solid fa-triangle-exclamation shrink-0 text-xs"></i>
               «Desde» no puede ser posterior a «Hasta»
             </p>
           }
