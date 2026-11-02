@@ -20,6 +20,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
   selector: 'app-supplier-page',
   imports: [SearchInput, SearchList, EmptyState, ListSkeleton, SupplierFormModal, ErrorState],
   templateUrl: './supplier-page.html',
+  host: { class: 'flex min-h-0 flex-1 flex-col' },
 })
 export default class SupplierPage {
   // Inyectamos el service
