@@ -1,6 +1,10 @@
 import { Component, computed, input, output } from '@angular/core';
 import { CashDay } from '../../interfaces/cash.interface';
-import { formatCashDayTitle, paymentMethodLabel } from '../../utils/cash-utils';
+import {
+  formatCashDayTitle,
+  paymentMethodBadgeClass,
+  paymentMethodLabel,
+} from '../../utils/cash-utils';
 import { CurrencyPipe } from '@angular/common';
 
 @Component({
@@ -17,6 +21,7 @@ export class CashDayModal {
 
   title = computed(() => formatCashDayTitle(this.day().date));
   methodLabel = paymentMethodLabel;
+  methodBadgeClass = paymentMethodBadgeClass;
 
   // Cierra el modal
   close() {

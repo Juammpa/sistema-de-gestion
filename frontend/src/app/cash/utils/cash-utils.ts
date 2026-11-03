@@ -14,10 +14,25 @@ export function formatCashDayTitle(date: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1).replace(',', '');
 }
 
-// Etiqueta en rojo como en la plantilla (el efectivo no lleva etiqueta)
-export function paymentMethodLabel(payment: CashPayment): string | null {
-  if (payment.paymentType === 'CASH') return null;
+// Etiqueta del metodo de pago de cada cobro
+export function paymentMethodLabel(payment: CashPayment): string {
   if (payment.paymentType === 'SUPPLIER_TRANSFER') return `Trans. ${payment.supplierName}`;
 
   return translatePaymentType(payment.paymentType, payment.customPaymentMethodName);
+}
+
+// Color de la tarjeta segun el metodo
+export function paymentMethodBadgeClass(payment: CashPayment): string {
+  switch (payment.paymentType) {
+    case 'CASH':
+      return 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300';
+    case 'SUPPLIER_TRANSFER':
+      return 'border-violet-500/25 bg-violet-500/10 text-violet-300';
+    case 'TRANSFER':
+      return 'border-sky-500/25 bg-sky-500/10 text-sky-300';
+    case 'CHECK':
+      return 'border-amber-500/25 bg-amber-500/10 text-amber-300';
+    default:
+      return 'border-rose-500/25 bg-rose-500/10 text-rose-300';
+  }
 }

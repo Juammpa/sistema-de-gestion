@@ -67,11 +67,7 @@
                   @if (methodLabel(payment); as label) {
                     <span
                       class="shrink-0 rounded-md border px-1.5 py-0.5 text-xs font-semibold"
-                      [class]="
-                        payment.paymentType === 'SUPPLIER_TRANSFER'
-                          ? 'border-violet-500/25 bg-violet-500/10 text-violet-300'
-                          : 'border-rose-500/25 bg-rose-500/10 text-rose-300'
-                      "
+                      [class]="methodBadgeClass(payment)"
                     >
                       {{ label }}
                     </span>
