@@ -44,6 +44,22 @@
               </button>
             }
           </div>
+          <div
+            role="group"
+            aria-label="Estado"
+            class="inline-flex items-center gap-0.5 rounded-lg border border-slate-800 bg-surface/60 p-1"
+          >
+            @for (option of statusOptions; track option.value) {
+              <button
+                type="button"
+                [attr.aria-pressed]="status() === option.value"
+                (click)="status.set(option.value)"
+                class="min-h-9 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:bg-accent-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-accent-500"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
 
           <p class="flex items-center gap-2" aria-live="polite">
             <span
