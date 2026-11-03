@@ -16,6 +16,7 @@ import { StockItem } from '../../interfaces/stock.interface';
 import { StockCutsModal } from '../../components/stock-cuts-modal/stock-cuts-modal';
 
 type SpecieFilter = 'ALL' | SpecieValue;
+type StatusFilter = 'ALL' | 'AVAILABLE' | 'SOLD';
 
 @Component({
   selector: 'app-stock-page',
@@ -43,11 +44,18 @@ export default class StockPage {
   // Filtros de pantalla: se aplican sobre lo ya cargado, sin volver a pedir datos
   specie = signal<SpecieFilter>('ALL');
   selectedType = signal<number | null>(null);
+  status = signal<StatusFilter>('ALL');
 
   protected readonly specieOptions: { value: SpecieFilter; label: string }[] = [
     { value: 'ALL', label: 'Todos' },
     { value: 'BOVINE', label: 'Bovinos' },
     { value: 'PORCINE', label: 'Porcinos' },
+  ];
+
+  protected readonly statusOptions: { value: StatusFilter; label: string }[] = [
+    { value: 'ALL', label: 'Todas' },
+    { value: 'AVAILABLE', label: 'Disponibles' },
+    { value: 'SOLD', label: 'Vendidas' },
   ];
 
   stockResource = rxResource({
@@ -79,9 +87,12 @@ export default class StockPage {
 
     const specie = this.specie();
     const type = this.activeType();
+    const status = this.status();
     return stock.items.filter(
       (item) =>
-        (specie === 'ALL' || item.specie === specie) && (!type || item.purchaseTypeId === type),
+        (specie === 'ALL' || item.specie === specie) &&
+        (!type || item.purchaseTypeId === type) &&
+        (status === 'ALL' || item.soldOut === (status === 'SOLD')),
     );
   });
 
