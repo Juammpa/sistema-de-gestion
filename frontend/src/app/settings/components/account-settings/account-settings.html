@@ -44,10 +44,20 @@
         Esta acción es permanente. Se eliminarán tus clientes, proveedores y el historial completo
         de movimientos. No se puede deshacer.
       </p>
-      <button type="button" [class]="ui.dangerSolidButton">
+      <button type="button" (click)="showDeleteModal.set(true)" [class]="ui.dangerSolidButton">
         <i class="fa-regular fa-trash-can text-xs" aria-hidden="true"></i>
         Eliminar cuenta permanentemente
       </button>
     </div>
   </div>
 </div>
+
+@if (showDeleteModal()) {
+  <delete-account-modal
+    animate.leave="modal-host-leave"
+    [username]="auth.username"
+    [loading]="deleting()"
+    (cancel)="showDeleteModal.set(false)"
+    (confirm)="deleteAccount($event)"
+  />
+}

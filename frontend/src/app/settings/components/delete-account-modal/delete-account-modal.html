@@ -1,0 +1,93 @@
+<div
+  (click)="close()"
+  (document:keydown.escape)="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md modal-backdrop"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="delete-account-title"
+    aria-describedby="delete-account-description"
+    class="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border border-slate-800/90 bg-linear-to-b from-panel-from to-panel-to shadow-2xl shadow-black/90 ring-1 ring-white/10 sm:max-w-110"
+  >
+    <div class="px-6 pb-6 pt-8 sm:px-8">
+      <div class="text-center">
+        <span
+          aria-hidden="true"
+          class="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/30 bg-linear-to-br from-red-600/25 to-red-500/10 text-xl text-red-300 shadow-md shadow-red-500/10 ring-8 ring-red-500/5"
+        >
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </span>
+        <h2
+          id="delete-account-title"
+          class="mt-4 text-balance text-lg font-bold tracking-tight text-slate-50 sm:text-xl"
+        >
+          Eliminar cuenta permanentemente
+        </h2>
+        <p id="delete-account-description" class="mt-2 text-sm leading-relaxed text-slate-400">
+          Se eliminarán tus clientes, proveedores, cortes y todo el historial de movimientos. Tu
+          usuario dejará de existir. Esta acción no se puede deshacer.
+        </p>
+      </div>
+
+      <p
+        role="note"
+        class="mt-5 flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left text-sm leading-relaxed text-amber-200"
+      >
+        <i aria-hidden="true" class="fa-solid fa-circle-info mt-0.5 shrink-0 text-amber-300"></i>
+        Si querés conservar tus datos, cerrá esta ventana y usá «Solicitar exportación» antes de
+        continuar.
+      </p>
+
+      <div class="mt-5">
+        <label for="confirm-username" [class]="ui.label">
+          Para confirmar, escribí
+          <span class="font-mono font-semibold text-slate-100">{{ username() }}</span>
+        </label>
+        <input
+          #confirmInput
+          id="confirm-username"
+          type="text"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          [class]="ui.field"
+          [value]="typed()"
+          (input)="typed.set(confirmInput.value)"
+          (keydown.enter)="submit()"
+        />
+      </div>
+    </div>
+
+    <div
+      class="flex items-center gap-3 border-t border-slate-800/80 bg-slate-900/40 px-6 py-4 sm:px-8"
+    >
+      <button
+        type="button"
+        (click)="close()"
+        [disabled]="loading()"
+        class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-slate-700/70 bg-slate-800/50 px-4 py-3 text-sm font-semibold text-slate-300 transition-ui duration-150 hover:bg-slate-800 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:active:scale-[0.97]"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="submit()"
+        [disabled]="!canConfirm() || loading()"
+        [attr.aria-busy]="loading()"
+        class="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-600/25 transition-ui duration-150 enabled:hover:bg-red-500 motion-safe:enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-to disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+      >
+        <i
+          aria-hidden="true"
+          class="fa-regular text-xs"
+          [class.fa-trash-can]="!loading()"
+          [class.fa-hourglass-half]="loading()"
+          [class.animate-spin]="loading()"
+          [class.motion-reduce:animate-none]="loading()"
+        ></i>
+        <span>{{ loading() ? 'Eliminando...' : 'Eliminar cuenta' }}</span>
+      </button>
+    </div>
+  </div>
+</div>
