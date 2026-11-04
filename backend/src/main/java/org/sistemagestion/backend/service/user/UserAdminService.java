@@ -132,6 +132,25 @@ public class UserAdminService implements IUserAdminService {
         identityProvider.setEnabled(userId, true);
     }
 
+    // El candado cubre limpieza y borrado: asi dos admins no se eliminan a la vez y dejan al sistema sin admin
+    @Override
+    public void removeUser(String userId, Runnable cleanup) {
+
+        synchronized (adminChangeLock) {
+
+            List<IdentityUser> admins = identityProvider.findUsersByRole(UserRole.ADMIN);
+
+            if (isIn(admins, userId)) {
+                ensureAnotherEnabledAdmin(admins, userId,
+                        "No se puede eliminar la cuenta del último administrador habilitado.");
+            }
+
+            cleanup.run();
+            identityProvider.deleteUser(userId);
+        }
+
+    }
+
 
     // Despues del cambio tiene que quedar al menos otro admin habilitado
     private void ensureAnotherEnabledAdmin(List<IdentityUser> admins, String userId, String message) {
