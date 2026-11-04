@@ -16,4 +16,7 @@ public interface IUserAdminService {
     void disableUser(String userId, String actorId);
 
     void activateUser(String userId);
+
+    // Borra el usuario despues de ejecutar la limpieza de sus datos
+    void removeUser(String userId, Runnable cleanup);
 }
