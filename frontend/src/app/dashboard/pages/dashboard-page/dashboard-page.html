@@ -1,9 +1,7 @@
 <div class="mx-auto max-w-7xl space-y-4 px-3 py-6 sm:px-6">
   <header>
     <h1 class="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">Panel de Inicio</h1>
-    <p class="mt-1 text-sm text-accent-300">
-      Resumen financiero · Actualizado al {{ today }}
-    </p>
+    <p class="mt-1 text-sm text-accent-300">Resumen financiero · Actualizado al {{ today }}</p>
   </header>
 
   @if (dashboard.error()) {
@@ -14,9 +12,9 @@
       <kpi-card
         class="animate-rise sm:col-span-2 xl:col-span-1"
         [featured]="true"
-        label="Balance neto"
+        label="Posición de cuentas"
         tone="amber"
-        [subtitle]="v.net >= 0 ? 'Saldo a favor' : 'Saldo en contra'"
+        [subtitle]="v.net >= 0 ? 'Por cobrar - Por pagar' : 'Por cobrar - Por pagar · en contra'"
         [value]="v.net"
         [change]="v.netChange"
       />
