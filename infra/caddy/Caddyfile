@@ -1,0 +1,19 @@
+{
+	# Let's Encrypt avisa a este mail si un certificado esta por vencer
+	email {$ACME_EMAIL}
+}
+
+# La aplicacion: /api va al backend y todo lo demas al frontend
+{$APP_DOMAIN} {
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+	handle {
+		reverse_proxy frontend:80
+	}
+}
+
+# El login (Keycloak)
+{$AUTH_DOMAIN} {
+	reverse_proxy keycloak:8080
+}

@@ -1,4 +1,5 @@
 # Secretos y datos locales: nunca se versionan
 .env
+.env.prod
 backups/
 *.dump
