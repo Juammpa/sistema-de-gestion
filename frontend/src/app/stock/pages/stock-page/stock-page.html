@@ -27,7 +27,7 @@
     <!-- Filtros: quedan fijos -->
     <div class="shrink-0">
       <div class="mx-3 max-w-3xl space-y-3 pb-3 md:mx-auto">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
           <div
             role="group"
             aria-label="Especie"
@@ -38,12 +38,13 @@
                 type="button"
                 [attr.aria-pressed]="specie() === option.value"
                 (click)="specie.set(option.value)"
-                class="min-h-9 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:bg-accent-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-accent-500"
+                class="min-h-9 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-2 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:bg-accent-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-accent-500 sm:px-3"
               >
                 {{ option.label }}
               </button>
             }
           </div>
+
           <div
             role="group"
             aria-label="Estado"
@@ -53,18 +54,21 @@
               <button
                 type="button"
                 [attr.aria-pressed]="status() === option.value"
+                [attr.aria-label]="option.label"
                 (click)="status.set(option.value)"
-                class="min-h-9 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-3 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:bg-accent-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-accent-500"
+                class="min-h-9 cursor-pointer touch-manipulation whitespace-nowrap rounded-md px-2 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:bg-accent-600 aria-pressed:text-white aria-pressed:shadow-sm aria-pressed:hover:bg-accent-500 sm:px-3"
               >
-                {{ option.label }}
+                <span class="sm:hidden">{{ option.short }}</span>
+                <span class="hidden sm:inline">{{ option.label }}</span>
               </button>
             }
           </div>
 
-          <p class="flex items-center gap-2" aria-live="polite">
+          <!-- Mobile: fila propia debajo; sm+: a la derecha de los filtros -->
+          <p class="flex basis-full items-center gap-2 sm:ml-auto sm:basis-auto" aria-live="polite">
             <span
               [class]="
-                'inline-flex shrink-0 items-center gap-1.5 rounded-md border p-2 text-xs font-medium leading-none transition-colors duration-150 before:size-1.5 before:shrink-0 before:rounded-full before:bg-current motion-reduce:transition-none ' +
+                'inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs font-medium leading-none transition-colors duration-150 before:size-1.5 before:shrink-0 before:rounded-full before:bg-current motion-reduce:transition-none ' +
                 countBadge()
               "
             >
@@ -72,7 +76,7 @@
             </span>
             <span
               [class]="
-                'inline-flex shrink-0 items-center rounded-md border p-2 text-xs font-semibold leading-none tabular-nums transition-colors duration-150 motion-reduce:transition-none ' +
+                'inline-flex shrink-0 items-center rounded-md border px-2 py-1.5 text-xs font-semibold leading-none tabular-nums transition-colors duration-150 motion-reduce:transition-none ' +
                 countBadge()
               "
             >
@@ -83,13 +87,17 @@
 
         <!-- Tipos de compra (solo si hay más de uno para elegir) -->
         @if (availableTypes().length > 1) {
-          <div role="group" aria-label="Tipo de compra" class="flex flex-wrap gap-2">
+          <div
+            role="group"
+            aria-label="Tipo de compra"
+            class="-mx-3 flex gap-2 overflow-x-auto px-3 scrollbar-none md:mx-0 md:flex-wrap md:overflow-visible md:px-0"
+          >
             @for (totals of availableTypes(); track totals.purchaseTypeId) {
               <button
                 type="button"
                 [attr.aria-pressed]="activeType() === totals.purchaseTypeId"
                 (click)="selectType(totals.purchaseTypeId)"
-                class="inline-flex min-h-9 cursor-pointer touch-manipulation items-center gap-1.5 rounded-full border border-slate-700/70 bg-raised px-3 text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-accent-500/50 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:border-accent-500 aria-pressed:bg-accent-500/15 aria-pressed:text-accent-200"
+                class="inline-flex shrink-0 min-h-9 cursor-pointer touch-manipulation items-center gap-1.5 rounded-full border border-slate-700/70 bg-raised px-3 text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-accent-500/50 hover:text-accent-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 motion-reduce:transition-none aria-pressed:border-accent-500 aria-pressed:bg-accent-500/15 aria-pressed:text-accent-200"
               >
                 {{ totals.purchaseTypeName }}
                 <span
