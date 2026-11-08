@@ -52,10 +52,10 @@ export default class StockPage {
     { value: 'PORCINE', label: 'Porcinos' },
   ];
 
-  protected readonly statusOptions: { value: StatusFilter; label: string }[] = [
-    { value: 'ALL', label: 'Todas' },
-    { value: 'AVAILABLE', label: 'Disponibles' },
-    { value: 'SOLD', label: 'Vendidas' },
+  protected readonly statusOptions: { value: StatusFilter; label: string; short: string }[] = [
+    { value: 'ALL', label: 'Todas', short: 'Todas' },
+    { value: 'AVAILABLE', label: 'Disponibles', short: 'Disp.' },
+    { value: 'SOLD', label: 'Vendidas', short: 'Vend.' },
   ];
 
   stockResource = rxResource({
