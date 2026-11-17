@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/* ======Sistema de Gestión · tema de acceso de Keycloak 26.8 (PatternFly v5) Se carga DESPUÉS del CSS de keycloak.v2 (theme.properties: styles=css/styles.css css/sistema-gestion.css). Cubre: inicio de sesión, cambio de contraseña y actualización obligatoria de contraseña. ========================================================================== */ /* ===== Tipografía: Inter si está instalada; si no, la fuente del sistema (sans-serif) */
+/* ======CarniFlow · tema de acceso de Keycloak 26.8 (PatternFly v5) Se carga DESPUÉS del CSS de keycloak.v2 (theme.properties: styles=css/styles.css css/sistema-gestion.css). Cubre: inicio de sesión, cambio de contraseña y actualización obligatoria de contraseña. ========================================================================== */ /* ===== Tipografía: Inter si está instalada; si no, la fuente del sistema (sans-serif) */
 /* ===== Tokens ===== */
 :root {
     color-scheme: dark; /* Controles nativos en oscuro */ /* Paleta */
@@ -409,7 +409,7 @@ h1#kc-page-title {
     line-height: 1.5;
 } /* ===== 4) Pie exterior ===== */
 .pf-v5-c-login__container::after {
-    content: "Sistema de Gestión · Acceso a tu negocio";
+    content: "CarniFlow · Acceso a tu negocio";
     color: #64748b;
     font-size: 0.75rem;
     line-height: 1.5;

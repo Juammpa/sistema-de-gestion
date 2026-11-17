@@ -7,7 +7,7 @@
 spring:
   datasource:
     # Port and credentials come from the root .env (POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD)
-    url: jdbc://postgresql://localhost:5433/sistema_gestion
+    url: jdbc:postgresql://localhost:5433/sistema_gestion
     username: postgres
     password: <POSTGRES_PASSWORD from .env>
 
