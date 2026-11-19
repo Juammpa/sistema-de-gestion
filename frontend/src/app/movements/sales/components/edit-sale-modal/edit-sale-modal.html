@@ -133,9 +133,7 @@
       </div>
 
       <!-- Unidades de stock del corte elegido -->
-      @if (!loaded()) {
-        <p role="status" class="text-sm text-slate-400">Cargando las unidades de la venta…</p>
-      } @else if (cutMeatId() !== null) {
+      @if (cutMeatId() !== null) {
         <sale-units-picker
           [units]="cutUnits()"
           [pricePerKilo]="pricePerKilo()"

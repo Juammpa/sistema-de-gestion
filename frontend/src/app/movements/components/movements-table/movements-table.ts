@@ -83,6 +83,9 @@ export class MovementsTable {
   hasError = signal<boolean>(false);
   hasNext = signal<boolean>(false); // Quedan mas pagina por pedir.
 
+  // Filas de relleno que se muestran mientras carga la primera pagina
+  protected readonly skeletonRows = [0, 1, 2, 3, 4, 5];
+
   private nextPage = 0;
   private request?: Subscription;
 

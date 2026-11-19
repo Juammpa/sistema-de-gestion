@@ -5,7 +5,6 @@ import { CashDateFilter } from '../../../cash/components/cash-date-filter/cash-d
 import { SpecieValue } from '../../../cut-meat/utils/specie.utils';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
-import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { daysAgo, toIsoDate } from '../../../shared/utils/date.utils';
 import { StockHeader } from '../../components/stock-header/stock-header';
 import { StockService } from '../../services/stock.service';
@@ -14,6 +13,7 @@ import { SUPPLIER_TYPE_INFO } from '../../../supplier/utils/supplier-type.utils'
 import { StockWeightsModal } from '../../components/stock-weights-modal/stock-weights-modal';
 import { StockItem } from '../../interfaces/stock.interface';
 import { StockCutsModal } from '../../components/stock-cuts-modal/stock-cuts-modal';
+import { ListSkeleton } from '../../../shared/components/list-skeleton/list-skeleton';
 
 type SpecieFilter = 'ALL' | SpecieValue;
 type StatusFilter = 'ALL' | 'AVAILABLE' | 'SOLD';
@@ -25,7 +25,7 @@ type StatusFilter = 'ALL' | 'AVAILABLE' | 'SOLD';
     CashDateFilter,
     EmptyState,
     ErrorState,
-    LoadingSpinner,
+    ListSkeleton,
     StockHeader,
     StockItemCard,
     StockWeightsModal,

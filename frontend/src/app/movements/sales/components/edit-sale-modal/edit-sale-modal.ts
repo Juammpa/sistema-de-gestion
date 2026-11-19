@@ -56,7 +56,6 @@ export class EditSaleModal implements OnInit {
 
   // Unidades que la venta tiene hoy (vienen con el detalle de la venta)
   private ownUnits = signal<AvailableCut[]>([]);
-  loaded = signal(false);
 
   // Corte elegido y unidades elegidas para venderlo
   cutMeatId = signal<number | null>(null);
@@ -98,8 +97,10 @@ export class EditSaleModal implements OnInit {
   }
 
   // Precarga el form con los datos actuales de la venta y trae sus unidades
+  // La venta llega con el detalle completo (incluye stockCuts)
   ngOnInit() {
     const current = this.sale();
+    const own = current.stockCuts ?? [];
 
     this.cutMeatId.set(current.cutMeatId);
     this.saleForm.patchValue(
@@ -107,15 +108,8 @@ export class EditSaleModal implements OnInit {
       { emitEvent: false },
     );
 
-    this.saleService.getSaleById(current.id).subscribe({
-      next: (detail) => {
-        const own = detail.stockCuts ?? [];
-        this.ownUnits.set(own);
-        this.selectedIds.set(own.map((unit) => unit.id));
-        this.loaded.set(true);
-      },
-      error: () => {}, // El aviso lo muestra el interceptor
-    });
+    this.ownUnits.set(own);
+    this.selectedIds.set(own.map((unit) => unit.id));
   }
 
   close() {
@@ -123,7 +117,7 @@ export class EditSaleModal implements OnInit {
   }
 
   onSave() {
-    if (this.saleForm.invalid || !this.loaded() || this.selectedIds().length === 0) {
+    if (this.saleForm.invalid || this.selectedIds().length === 0) {
       this.saleForm.markAllAsTouched();
       return;
     }

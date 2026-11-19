@@ -60,11 +60,21 @@
         </td>
       </tr>
     } @else if (isLoading()) {
-      <tr class="max-md:block">
-        <td colspan="9" class="max-md:block py-10 text-center">
-          <loading-spinner />
-        </td>
-      </tr>
+      <!-- Primera pagina cargando: filas de relleno con la forma de la tabla -->
+      @for (row of skeletonRows; track row) {
+        <tr aria-hidden="true" class="max-md:block">
+          <td colspan="9" class="max-md:block px-6 py-4">
+            <div
+              class="flex animate-pulse items-center gap-4 motion-reduce:animate-none"
+              [style.animation-delay.ms]="row * 80"
+            >
+              <div class="h-3.5 w-20 shrink-0 rounded-md bg-slate-800/80"></div>
+              <div class="h-3.5 flex-1 rounded-md bg-slate-800/60"></div>
+              <div class="h-3.5 w-24 shrink-0 rounded-md bg-slate-800/80"></div>
+            </div>
+          </td>
+        </tr>
+      }
     } @else if (hasError() && movements().length === 0) {
       <tr class="max-md:block">
         <td colspan="9" class="max-md:block py-10 text-center text-sm text-red-400">
