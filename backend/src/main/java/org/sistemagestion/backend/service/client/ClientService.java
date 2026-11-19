@@ -48,7 +48,7 @@ public class ClientService implements IClientService{
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDto> getAllClients() {
-        return clientRepository.findByIsActiveTrue().stream()
+        return clientRepository.findActiveWithButcherShops().stream()
                 .map(mapper::toDto)
                 .toList();
     }

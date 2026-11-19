@@ -51,7 +51,7 @@ public class SupplierService implements ISupplierService{
     @Override
     @Transactional(readOnly = true)
     public List<SupplierResponseDto> getAllSuppliers() {
-        return supplierRepository.findByIsActiveTrue().stream()
+        return supplierRepository.findByActiveWithButcherShops().stream()
                 .map(mapper::toDto)
                 .toList();
     }
