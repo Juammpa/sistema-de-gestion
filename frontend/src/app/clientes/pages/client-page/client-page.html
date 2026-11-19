@@ -36,10 +36,10 @@
       infoMessage="No se encontraron clientes con esa búsqueda"
       icon="fa-solid fa-magnifying-glass"
     />
+  } @else {
+    <!-- Iterar lista de clientes-->
+    <search-list [searchList]="clientList()" pathRoute="/home/clientes" />
   }
-
-  <!-- Iterar lista de usuarios -->
-  <search-list [searchList]="clientList()" pathRoute="/home/clientes" />
 </div>
 
 <!-- Modal para Agregar Cliente -->

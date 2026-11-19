@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CashService } from '../../services/cash.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { CashItem } from '../../components/cash-item/cash-item';
 import { CashDateFilter } from '../../components/cash-date-filter/cash-date-filter';
@@ -9,17 +8,18 @@ import { CashHeader } from '../../components/cash-header/cash-header';
 import { CashDayModal } from '../../components/cash-day-modal/cash-day-modal';
 import { CashDay } from '../../interfaces/cash.interface';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
+import { ListSkeleton } from '../../../shared/components/list-skeleton/list-skeleton';
 
 @Component({
   selector: 'app-cash-page',
   imports: [
-    LoadingSpinner,
     EmptyState,
     CashItem,
     CashDateFilter,
     CashHeader,
     CashDayModal,
     ErrorState,
+    ListSkeleton,
   ],
   templateUrl: './cash-page.html',
   host: { class: 'flex min-h-0 flex-1 flex-col' },

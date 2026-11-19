@@ -12,7 +12,7 @@
 >
   <!---->
   @if (cashResource.isLoading()) {
-    <div class="m-auto py-12"><loading-spinner /></div>
+    <list-skeleton />
     <!---->
   } @else if (cashResource.error()) {
     <error-state

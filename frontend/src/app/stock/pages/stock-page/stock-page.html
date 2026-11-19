@@ -8,7 +8,9 @@
 </div>
 
 @if (stockResource.status() === 'loading') {
-  <div class="flex justify-center py-12"><loading-spinner /></div>
+  <div class="mx-3 max-w-3xl md:mx-auto md:w-full">
+    <list-skeleton />
+  </div>
 } @else if (stockResource.error()) {
   <div class="mx-3 max-w-3xl md:mx-auto">
     <error-state

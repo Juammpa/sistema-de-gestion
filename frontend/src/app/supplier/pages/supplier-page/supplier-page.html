@@ -36,10 +36,10 @@
       infoMessage="No se encontraron proveedores con esa búsqueda"
       icon="fa-solid fa-magnifying-glass"
     />
+  } @else {
+    <!-- Iterar lista de usuarios -->
+    <search-list [searchList]="supplierList()" pathRoute="/home/proveedores" />
   }
-
-  <!-- Iterar lista de usuarios -->
-  <search-list [searchList]="supplierList()" pathRoute="/home/proveedores" />
 </div>
 
 <!-- Modal para Agregar Proveedor -->
