@@ -5,6 +5,9 @@
 
 # La aplicacion: /api va al backend y todo lo demas al frontend
 {$APP_DOMAIN} {
+	# Comprime las respuestas (zstd si el navegador lo soporta, si no gzip). Sin esto el JSON de /api viaja sin comprimir
+	encode zstd gzip
+
 	handle /api/* {
 		reverse_proxy backend:8080
 	}
