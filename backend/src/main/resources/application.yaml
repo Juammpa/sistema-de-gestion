@@ -36,6 +36,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 50
 
   flyway:
     baseline-on-migrate: true
