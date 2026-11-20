@@ -6,11 +6,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-// Todoo lo que se exporta, ya convertirdo a filas simples (sin entidades JPA)
-public record ExportData(
-        List<ClientSheet> clients,
-        List<SupplierBook> suppliers
-) {
+// Lo que se exporta, ya convertido a filas simples (sin entidades JPA).
+// Se arma de a una pieza por vez (un cliente, un proveedor): nunca ttodo junto en memoria
+public final class ExportData {
+
+    private ExportData() {}
 
     // Una hoja por cliente
     // Si tiene mas de una sucursal --> Un bloque por sucursal (lado a lado)
@@ -48,5 +48,5 @@ public record ExportData(
             BigDecimal credit,
             BigDecimal balance,
             boolean highlighted
-            ) {}
+    ) {}
 }

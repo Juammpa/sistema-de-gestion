@@ -2,13 +2,13 @@ package org.sistemagestion.backend.service.export;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.OutputStream;
 import java.text.Normalizer;
-import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -22,32 +22,46 @@ public class ExportService implements IExportService {
 
     private final ExportDataService exportDataService;
 
+    // Una sola transaccion de solo lectura para ttodo el export (hay relaciones LAZY).
+    // Los movimientos se cargan de a un cliente o proveedor, y cada Excel se escribe en el ZIP a medida que se arma
     @Override
-    public ExportFile exportAll() {
-        ExportData data = exportDataService.load();
+    @Transactional(readOnly = true)
+    public void exportAll(OutputStream out) throws IOException {
 
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        try (ZipOutputStream zip = new ZipOutputStream(bytes)) {
+        ExportPlan plan = exportDataService.plan();
+        ZipOutputStream zip = new ZipOutputStream(out);
 
-            addEntry(zip, CLIENTS_FILE, ClientsWorkbookBuilder.build(data.clients()));
+        zip.putNextEntry(new ZipEntry(CLIENTS_FILE));
+        ClientsWorkbookBuilder.write(clientSheets(plan), zip);
+        zip.closeEntry();
 
-            Set<String> usedNames = new HashSet<>();
-            for (ExportData.SupplierBook supplier: data.suppliers()) {
-                addEntry(zip, uniqueFileName(supplier.companyName(), usedNames), SupplierWorkbookBuilder.build(supplier));
-            }
-
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        Set<String> usedNames = new HashSet<>();
+        for (ExportPlan.SupplierPlan supplier: plan.suppliers()) {
+            zip.putNextEntry(new ZipEntry(uniqueFileName(supplier.companyName(), usedNames)));
+            SupplierWorkbookBuilder.write(exportDataService.loadSupplierBook(plan, supplier), zip);
+            zip.closeEntry();
         }
 
-        // El ZIP se cierra al salir del try: recien ahi los bytes estan completos
-        return new ExportFile("exportacion_" + LocalDate.now() + ".zip", bytes.toByteArray());
+        // Cierra el ZIP sin cerrar la respuesta: eso lo hace el servidor
+        zip.finish();
     }
 
-    private void addEntry(ZipOutputStream zip, String name, byte[] content) throws IOException {
-        zip.putNextEntry(new ZipEntry(name));
-        zip.write(content);
-        zip.closeEntry();
+    // Las hojas de clientes se cargan una por una, justo cuando el libro las pide
+    private Iterator<ExportData.ClientSheet> clientSheets(ExportPlan plan) {
+
+        Iterator<ExportPlan.ClientPlan> clients = plan.clients().iterator();
+
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return clients.hasNext();
+            }
+
+            @Override
+            public ExportData.ClientSheet next() {
+                return exportDataService.loadClientSheet(clients.next());
+            }
+        };
     }
 
     // "Cuenta_Cte_Meyer.xlsx"; si dos proveedores se llaman igual, el segundo lleva _2
@@ -73,4 +87,3 @@ public class ExportService implements IExportService {
     }
 
 }
-

@@ -1,8 +1,11 @@
 package org.sistemagestion.backend.service.export;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 public interface IExportService {
 
-    // ZIP con el Excel de clientes y un Excel por proveedor
-    ExportFile exportAll();
+    // Escribe el ZIP (Excel de clientes + un Excel por proveedor) directo en out, a medida que lo arma
+    void exportAll(OutputStream out) throws IOException;
 
 }

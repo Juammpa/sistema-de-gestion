@@ -5,10 +5,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 
 // Helpers para escribir celdas.
@@ -71,14 +67,6 @@ public class ExcelCells {
         if (lastCol > firstCol) {
             sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, firstCol, lastCol));
         }
-    }
-
-    static byte[] toBytes(XSSFWorkbook workbook) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        workbook.write(out);
-
-        return out.toByteArray();
     }
 
     private static Cell cell(Row row, int col, CellStyle style) {

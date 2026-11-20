@@ -1,12 +1,17 @@
 package org.sistemagestion.backend.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.sistemagestion.backend.service.export.ExportFile;
 import org.sistemagestion.backend.service.export.IExportService;
-import org.springframework.http.*;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/export")
@@ -15,20 +20,21 @@ public class ExportController {
 
     private final IExportService exportService;
 
-    // El ZIP con el Excel de clientes y un Excel por proveedor
+    // El ZIP con el Excel de clientes y un Excel por proveedor.
+    // Se escribe directo en la respuesta, a medida que se arma: no se conoce el tamano de antemano,
+    // asi que la respuesta no lleva Content-Length
     @GetMapping
-    public ResponseEntity<byte[]> export() {
+    public void export(HttpServletResponse response) throws IOException {
 
-        ExportFile file = exportService.exportAll();
-        return ResponseEntity.ok()
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        ContentDisposition.attachment().filename(file.fileName()).build().toString())
-                            .contentType(MediaType.parseMediaType("application/zip"))
-                            .contentLength(file.content().length)
-                            .cacheControl(CacheControl.noStore())
-                            .body(file.content());
+        String fileName = "exportacion_" + LocalDate.now() + ".zip";
 
+        response.setContentType("application/zip");
+        response.setHeader(
+                HttpHeaders.CONTENT_DISPOSITION,
+                ContentDisposition.attachment().filename(fileName).build().toString());
+        response.setHeader(HttpHeaders.CACHE_CONTROL, CacheControl.noStore().getHeaderValue());
+
+        exportService.exportAll(response.getOutputStream());
     }
 
 }

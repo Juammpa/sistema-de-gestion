@@ -1,5 +1,6 @@
 package org.sistemagestion.backend.service.export;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.model.*;
@@ -9,12 +10,12 @@ import org.sistemagestion.backend.repository.ClientRepository;
 import org.sistemagestion.backend.repository.MovementRepository;
 import org.sistemagestion.backend.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
+// Todos los metodos se llaman dentro de la transaccion de solo lectura de ExportService:
+// Payment.supplier y Payment.originPayment son LAZY
 @Service
 @RequiredArgsConstructor
 public class ExportDataService {
@@ -26,98 +27,79 @@ public class ExportDataService {
     private final SupplierRepository supplierRepository;
     private final MovementRepository movementRepository;
     private final ButcherShopRepository butcherShopRepository;
+    private final EntityManager entityManager;
 
-    // Todoo en una transaccion: Payment.supplier y Payment.originPayment son LAZY
-    @Transactional(readOnly = true)
-    public ExportData load() {
+    // ---------- Plan --------------
+
+    // Que se exporta, sin movimientos: solo nombres, cuentas y saldos
+    public ExportPlan plan() {
 
         List<Client> clients = clientRepository.findActiveWithButcherShops();
         List<Supplier> suppliers = supplierRepository.findByIsActiveTrueOrderByCompanyNameAsc();
 
-        Map<Long, List<Movement>> movementsByAccount = loadMovements(clients, suppliers);
-        Map<Long, Client> clientByAccount = clientsByAccountId(clients);
-
         // "resumen" ya lo usa la hoja de resumen del archivo de clientes.
         Set<String> usedSheetNames = new HashSet<>(Set.of("resumen"));
+        Map<Long, String> clientNameByAccount = new HashMap<>();
 
-        List<ExportData.ClientSheet> clientSheets = new ArrayList<>();
+        List<ExportPlan.ClientPlan> clientPlans = new ArrayList<>();
         for (Client client: clients) {
-            clientSheets.add(toClientSheet(client, movementsByAccount, usedSheetNames));
-        }
 
-        List<ExportData.SupplierBook> supplierBooks = new ArrayList<>();
-        for (Supplier supplier: suppliers) {
-            supplierBooks.add(toSupplierBook(supplier, movementsByAccount, clientByAccount));
-        }
+            String clientName = fullName(client);
+            List<ExportPlan.ShopPlan> shops = new ArrayList<>();
 
-        return new ExportData(clientSheets, supplierBooks);
-    }
-
-
-
-    // ---------- Lectura --------------
-
-    // Una sola consulta para todas las cuentas (sucursales y proveedores), agrupadas por cuenta
-    private Map<Long, List<Movement>> loadMovements(List<Client> clients, List<Supplier> suppliers) {
-
-        List<Long> accountIds = new ArrayList<>();
-
-        for (Client client: clients) {
             for (ButcherShop shop: client.getActiveButcherShops()) {
-                accountIds.add(shop.getCurrentAccount().getId());
+                CurrentAccount account = shop.getCurrentAccount();
+                shops.add(new ExportPlan.ShopPlan(shop.getName(), shop.getAddress(),account.getId(), balanceOf(account)));
+                clientNameByAccount.put(account.getId(), clientName);
             }
+
+            clientPlans.add(new ExportPlan.ClientPlan(uniqueSheetName(clientName, usedSheetNames), clientName, shops));
         }
 
+        List<ExportPlan.SupplierPlan> supplierPlans = new ArrayList<>();
         for (Supplier supplier: suppliers) {
-            accountIds.add(supplier.getCurrentAccount().getId());
+            CurrentAccount account = supplier.getCurrentAccount();
+            supplierPlans.add(new ExportPlan.SupplierPlan(
+                    supplier.getCompanyName(), supplier.getSupplierType(), account.getId(), balanceOf(account)));
         }
 
-        if (accountIds.isEmpty()) {
-            return Map.of();
-        }
-
-        // groupingBy conserva el orden de la consulta (fecha e id ascendente) dentro de cada cuenta
-        return movementRepository.findByCurrentAccountIdInOrderByDateAscIdAsc(accountIds).stream()
-                .collect(Collectors.groupingBy(m -> m.getCurrentAccount().getId()));
-    }
-
-    // Cuenta corriente de una sucursal --> Su cliente (para nombras los pagos espejo)
-    private Map<Long, Client> clientsByAccountId(List<Client> clients) {
-
-        Map<Long, Client> byAccount = new HashMap<>();
-        for (Client client: clients) {
-            for (ButcherShop shop: client.getActiveButcherShops()) {
-                byAccount.put(shop.getCurrentAccount().getId(), client);
-            }
-        }
-
-        return byAccount;
+        return new ExportPlan(clientPlans, supplierPlans, clientNameByAccount);
     }
 
 
 
     // ---------- Clientes --------------
 
-    private ExportData.ClientSheet toClientSheet(Client client, Map<Long, List<Movement>> movementsByAccount, Set<String> usedSheetNames) {
+    // Carga los movimientos de las sucursales de un cliente y los convierte en filas
+    public ExportData.ClientSheet loadClientSheet(ExportPlan.ClientPlan client) {
 
-        String clientName = fullName(client);
-        boolean severalShops = client.getActiveButcherShops().size() > 1;
+        boolean severalShops = client.shops().size() > 1;
 
         List<ExportData.ShopBlock> blocks = new ArrayList<>();
 
-        for (ButcherShop shop: client.getActiveButcherShops()) {
-            CurrentAccount account = shop.getCurrentAccount();
-            List<ExportData.ClientRow> rows =
-                    movementsByAccount.getOrDefault(account.getId(), List.of()).stream()
-                            .map(this::toClientRow)
-                            .toList();
+        for (ExportPlan.ShopPlan shop: client.shops()) {
+            List<ExportData.ClientRow> rows = movementRepository
+                    .findByCurrentAccountIdOrderByDateAscIdAsc(shop.accountId()).stream()
+                    .map(this::toClientRow)
+                    .toList();
 
             // Si tiene una sucursal, va solo el nombre del cliente
-            String title = severalShops ? clientName + " (" + shop.getName() + ")" : clientName;
-            blocks.add(new ExportData.ShopBlock(title, balanceOf(account), rows));
+            String title = severalShops ? client.fullName() + " (" + shopLabel(shop) + ")" : client.fullName();
+            blocks.add(new ExportData.ShopBlock(title, shop.balance(), rows));
         }
 
-        return new ExportData.ClientSheet(uniqueSheetName(clientName, usedSheetNames), blocks);
+        // Las entidades ya estan convertidas a filas: se sueltan para que no se acumulen en la sesion
+        entityManager.clear();
+
+        return new ExportData.ClientSheet(client.sheetName(), blocks);
+    }
+
+    // "Centro - Calle 123"; si la sucursal no tiene direccion, solo el nombre
+    private String shopLabel(ExportPlan.ShopPlan shop) {
+
+        String address = shop.address() == null ? "" : shop.address().trim();
+
+        return address.isEmpty() ? shop.name() : shop.name() + " - " + address;
     }
 
     private ExportData.ClientRow toClientRow(Movement movement) {
@@ -162,17 +144,20 @@ public class ExportDataService {
 
     // ---------- Proveedores --------------
 
-    private ExportData.SupplierBook toSupplierBook(Supplier supplier, Map<Long, List<Movement>> movementsByAccount, Map<Long, Client> clientByAccount) {
+    // Carga los movimientos de la cuenta de un proveedor y los convierte en filas
+    public ExportData.SupplierBook loadSupplierBook(ExportPlan plan, ExportPlan.SupplierPlan supplier) {
 
-        CurrentAccount account = supplier.getCurrentAccount();
-        List<ExportData.SupplierRow> rows = movementsByAccount.getOrDefault(account.getId(), List.of())
-                .stream().map(movement -> toSupplierRow(movement,clientByAccount))
+        List<ExportData.SupplierRow> rows = movementRepository
+                .findByCurrentAccountIdOrderByDateAscIdAsc(supplier.accountId()).stream()
+                .map(movement -> toSupplierRow(movement, plan))
                 .toList();
 
-        return new ExportData.SupplierBook(supplier.getCompanyName(), supplier.getSupplierType(), balanceOf(account), rows);
+        entityManager.clear();
+
+        return new ExportData.SupplierBook(supplier.companyName(), supplier.supplierType(), supplier.balance(), rows);
     }
 
-    private ExportData.SupplierRow toSupplierRow(Movement movement, Map<Long, Client> clientByAccount) {
+    private ExportData.SupplierRow toSupplierRow(Movement movement, ExportPlan plan) {
         return switch (movement) {
 
             case Purchase purchase -> new ExportData.SupplierRow(
@@ -181,19 +166,19 @@ public class ExportDataService {
                     purchase.getAmount(), null, purchase.getBalance(), false);
 
             case Payment payment -> new ExportData.SupplierRow(
-                    payment.getDate(), supplierPaymentLabel(payment, clientByAccount),
+                    payment.getDate(), supplierPaymentLabel(payment, plan),
                     null, null, null, null,
                     payment.getAmount(), payment.getBalance(),
                     payment.getOriginPayment() != null);
 
             default -> throw new IllegalStateException(
                     "Movimiento inesperado en la cuenta de un proveedor: " +
-                    movement.getClass().getSimpleName());
+                            movement.getClass().getSimpleName());
         };
     }
 
     // "Transferencia Maspi" cuando es un pago espejo (un cliente le transfirio al proveedor)
-    private String supplierPaymentLabel(Payment payment, Map<Long, Client> clientByAccount) {
+    private String supplierPaymentLabel(Payment payment, ExportPlan plan) {
 
         Payment origin = payment.getOriginPayment();
 
@@ -201,17 +186,28 @@ public class ExportDataService {
             return ExportLabels.paymentType(payment);
         }
 
-        Long originAccountId = origin.getCurrentAccount().getId();
-        Client client = clientByAccount.get(originAccountId);
+        String clientName = clientNameOf(plan, origin.getCurrentAccount().getId());
 
-        if(client == null) {
-            // El cliente fue eliminado (borrado logico), asi que no esta entre los activos
-            client = butcherShopRepository.findByCurrentAccountId(originAccountId)
-                    .map(ButcherShop::getClient)
-                    .orElse(null);
+        return clientName != null ? "Transferencia " + clientName : "Tansferencia";
+    }
+
+    // Nombre del cliente dueno de una cuenta. Los clientes activos ya estan en el plan;
+    // si fue eliminado (borrado logico) se busca una vez y se recuerda para los demas pagos
+    private String clientNameOf(ExportPlan plan, Long accountId) {
+
+        String name = plan.clientNameByAccount().get(accountId);
+        if (name != null) return name;
+
+        name = butcherShopRepository.findByCurrentAccountId(accountId)
+                .map(ButcherShop::getClient)
+                .map(this::fullName)
+                .orElse(null);
+
+        if (name != null) {
+            plan.clientNameByAccount().put(accountId, name);
         }
 
-        return client != null ? "Transferencia " + fullName(client) : "Tansferencia";
+        return name;
     }
 
 

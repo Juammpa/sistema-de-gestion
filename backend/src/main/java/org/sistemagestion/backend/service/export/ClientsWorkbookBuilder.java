@@ -2,15 +2,17 @@ package org.sistemagestion.backend.service.export;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.sistemagestion.backend.common.Decimals;
 import org.sistemagestion.backend.service.export.ExcelStyles.CellKind;
 import org.sistemagestion.backend.service.export.ExcelStyles.Look;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 // Archivo de clientes: una hoja por cliente + Resumen
@@ -30,6 +32,10 @@ final class ClientsWorkbookBuilder {
     private static final int HEADER_ROW = 1;
     private static final int FIRST_DATA_ROW = 2;
 
+    // Filas que POI mantiene en memoria por hoja: las anteriores se escriben a un archivo temporal.
+    // Tiene que ser mayor que las filas de la hoja Resumen (ahi se vuelve a filas ya escritas)
+    private static final int ROW_WINDOW = 100;
+
     // Resumen: grupos de 3 columnas (N°, Nombre, Saldo) + 1 de separacion, 10 clientes por grupo
     private static final String SUMMARY_SHEET = "Resumen";
     private static final int SUMMARY_GROUP_SIZE = 10;
@@ -39,44 +45,67 @@ final class ClientsWorkbookBuilder {
 
     private ClientsWorkbookBuilder() {}
 
-    static byte[] build(List<ExportData.ClientSheet> clients) {
+    // Escribe el libro en out. Las hojas llegan de a una: cada una se escribe y se suelta,
+    // asi que en memoria hay una sola hoja de cliente por vez (mas las filas de la ventana)
+    static void write(Iterator<ExportData.ClientSheet> clients, OutputStream out) throws IOException {
 
-        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+        // SXSSFWorkbook cierra tambien el XSSFWorkbook y borra sus archivos temporales
+        try (SXSSFWorkbook workbook = new SXSSFWorkbook(new XSSFWorkbook(), ROW_WINDOW)) {
 
-            ExcelStyles styles = new ExcelStyles(workbook);
+            // Los estilos pertenecen al libro de fondo (XSSF) y se reutilizan en todas las hojas
+            ExcelStyles styles = new ExcelStyles(workbook.getXSSFWorkbook());
 
-            List<ExportData.ShopBlock> allBlocks = new ArrayList<>();
-            for (ExportData.ClientSheet client: clients) {
+            // El Resumen solo necesita el titulo y el saldo de cada sucursal, no sus filas
+            List<ExportData.ShopBlock> summary = new ArrayList<>();
+            while (clients.hasNext()) {
 
+                ExportData.ClientSheet client = clients.next();
                 writeClientSheet(workbook.createSheet(client.sheetName()), client, styles);
-                allBlocks.addAll(client.blocks());
+
+                for (ExportData.ShopBlock block: client.blocks()) {
+                    summary.add(new ExportData.ShopBlock(block.title(), block.balance(), List.of()));
+                }
             }
 
-            writeSummary(workbook.createSheet(SUMMARY_SHEET), allBlocks, styles);
+            writeSummary(workbook.createSheet(SUMMARY_SHEET), summary, styles);
 
-            return ExcelCells.toBytes(workbook);
-
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            workbook.write(out);
         }
     }
 
     // ------------- Hoja de un cliente ----------------
 
+    // Los bloques (sucursales) van lado a lado y comparten filas. Con escritura en streaming una fila
+    // no se puede retomar una vez escrita, asi que se escribe fila por fila, de todos los bloques a la vez
     private static void writeClientSheet(Sheet sheet, ExportData.ClientSheet client, ExcelStyles styles) {
 
         List<ExportData.ShopBlock> blocks = client.blocks();
+        Look look = Look.CLIENT;
+
         for (int i = 0; i < blocks.size(); i++) {
-            writeBlock(sheet, blocks.get(i), i, styles);
+            writeBlockHeader(sheet, blocks.get(i), i, look, styles);
+        }
+
+        int rowsCount = blocks.stream().mapToInt(block -> block.rows().size()).max().orElse(0);
+
+        for (int r = 0; r < rowsCount; r++) {
+            Row row = ExcelCells.row(sheet, FIRST_DATA_ROW + r, ExcelStyles.BODY_ROW_HEIGHT);
+
+            for (int i = 0; i < blocks.size(); i++) {
+                List<ExportData.ClientRow> rows = blocks.get(i).rows();
+                if (r < rows.size()) {
+                    writeDataRow(row, i * BLOCK_STRIDE, rows.get(r), look, styles);
+                }
+            }
         }
 
         // Titulo y encabezados quedan fijos al desplazarse
         sheet.createFreezePane(0, FIRST_DATA_ROW);
     }
 
-    private static void writeBlock(Sheet sheet, ExportData.ShopBlock block, int index, ExcelStyles styles) {
+    // Anchos, titulo y encabezados de un bloque
+    private static void writeBlockHeader(Sheet sheet, ExportData.ShopBlock block, int index, Look look, ExcelStyles styles) {
 
-        Look look = Look.CLIENT;
         int first = index * BLOCK_STRIDE;
 
         for (int c = 0; c < COLUMNS; c++) {
@@ -95,22 +124,21 @@ final class ClientsWorkbookBuilder {
         for (int c = 0; c < COLUMNS; c++) {
             ExcelCells.text(headerRow, first + c, HEADERS[c], styles.header(look, c == COLUMNS -1));
         }
+    }
 
-        int rowIndex = FIRST_DATA_ROW;
-        for (ExportData.ClientRow data: block.rows()) {
-            Row row = ExcelCells.row(sheet, rowIndex++, ExcelStyles.BODY_ROW_HEIGHT);
-            boolean h = data.highlighted();
+    private static void writeDataRow(Row row, int first, ExportData.ClientRow data, Look look, ExcelStyles styles) {
 
-            ExcelCells.date(row, first, data.date(), styles.body(look, CellKind.DATE, h));
-            ExcelCells.text(row, first + 1, data.type(), styles.body(look, CellKind.TEXT, h));
-            ExcelCells.text(row, first + 2, data.cutMeat(), styles.body(look, CellKind.TEXT, h));
-            ExcelCells.number(row, first + 3, data.unit(), styles.body(look, CellKind.UNIT, h));
-            ExcelCells.number(row, first + 4, data.kilograms(), styles.body(look, CellKind.KILOS, h));
-            ExcelCells.number(row, first + 5, data.pricePerKilo(), styles.body(look, CellKind.MONEY, h));
-            ExcelCells.number(row, first + 6, data.delivered(), styles.body(look, CellKind.MONEY, h));
-            ExcelCells.number(row, first + 7, data.total(), styles.body(look, CellKind.MONEY, h));
-            ExcelCells.number(row, first + 8, data.balance(), styles.body(look, CellKind.BALANCE, h));
-        }
+        boolean h = data.highlighted();
+
+        ExcelCells.date(row, first, data.date(), styles.body(look, CellKind.DATE, h));
+        ExcelCells.text(row, first + 1, data.type(), styles.body(look, CellKind.TEXT, h));
+        ExcelCells.text(row, first + 2, data.cutMeat(), styles.body(look, CellKind.TEXT, h));
+        ExcelCells.number(row, first + 3, data.unit(), styles.body(look, CellKind.UNIT, h));
+        ExcelCells.number(row, first + 4, data.kilograms(), styles.body(look, CellKind.KILOS, h));
+        ExcelCells.number(row, first + 5, data.pricePerKilo(), styles.body(look, CellKind.MONEY, h));
+        ExcelCells.number(row, first + 6, data.delivered(), styles.body(look, CellKind.MONEY, h));
+        ExcelCells.number(row, first + 7, data.total(), styles.body(look, CellKind.MONEY, h));
+        ExcelCells.number(row, first + 8, data.balance(), styles.body(look, CellKind.BALANCE, h));
     }
 
     // ------------- Resumen ------------------
