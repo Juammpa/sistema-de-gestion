@@ -1,16 +1,25 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { tap } from 'rxjs';
 import { CutMeat, CutMeatRequest } from '../interfaces/cut-meat.interface';
 import { environment } from '../../../environments/environment';
 import { notifyAlways } from '../../core/errors/error-context';
+import { CachedRequest } from '../../shared/utils/cached-request';
 
 @Injectable({ providedIn: 'root' })
 export class CutMeatService {
   private http = inject(HttpClient);
 
+  // La lista la piden la pagina de cortes y varios modales: se guarda para no pedirla cada vez
+  private allCutMeats = new CachedRequest(() =>
+    this.http.get<CutMeat[]>(`${environment.apiUrl}/cut-meat`),
+  );
+
   // Craer un tipo de corte de carne
   createCutMeat(cutMeat: CutMeatRequest) {
-    return this.http.post<CutMeat>(`${environment.apiUrl}/cut-meat`, cutMeat);
+    return this.http
+      .post<CutMeat>(`${environment.apiUrl}/cut-meat`, cutMeat)
+      .pipe(tap(() => this.allCutMeats.invalidate()));
   }
 
   // Obtener un tipo de corte de corte
@@ -22,22 +31,28 @@ export class CutMeatService {
 
   // Obtener todos los cortes de carne
   getAllCutMeats() {
-    return this.http.get<CutMeat[]>(`${environment.apiUrl}/cut-meat`);
+    return this.allCutMeats.get();
   }
 
   // Actualizar un tipo de corte de carne
   updateCutMeat(id: number, cutMeat: CutMeatRequest) {
-    return this.http.put<CutMeat>(`${environment.apiUrl}/cut-meat/${id}`, cutMeat);
+    return this.http
+      .put<CutMeat>(`${environment.apiUrl}/cut-meat/${id}`, cutMeat)
+      .pipe(tap(() => this.allCutMeats.invalidate()));
   }
 
   // Reactivar corte de carne
   activateCutMeatById(id: number) {
-    return this.http.patch(`${environment.apiUrl}/cut-meat/${id}/activate`, {});
+    return this.http
+      .patch(`${environment.apiUrl}/cut-meat/${id}/activate`, {})
+      .pipe(tap(() => this.allCutMeats.invalidate()));
   }
 
   // Eliminar un tipo de corte de carne
   deleteCutMeatById(id: number) {
-    return this.http.delete(`${environment.apiUrl}/cut-meat/${id}`);
+    return this.http
+      .delete(`${environment.apiUrl}/cut-meat/${id}`)
+      .pipe(tap(() => this.allCutMeats.invalidate()));
   }
 
   // Indica si ya existe un corte (activo o eliminado) con ese nombre y especie
